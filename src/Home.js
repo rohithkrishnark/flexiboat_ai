@@ -15,7 +15,7 @@ function Home() {
           </h1>
 
           <p>
-            Get instant answers, academic guidance, documents,
+            Get instant answers, academic hello   guidance, documents,
             and insights using AI.
           </p>
 
