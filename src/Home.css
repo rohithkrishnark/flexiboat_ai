@@ -1,0 +1,85 @@
+.home {
+  padding: 40px 60px;
+  background: #f7f9fc;
+  min-height: 100vh;
+}
+
+/* HERO */
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 60px;
+}
+
+.hero-left {
+  max-width: 500px;
+}
+
+.tagline {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.hero-left h1 {
+  font-size: 42px;
+  margin: 15px 0;
+}
+
+.hero-left h1 span {
+  color: #2563eb;
+}
+
+.hero-left p {
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.primary-btn {
+  margin-top: 20px;
+  padding: 12px 24px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* IMAGE */
+.hero-image {
+  width: 380px;
+}
+
+/* DASHBOARD */
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+}
+
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+}
+
+.home {
+  animation: homeFade 0.8s ease-in;
+}
+
+@keyframes homeFade {
+  from {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
