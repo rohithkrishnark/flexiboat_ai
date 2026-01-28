@@ -1,7 +1,18 @@
+/* *{
+    background: #f7f9fc;
+} */
 .home {
-  padding: 40px 60px;
+  padding: 20px 60px;
   background: #f7f9fc;
+  min-height: 80vh;
+  width: 90vw;
+}
+.parent {
+  width: 100vw;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f7f9fc;
 }
 
 /* HERO */
@@ -47,9 +58,12 @@
 
 /* IMAGE */
 .hero-image {
-  width: 380px;
+  width: 80px;
 }
 
+.hero-image2 {
+  width: 150px;
+}
 /* DASHBOARD */
 .dashboard {
   display: grid;
@@ -82,4 +96,22 @@
     opacity: 1;
     transform: scale(1);
   }
+}
+
+
+
+.fade-text {
+  min-height: 48px;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  color: #6b7280;
+}
+
+.fade-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-out {
+  opacity: 0;
+  transform: translateY(8px);
 }
