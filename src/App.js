@@ -1,15 +1,12 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Intro from './Intro';
-import Home from './Home';
+import { ToastContainer } from 'react-toastify';
+import AppRoutes from './AppRoutes';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Intro />} />
-        <Route path="/home" element={<Home />} />
-      </Routes>
-    </BrowserRouter>
+    <>
+      <ToastContainer />
+      <AppRoutes />
+    </>
   );
 }
 
