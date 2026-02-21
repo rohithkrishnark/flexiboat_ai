@@ -7,6 +7,8 @@ import Intro from "./Intro";
 import Login from "../src/UserManagement/Login";
 import Home from "./Home";
 import Signup from "./UserManagement/SignUp";
+import AdminDashBoard from "./ADMIN/Dasboard/AdminDashBoard";
+import AdminLayout from "./ADMIN/AdminLayout/AdminLayout";
 
 // import HomeDashboard from "./HomeDashboard";
 // import Profile from "./Profile";
@@ -44,6 +46,26 @@ const router = createBrowserRouter([
       // },
     ],
   },
+  {
+    path: "/admin",
+    element: <AdminLayout />, // layoutAdminLayout
+    children: [
+      {
+        path: "admindashboard",
+        // index: true,
+        element: <AdminDashBoard />,
+      },
+      // {
+      //   path: "profile",
+      //   element: <Profile />,
+      // },
+      // {
+      //   path: "settings",
+      //   element: <Settings />,
+      // },
+    ],
+  }
+  
 ]);
 
 const AppRoutes = () => {
