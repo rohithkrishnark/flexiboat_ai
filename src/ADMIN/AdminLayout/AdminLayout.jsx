@@ -2,8 +2,6 @@ import { Box } from '@mui/joy'
 import { Outlet } from 'react-router-dom'
 import AdminSideBar from '../Components/AdminSideBar'
 import AdminTopBar from '../Components/AdminTopBar'
-// import AdminSideBar from '../Components/AdminSideBar'
-// import AdminTopBar from '../Components/AdminTopBar'
 
 const AdminLayout = () => {
   return (
@@ -12,12 +10,12 @@ const AdminLayout = () => {
       <AdminSideBar />
 
       {/* Right side */}
-      <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         {/* Top Navbar */}
         <AdminTopBar />
 
         {/* Page Content */}
-        <Box sx={{ flexGrow: 1, p: 2, bgcolor: '#f9fafb',m:1 }}>
+        <Box sx={{ flex: 1, p: 2, bgcolor: '#f9fafb', overflow: 'auto' }}>
           <Outlet />
         </Box>
       </Box>

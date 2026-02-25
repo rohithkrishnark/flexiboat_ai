@@ -1,7 +1,4 @@
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import Intro from "./Intro";
 import Login from "../src/UserManagement/Login";
@@ -9,6 +6,11 @@ import Home from "./Home";
 import Signup from "./UserManagement/SignUp";
 import AdminDashBoard from "./ADMIN/Dasboard/AdminDashBoard";
 import AdminLayout from "./ADMIN/AdminLayout/AdminLayout";
+import UploadTraining from "./ADMIN/AdminPdfUpload/UploadTraining";
+import AddNewFaculity from "./ADMIN/AdminFacultyAdding/AddNewFaculity";
+import ViewFaculityActivity from "./ADMIN/AdminFacultyAdding/ViewFaculityActivity";
+import AddAlumin from "./ADMIN/Alumini/AddAlumin";
+import ViewAlumini from "./ADMIN/Alumini/ViewAlumini";
 
 // import HomeDashboard from "./HomeDashboard";
 // import Profile from "./Profile";
@@ -24,7 +26,7 @@ const router = createBrowserRouter([
     path: "/login",
     element: <Login />,
   },
-    {
+  {
     path: "/signup",
     element: <Signup />,
   },
@@ -55,17 +57,39 @@ const router = createBrowserRouter([
         // index: true,
         element: <AdminDashBoard />,
       },
-      // {
-      //   path: "profile",
-      //   element: <Profile />,
-      // },
+      {
+        path: "uploadpdf",
+        element: <UploadTraining />,
+      },
+      {
+        path: "addfaculity",
+        element: <AddNewFaculity />,
+      },
+      {
+        path: "viewfaculity",
+        element: <ViewFaculityActivity />,
+      },
+      {
+        path: "addalumin",
+        element: <AddAlumin />,
+      },
+      {
+        path: "addalumin/:id",
+        element: <AddAlumin />,
+      },
+      {
+        path: "viewalumini",
+        element: <ViewAlumini />,
+      },
+
       // {
       //   path: "settings",
       //   element: <Settings />,
       // },
+
+      ,
     ],
-  }
-  
+  },
 ]);
 
 const AppRoutes = () => {
