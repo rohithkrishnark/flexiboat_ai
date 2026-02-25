@@ -9,7 +9,7 @@ import {
   Divider
 } from '@mui/joy'
 import { useNavigate } from 'react-router-dom'
-
+import PictureAsPdfTwoToneIcon from '@mui/icons-material/PictureAsPdfTwoTone';
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import PeopleIcon from '@mui/icons-material/People'
 import InventoryIcon from '@mui/icons-material/Inventory'
@@ -29,19 +29,24 @@ const MENU_ITEMS = [
     path: '/admin/admindashboard'
   },
   {
-    label: 'Users',
+    label: 'Alumini',
     icon: PeopleIcon,
     nested: [
-      { label: 'Alumni Approval', path: '/admin/users/alumni' },
-      { label: 'Faculty Approval', path: '/admin/users/faculty' }
+      { label: 'Add Alumini', path: '/admin/addalumin' },
+      { label: 'View Alumini', path: '/admin/viewalumini' }
     ]
   },
   {
-    label: 'Products',
+    label: 'Upload',
+    icon: PictureAsPdfTwoToneIcon,
+    path: '/admin/uploadpdf'
+  },
+  {
+    label: 'Faculity',
     icon: InventoryIcon,
     nested: [
-      { label: 'Add Product', path: '/admin/products/add' },
-      { label: 'View Products', path: '/admin/products/view' }
+      { label: 'Add Faculty', path: '/admin/addfaculity' },
+      { label: 'View Faculity', path: '/admin/viewfaculity' }
     ]
   },
   {
@@ -58,7 +63,7 @@ const AdminSideBar = () => {
   const [openMenu, setOpenMenu] = useState(null)
   const [activeMenu, setActiveMenu] = useState('Dashboard')
 
-const handleMenuClick = (item) => {
+  const handleMenuClick = (item) => {
     // MENU WITHOUT NESTED → NAVIGATE
     if (!item.nested) {
       setActiveMenu(item.label)
