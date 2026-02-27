@@ -20,6 +20,12 @@ export const FetchAllAluminiDetail = async () => {
   try {
     const response = await axiosLogin.get("/training/alumini/fetchall");
     const { success, data } = response.data;
+
+    console.log({
+      success,
+      data,
+    });
+
     //  Record exist
     if (success !== 0) return data;
     //  No Record found

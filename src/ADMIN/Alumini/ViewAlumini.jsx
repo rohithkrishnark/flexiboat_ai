@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import {
   Box,
   Typography,
-  Table
+  Table,
+  Tooltip
 } from '@mui/joy'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -12,11 +13,18 @@ import { useNavigate } from 'react-router-dom'
 import axiosLogin from '../../Axios/axios';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import AlumniLoginModal from '../AdminModal/AlumniLoginModal'
+import LockOutlineIcon from '@mui/icons-material/LockOutline';
+// import ChangePasswordConfirmModal from '../AdminModal/ChangePasswordConfirmModal';
 
 const ViewAlumini = () => {
-  const { data: AllAluminidata, isLoading, refetch: FetchAllAluminDetail } = useFetchAllAluminDetail()
+  const { data: AllAluminidata,
+    isLoading, refetch: FetchAllAluminDetail,
+    isError,
+    error
+  } = useFetchAllAluminDetail()
   const [openLoginModal, setOpenLoginModal] = useState(false)
   const [selectedAlumni, setSelectedAlumni] = useState(null)
+
 
   // Open modal for specific alumni
   const handleOpenLoginModal = (row) => {
@@ -50,6 +58,9 @@ const ViewAlumini = () => {
       warningNotify("Something went wrong while marking alumni inactive");
     }
   };
+  if (isError) {
+    return <Typography color="danger">{error.message}</Typography>
+  }
   if (isLoading) {
     return (
       <Box sx={{ p: 2 }}>
@@ -115,16 +126,28 @@ const ViewAlumini = () => {
                   <td>{row.alum_qualification}</td>
                   <td>{row.alum_status === 1 ? "Active" : "InActive"}</td>
                   <td>
-                    <LockOpenIcon
-                      sx={{ cursor: 'pointer' }}
-                      onClick={() => handleOpenLoginModal(row)}
-                    />
+                    {
+                      row.is_email_send === 1 ?
+                        <Tooltip title="Login already sent" placement="top">
+                          <span>
+                            <LockOutlineIcon
+                              color='success'
+                              sx={{ cursor: 'pointer' }}
+                              onClick={() => handleOpenLoginModal(row)}
+                            />
+                          </span>
+                        </Tooltip>
+                        : <LockOpenIcon
+                          sx={{ cursor: 'pointer' }}
+                          onClick={() => handleOpenLoginModal(row)}
+                        />
+                    }
+
                   </td>
-                  <td>
-                    <EditIcon
-                      sx={{ cursor: 'pointer' }}
-                      onClick={() => handleEdit(row)}
-                    />
+                  <td> <EditIcon
+                    sx={{ cursor: 'pointer' }}
+                    onClick={() => handleEdit(row)}
+                  />
                   </td>
                   <td>
                     <DeleteIcon
@@ -145,6 +168,13 @@ const ViewAlumini = () => {
         alumni={selectedAlumni}
         onSent={() => FetchAllAluminDetail()}
       />
+
+
+      {/* <ChangePasswordConfirmModal
+        open={openSecurityModal}
+        onClose={() => setOpenSecurityModal(false)}
+        alumni={selectedAlumni}
+      /> */}
     </Box>
   )
 }

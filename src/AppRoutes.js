@@ -11,6 +11,13 @@ import AddNewFaculity from "./ADMIN/AdminFacultyAdding/AddNewFaculity";
 import ViewFaculityActivity from "./ADMIN/AdminFacultyAdding/ViewFaculityActivity";
 import AddAlumin from "./ADMIN/Alumini/AddAlumin";
 import ViewAlumini from "./ADMIN/Alumini/ViewAlumini";
+import InstantAlert from "./ADMIN/AlertSystem.jsx/InstantAlert";
+import Settings from "./ADMIN/Settings/Settings";
+import DepartmentMaster from "./ADMIN/Settings/DepartmentMaster/DepartmentMaster";
+import ProgramDetailMaster from "./ADMIN/Settings/Program Detail Master/ProgramDetailMaster";
+import ProgramMaster from "./ADMIN/Settings/Program Master/ProgramMaster";
+import DesignationMaster from "./ADMIN/Settings/Designation Master/DesignationMaster";
+import UserGroupMaster from "./ADMIN/Settings/User Group Master/UserGroupMaster";
 
 // import HomeDashboard from "./HomeDashboard";
 // import Profile from "./Profile";
@@ -81,12 +88,34 @@ const router = createBrowserRouter([
         path: "viewalumini",
         element: <ViewAlumini />,
       },
-
-      // {
-      //   path: "settings",
-      //   element: <Settings />,
-      // },
-
+      {
+        path: "alert",
+        element: <InstantAlert />,
+      },
+      {
+        path: "settings",
+        element: <Settings />,
+      },
+      {
+        path: "depmaster",
+        element: <DepartmentMaster />,
+      },
+      {
+        path: "programdtlmast",
+        element: <ProgramDetailMaster />,
+      },
+      {
+        path: "programmast",
+        element: <ProgramMaster />,
+      },
+      {
+        path: "designation",
+        element: <DesignationMaster />,
+      },
+      {
+        path: "usergroup",
+        element: <UserGroupMaster />,
+      },
       ,
     ],
   },
