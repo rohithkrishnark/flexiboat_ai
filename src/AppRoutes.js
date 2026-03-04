@@ -18,6 +18,10 @@ import ProgramDetailMaster from "./ADMIN/Settings/Program Detail Master/ProgramD
 import ProgramMaster from "./ADMIN/Settings/Program Master/ProgramMaster";
 import DesignationMaster from "./ADMIN/Settings/Designation Master/DesignationMaster";
 import UserGroupMaster from "./ADMIN/Settings/User Group Master/UserGroupMaster";
+import FaculityLayout from "./FACULITY/FaculityLayout/FaculityLayout";
+import FaculityDashboard from "./FACULITY/FaculityDashboard/FaculityDashboard";
+import StudentActionDetail from "./FACULITY/DepartmentStudent/StudentActionDetail";
+import AddStudentDetail from "./FACULITY/DepartmentStudent/AddStudentDetail";
 
 // import HomeDashboard from "./HomeDashboard";
 // import Profile from "./Profile";
@@ -53,6 +57,70 @@ const router = createBrowserRouter([
       //   path: "settings",
       //   element: <Settings />,
       // },
+    ],
+  },
+  {
+    path: "/faculity",
+    element: <FaculityLayout />, // layoutAdminLayout
+    children: [
+      {
+        path: "dashboard",
+        // index: true,
+        element: <FaculityDashboard />,
+      },
+      {
+        path: "addstudents",
+        element: <AddStudentDetail />,
+      },
+      {
+        path: "viewstudents",
+        element: <StudentActionDetail />,
+      },
+      {
+        path: "viewfaculity",
+        element: <ViewFaculityActivity />,
+      },
+      {
+        path: "addalumin",
+        element: <AddAlumin />,
+      },
+      {
+        path: "addalumin/:id",
+        element: <AddAlumin />,
+      },
+      {
+        path: "viewalumini",
+        element: <ViewAlumini />,
+      },
+      {
+        path: "alert",
+        element: <InstantAlert />,
+      },
+      {
+        path: "settings",
+        element: <Settings />,
+      },
+      {
+        path: "depmaster",
+        element: <DepartmentMaster />,
+      },
+      {
+        path: "programdtlmast",
+        element: <ProgramDetailMaster />,
+      },
+      {
+        path: "programmast",
+        element: <ProgramMaster />,
+      },
+      {
+        path: "designation",
+        element: <DesignationMaster />,
+      },
+      {
+        path: "usergroup",
+        element: <UserGroupMaster />,
+      },
+      ,
     ],
   },
   {

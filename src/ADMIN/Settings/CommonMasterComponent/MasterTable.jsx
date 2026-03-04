@@ -1,8 +1,10 @@
 import React, { useMemo } from 'react'
 import { AgGridReact } from 'ag-grid-react'
+import { ModuleRegistry, AllCommunityModule } from 'ag-grid-community'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
-import { Box } from '@mui/joy'
+
+ModuleRegistry.registerModules([AllCommunityModule])
 
 const MasterTable = ({ columnDefs, rowData }) => {
 
@@ -15,22 +17,19 @@ const MasterTable = ({ columnDefs, rowData }) => {
   }), [])
 
   return (
-    <Box
+    <div
       className="ag-theme-alpine"
-      sx={{
-        height: 400,
-        width: '100%',
-        mt: 2
-      }}
+      style={{ height: "400px", width: "100%" }}
     >
       <AgGridReact
-        rowData={rowData}
+        theme="legacy"   // ✅ IMPORTANT FIX
+        rowData={rowData || []}
         columnDefs={columnDefs}
         defaultColDef={defaultColDef}
-        pagination
+        pagination={true}
         paginationPageSize={10}
       />
-    </Box>
+    </div>
   )
 }
 

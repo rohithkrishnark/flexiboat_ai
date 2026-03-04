@@ -51,3 +51,44 @@ export const FetchAllAluminiDetailById = async (id) => {
     throw new Error(error?.response?.data?.message || "Failed to fetch PDFs");
   }
 };
+
+export const FetchAllDeprmentDetail = async () => {
+  try {
+    const response = await axiosLogin.get("/training/department/get");
+    const { success, data } = response.data;
+    //  Record exist
+    if (success !== 0) return data;
+    //  No Record found
+    return [];
+  } catch (error) {
+    console.error("FetchExistingPdf error:", error);
+    throw new Error(error?.response?.data?.message || "Failed to fetch PDFs");
+  }
+};
+
+export const FetchAllProgramDetail = async () => {
+  try {
+    const response = await axiosLogin.get("/training/program/get");
+    const { success, data } = response.data;
+    if (success === 1) return data;
+
+    return [];
+  } catch (error) {
+    console.error("FetchAllProgramDetail error:", error);
+    throw new Error(
+      error?.response?.data?.message || "Failed to fetch programs",
+    );
+  }
+};
+
+export const FetchAllDesignation = async () => {
+  try {
+    const response = await axiosLogin.get("/training/designation/get");
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch designation");
+  }
+};
