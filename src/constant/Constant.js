@@ -28,3 +28,18 @@ export const warningNotify = (message) => {
 export const errorNotify = (message) => {
   toast.error(message, baseOptions);
 };
+
+
+export const getAuthUser = () => {
+  try {
+    const storedUser = localStorage.getItem("authUser");
+
+    if (!storedUser) return null;
+
+    return JSON.parse(atob(storedUser));
+  } catch (error) {
+    console.error("Invalid authUser in localStorage:", error);
+    localStorage.removeItem("authUser");
+    return null;
+  }
+};

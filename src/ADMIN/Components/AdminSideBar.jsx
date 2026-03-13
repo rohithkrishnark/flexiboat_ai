@@ -18,7 +18,7 @@ import SettingsIcon from '@mui/icons-material/Settings'
 import LogoutIcon from '@mui/icons-material/Logout'
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft'
 import AdjustIcon from '@mui/icons-material/Adjust'
-
+import CampaignIcon from '@mui/icons-material/Campaign';
 import adminlogo from '../AdminAssets/logo.png'
 import MenuItem from './MenuItem'
 
@@ -50,7 +50,12 @@ const MENU_ITEMS = [
     ]
   },
   {
-    label: 'Settings',
+    label: 'Alert',
+    icon: CampaignIcon,
+    path: '/admin/alert'
+  },
+  {
+    label: 'Setting',
     icon: SettingsIcon,
     path: '/admin/settings'
   }

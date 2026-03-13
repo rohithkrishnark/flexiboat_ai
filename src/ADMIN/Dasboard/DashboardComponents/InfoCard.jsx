@@ -23,7 +23,7 @@ const InfoCard = ({
       }}
     >
       {/* LEFT */}
-      <Box sx={{ width: '45%' }}>
+      <Box sx={{ width: '75%' }}>
         <Typography level="body-sm" sx={{ color: '#161616', fontWeight: 500,fontSize:16 }}>
           {title}
         </Typography>

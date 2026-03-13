@@ -14,6 +14,9 @@ import {
 import { successNotify, warningNotify } from '../../constant/Constant'
 import axiosLogin from '../../Axios/axios'
 import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
+import CustomeLoader from '../../Component/CustomeLoader';
+import PasswordIcon from '@mui/icons-material/Password';
+
 
 const AlumniLoginModal = ({ open, onClose, alumni, onSent }) => {
     const [loginDetail, setLoginDetail] = useState({
@@ -21,6 +24,7 @@ const AlumniLoginModal = ({ open, onClose, alumni, onSent }) => {
         password: ''
     })
     const [sendEmail, setSendEmail] = useState(true)
+    const [loadingmailsending, setLoadingMailSending] = useState(false)
 
     useEffect(() => {
         if (alumni) {
@@ -45,12 +49,16 @@ const AlumniLoginModal = ({ open, onClose, alumni, onSent }) => {
         setLoginDetail({ ...loginDetail, password })
     }
 
+
+    // CustomeLoader
+
     const handleSendLogin = async () => {
         if (!loginDetail.email || !loginDetail.password) {
             return warningNotify('Email and password are required')
         }
 
         try {
+            setLoadingMailSending(true)
             const response = await axiosLogin.post('/training/alumini/send-login', {
                 alum_id: alumni.alum_id,
                 alum_name: alumni.alum_name,
@@ -69,7 +77,13 @@ const AlumniLoginModal = ({ open, onClose, alumni, onSent }) => {
         } catch (error) {
             console.error(error)
             warningNotify('Something went wrong')
+        } finally {
+            setLoadingMailSending(false)
         }
+    }
+
+    if (loadingmailsending) {
+        return <CustomeLoader text={"Sending Mail Please Wait ..."} />
     }
 
     return (
@@ -106,7 +120,7 @@ const AlumniLoginModal = ({ open, onClose, alumni, onSent }) => {
                     </FormControl>
 
                     <FormControl>
-                        <FormLabel>Temporary Password</FormLabel>
+                        <FormLabel>{alumni?.is_email_send === 1 ? "Chnage Password " : "Temporary Password"} </FormLabel>
                         <Box sx={{ display: 'flex', gap: 1 }}>
                             <Input
                                 type="text"
@@ -116,9 +130,13 @@ const AlumniLoginModal = ({ open, onClose, alumni, onSent }) => {
                                 placeholder="Enter temporary password"
                                 fullWidth
                             />
-                            <Button size="sm" variant="outlined" onClick={generatePassword}>
-                                Generate
-                            </Button>
+                            {
+                                alumni?.is_email_send !== 1 && <Button size="sm" variant="outlined"
+                                    onClick={generatePassword}>
+                                    Generate
+                                </Button>
+                            }
+
                         </Box>
                     </FormControl>
 
@@ -137,8 +155,8 @@ const AlumniLoginModal = ({ open, onClose, alumni, onSent }) => {
                         <Button variant="outlined" color="neutral" onClick={onClose}>
                             Cancel
                         </Button>
-                        <Button startDecorator={<MarkEmailReadIcon />} variant="solid" color="primary" onClick={handleSendLogin}>
-                            Send to Mail Address
+                        <Button disabled={loadingmailsending} startDecorator={alumni?.is_email_send === 1 ? <PasswordIcon/> : <MarkEmailReadIcon />} variant="solid" color="primary" onClick={handleSendLogin}>
+                            {alumni?.is_email_send === 1 ? "ChangePassword" : "Send login credentials to email"}
                         </Button>
                     </Box>
                 </Box>

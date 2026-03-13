@@ -11,6 +11,18 @@ import AddNewFaculity from "./ADMIN/AdminFacultyAdding/AddNewFaculity";
 import ViewFaculityActivity from "./ADMIN/AdminFacultyAdding/ViewFaculityActivity";
 import AddAlumin from "./ADMIN/Alumini/AddAlumin";
 import ViewAlumini from "./ADMIN/Alumini/ViewAlumini";
+import InstantAlert from "./ADMIN/AlertSystem.jsx/InstantAlert";
+import Settings from "./ADMIN/Settings/Settings";
+import DepartmentMaster from "./ADMIN/Settings/DepartmentMaster/DepartmentMaster";
+import ProgramDetailMaster from "./ADMIN/Settings/Program Detail Master/ProgramDetailMaster";
+import ProgramMaster from "./ADMIN/Settings/Program Master/ProgramMaster";
+import DesignationMaster from "./ADMIN/Settings/Designation Master/DesignationMaster";
+import UserGroupMaster from "./ADMIN/Settings/User Group Master/UserGroupMaster";
+import FaculityLayout from "./FACULITY/FaculityLayout/FaculityLayout";
+import FaculityDashboard from "./FACULITY/FaculityDashboard/FaculityDashboard";
+import StudentActionDetail from "./FACULITY/DepartmentStudent/StudentActionDetail";
+import AddStudentDetail from "./FACULITY/DepartmentStudent/AddStudentDetail";
+import AboutExploration from "./WebFrontDesign/Pages/AboutExploration";
 
 // import HomeDashboard from "./HomeDashboard";
 // import Profile from "./Profile";
@@ -33,19 +45,74 @@ const router = createBrowserRouter([
   {
     path: "/home",
     element: <Home />, // layout
+  },
+  {
+    path: "/about",
+    element: <AboutExploration />, // layout
+  },
+
+  {
+    path: "/faculity",
+    element: <FaculityLayout />, // layoutAdminLayout
     children: [
-      // {
-      //   index: true,
-      //   element: <HomeDashboard />,
-      // },
-      // {
-      //   path: "profile",
-      //   element: <Profile />,
-      // },
-      // {
-      //   path: "settings",
-      //   element: <Settings />,
-      // },
+      {
+        path: "dashboard",
+        // index: true,
+        element: <FaculityDashboard />,
+      },
+      {
+        path: "addstudents",
+        element: <AddStudentDetail />,
+      },
+      {
+        path: "viewstudents",
+        element: <StudentActionDetail />,
+      },
+      {
+        path: "viewfaculity",
+        element: <ViewFaculityActivity />,
+      },
+      {
+        path: "addalumin",
+        element: <AddAlumin />,
+      },
+      {
+        path: "addalumin/:id",
+        element: <AddAlumin />,
+      },
+      {
+        path: "viewalumini",
+        element: <ViewAlumini />,
+      },
+      {
+        path: "alert",
+        element: <InstantAlert />,
+      },
+      {
+        path: "settings",
+        element: <Settings />,
+      },
+      {
+        path: "depmaster",
+        element: <DepartmentMaster />,
+      },
+      {
+        path: "programdtlmast",
+        element: <ProgramDetailMaster />,
+      },
+      {
+        path: "programmast",
+        element: <ProgramMaster />,
+      },
+      {
+        path: "designation",
+        element: <DesignationMaster />,
+      },
+      {
+        path: "usergroup",
+        element: <UserGroupMaster />,
+      },
+      ,
     ],
   },
   {
@@ -81,12 +148,34 @@ const router = createBrowserRouter([
         path: "viewalumini",
         element: <ViewAlumini />,
       },
-
-      // {
-      //   path: "settings",
-      //   element: <Settings />,
-      // },
-
+      {
+        path: "alert",
+        element: <InstantAlert />,
+      },
+      {
+        path: "settings",
+        element: <Settings />,
+      },
+      {
+        path: "depmaster",
+        element: <DepartmentMaster />,
+      },
+      {
+        path: "programdtlmast",
+        element: <ProgramDetailMaster />,
+      },
+      {
+        path: "programmast",
+        element: <ProgramMaster />,
+      },
+      {
+        path: "designation",
+        element: <DesignationMaster />,
+      },
+      {
+        path: "usergroup",
+        element: <UserGroupMaster />,
+      },
       ,
     ],
   },

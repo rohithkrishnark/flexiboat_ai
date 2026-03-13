@@ -6,7 +6,6 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
-import Divider from "@mui/material/Divider";
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -14,27 +13,18 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useNavigate } from "react-router-dom";
 import Person2Icon from '@mui/icons-material/Person2';
+import { Divider, Tooltip } from "@mui/joy";
+import { getAuthUser } from "../constant/Constant";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
+  const user = getAuthUser();
 
-  //  Safely decode user from localStorage
-  let user = null;
-  const storedUser = localStorage.getItem("user");
-  if (storedUser) {
-    try {
-      user = JSON.parse(atob(storedUser));
-    } catch (err) {
-      console.error("Failed to decode user from localStorage:", err);
-      localStorage.removeItem("user"); // remove invalid data
-      user = null;
-    }
-  }
 
   const handleIconClick = (event) => {
-    if (storedUser) {
+    if (user) {
       setAnchorEl(event.currentTarget);
     } else {
       navigate('/login')
@@ -46,7 +36,7 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
+    localStorage.removeItem("authUser");
     handleMenuClose();
   };
 
@@ -54,6 +44,31 @@ const Navbar = () => {
     handleMenuClose();
     navigate("/reset-password"); // adjust route
   };
+
+
+  const handleDrawerNavigate = (id) => {
+    setOpen(false);
+
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
+
+
+const handleNavScroll = (e, id) => {
+  e.preventDefault(); // stop default anchor jump
+  const element = document.getElementById(id);
+  if (element) {
+    element.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
+};
 
   return (
     <>
@@ -73,20 +88,28 @@ const Navbar = () => {
         </div>
 
         <ul className="nav-links">
-          <li><a href="/">Home</a></li>
-          <li><a href="/about">About</a></li>
-          <li><a href="/chat">Chat</a></li>
-          <li><a href="/contact">Contact</a></li>
+          <li> <a href="#home" onClick={(e) => handleNavScroll(e, "home")}>Home</a></li>
+          <li> <a href="#about" onClick={(e) => handleNavScroll(e, "about")}>About</a></li>
+          <li><a href="#chat" onClick={(e) => handleNavScroll(e, "chat")}>Chat</a></li>
+          <li> <a href="#contactus" onClick={(e) => handleNavScroll(e, "contactus")}>   Contact</a>
+          </li>
           <li>
             <IconButton onClick={handleIconClick} sx={{ color: "white" }}>
               {
 
-                storedUser ? <Person2Icon sx={{ fontSize: 20 }} /> :
-                  <AccountCircleIcon sx={{ fontSize: 20 }} />
+                user ?
+
+                  <Person2Icon sx={{ fontSize: 20 }} />
+                  :
+                  <Tooltip variant="outlined" title="Login Here" >
+                    <span>
+                      <AccountCircleIcon sx={{ fontSize: 20 }} />
+                    </span>
+                  </Tooltip>
               }
               {user && (
                 <span style={{ marginLeft: "8px", color: "white", fontSize: '16px' }}>
-                  {user.user_name}
+                  {user.logged_name}
                 </span>
               )}
             </IconButton>
@@ -100,7 +123,7 @@ const Navbar = () => {
               transformOrigin={{ vertical: "top", horizontal: "right" }}
             >
               {
-                storedUser && <>
+                user && <>
                   <MenuItem onClick={handleResetPassword}>Reset Password</MenuItem>
                   <MenuItem onClick={handleLogout}>Logout</MenuItem>
                 </>
@@ -135,13 +158,28 @@ const Navbar = () => {
         </div>
 
         <List>
-          {["Home", "About", "Chat", "Contact"].map((text) => (
+          {/* {["Home", "About", "Chat", "Contact"].map((text) => (
             <ListItem key={text} disablePadding>
               <ListItemButton
                 sx={{ color: "#fff", "&:hover": { backgroundColor: "#1f1f1f" } }}
                 onClick={() => setOpen(false)}
               >
                 <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          ))} */}
+          {[
+            { name: "Home", id: "home" },
+            { name: "About", id: "about" },
+            { name: "Chat", id: "chat" },
+            { name: "Contact", id: "contactus" },
+          ]?.map((item) => (
+            <ListItem key={item.name} disablePadding>
+              <ListItemButton
+                sx={{ color: "#fff", "&:hover": { backgroundColor: "#1f1f1f" } }}
+                onClick={() => handleDrawerNavigate(item.id)}
+              >
+                <ListItemText primary={item.name} />
               </ListItemButton>
             </ListItem>
           ))}
