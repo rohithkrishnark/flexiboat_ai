@@ -168,13 +168,6 @@ const ViewAlumini = () => {
         alumni={selectedAlumni}
         onSent={() => FetchAllAluminDetail()}
       />
-
-
-      {/* <ChangePasswordConfirmModal
-        open={openSecurityModal}
-        onClose={() => setOpenSecurityModal(false)}
-        alumni={selectedAlumni}
-      /> */}
     </Box>
   )
 }

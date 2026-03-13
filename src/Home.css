@@ -13,9 +13,11 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #f7f9fc;
+  background: #000000;
 }
-
+.page-content{
+  padding-top: 1px; /* same height as navbar */
+}
 /* HERO */
 .hero {
   display: flex;

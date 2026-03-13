@@ -4,7 +4,12 @@ import {
   FetchAllAluminiDetailById,
   FetchAllDeprmentDetail,
   FetchAllDesignation,
+  FetchAllFaculity,
+  FetchAllProgramDetaiById,
   FetchAllProgramDetail,
+  FetchAllProgramDetailMast,
+  FetchAllStudents,
+  FetchAllUserGroup,
   FetchExistingPdf,
 } from "./CommonFun";
 
@@ -56,3 +61,47 @@ export const useFetchAllDesignationDetail = () => {
     staleTime: Infinity,
   });
 };
+
+export const useFetchAllProgramDetailMast = () => {
+  return useQuery({
+    queryKey: ["getAllprogrmdtl"],
+    queryFn: FetchAllProgramDetailMast,
+    staleTime: Infinity,
+  });
+};
+
+export const useFetchAllUserGroup = () => {
+  return useQuery({
+    queryKey: ["getallgroup"],
+    queryFn: FetchAllUserGroup,
+    staleTime: Infinity,
+  });
+};
+
+export const useFetchAllFaculity = () => {
+  return useQuery({
+    queryKey: ["facfetch"],
+    queryFn: FetchAllFaculity,
+    staleTime: Infinity,
+  });
+};
+
+export const useFetchAllProgramDetailById = (id) => {
+  return useQuery({
+    queryKey: ["pgmdtlbyid", id],
+    queryFn: () => FetchAllProgramDetaiById(id),
+    staleTime: Infinity,
+  });
+};
+
+
+export const useFetchAllStudentDetail = () => {
+  return useQuery({
+    queryKey: ["allstudents"],
+    queryFn: FetchAllStudents,
+    staleTime: Infinity,
+  });
+};
+
+
+

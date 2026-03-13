@@ -8,6 +8,11 @@ ModuleRegistry.registerModules([AllCommunityModule])
 
 const MasterTable = ({ columnDefs, rowData }) => {
 
+
+  console.log({
+    rowData
+  });
+  
   const defaultColDef = useMemo(() => ({
     flex: 1,
     sortable: true,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useMemo, useCallback, memo } from 'react'
 import {
   Box,
   Input,
@@ -9,93 +9,150 @@ import {
   Select,
   Option
 } from '@mui/joy'
+import EditIcon from '@mui/icons-material/Edit'
 import { useLocation } from 'react-router-dom'
 import MasterWrapper from '../../Components/MasterWrapper'
 import MasterTable from '../CommonMasterComponent/MasterTable'
+import axiosLogin from '../../../Axios/axios'
+import { successNotify, warningNotify } from '../../../constant/Constant'
+import { useFetchAllProgramDetail, useFetchAllProgramDetailMast } from '../../CommonCode/useQuery'
 
 const ProgramDetailMaster = () => {
 
   const location = useLocation()
   const title = location.state?.title || "Program Detail Master"
 
-  const [rowData, setRowData] = useState([])
-  const [programList, setProgramList] = useState([])
   const [programYearName, setProgramYearName] = useState('')
   const [programId, setProgramId] = useState(null)
+  const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    fetchProgramDetails()
-    fetchPrograms()
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [detailId, setDetailId] = useState(null)
+
+
+
+  // Fetch Programs for dropdown
+  const {
+    data: programDetail,
+  } = useFetchAllProgramDetail()
+
+  //program detail master
+  const {
+    data: programDetailMast = [],
+    refetch: fetchProgramDetailMast
+  } = useFetchAllProgramDetailMast()
+
+
+  // Edit Click
+  const handleEdit = useCallback((row) => {
+    setDetailId(row.prgm_mast_dtl_slno)
+    setProgramYearName(row.program_year_name)
+    setProgramId(row.program_id)
+    setIsEditMode(true)
   }, [])
 
-  const fetchProgramDetails = async () => {
-    try {
-      const res = await fetch('http://localhost:5000/api/program-details')
-      const data = await res.json()
-      setRowData(data)
-    } catch (err) {
-      console.error(err)
+  // Submit Insert / Update
+  const handleSubmit = async (e) => {
+
+    e.preventDefault()
+    setLoading(true)
+
+    if (!programYearName || !programId) {
+      warningNotify("All fields required")
+      setLoading(false)
+      return
     }
-  }
-
-  const fetchPrograms = async () => {
-    try {
-      const res = await fetch('http://localhost:5000/api/programs')
-      const data = await res.json()
-      setProgramList(data)
-    } catch (err) {
-      console.error(err)
-    }
-  }
-
-  const handleSubmit = async () => {
-    if (!programYearName || !programId)
-      return alert("All fields required")
 
     try {
-      await fetch('http://localhost:5000/api/program-details', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+
+      let endpoint = ""
+      let payload = {}
+
+      if (isEditMode) {
+
+        endpoint = `/training/program-detail/update`
+
+        payload = {
+          prgm_mast_dtl_slno: detailId,
           program_year_name: programYearName,
           program_id: programId
-        })
-      })
+        }
 
-      setProgramYearName('')
-      setProgramId(null)
-      fetchProgramDetails()
+      } else {
+
+        endpoint = `/training/program-detail/insert`
+
+        payload = {
+          program_year_name: programYearName,
+          program_id: programId
+        }
+      }
+
+      const response = await axiosLogin.post(endpoint, payload)
+      const action = isEditMode ? "updated" : "added"
+
+      if (response.data.success === 1) {
+
+        successNotify(`Program detail ${action} successfully`)
+
+        setProgramYearName('')
+        setProgramId(null)
+        setDetailId(null)
+        setIsEditMode(false)
+
+        fetchProgramDetailMast()
+
+      } else {
+        warningNotify(`Failed to ${action}`)
+      }
 
     } catch (err) {
       console.error(err)
+      warningNotify("Something went wrong")
+    } finally {
+      setLoading(false)
     }
   }
 
   const columnDefs = useMemo(() => [
-    { headerName: "SL No", field: "prgm_mast_dtl_slno" },
-    { headerName: "Program Year Name", field: "program_year_name" },
-    { headerName: "Program Name", field: "program_name" }, // joined value
-    { headerName: "Created Date", field: "create_date" },
-    { headerName: "Edited Date", field: "edit_date" },
-  ], [])
+    {
+      headerName: "SL No",
+      field: "prgm_mast_dtl_slno",
+      width: 100
+    },
+    {
+      headerName: "Program Year Name",
+      field: "program_year_name"
+    },
+    {
+      headerName: "Program Name",
+      field: "program_name"
+    },
+    {
+      headerName: "Action",
+      width: 100,
+      filter: false,
+      sortable: false,
+      cellRenderer: (params) => (
+        <EditIcon
+          style={{ cursor: "pointer", color: "#1976d2" }}
+          onClick={() => handleEdit(params.data)}
+        />
+      )
+    }
+  ], [handleEdit])
 
   return (
     <MasterWrapper title={title}>
 
-      <Box
-        sx={{
-          display: 'flex',
-          gap: 3,
-          flexDirection: { xs: 'column', md: 'row' }
-        }}
-      >
+      <Box sx={{ display: 'flex', gap: 3 }}>
 
-        {/* 🔹 LEFT - FORM (30%) */}
-        <Card sx={{ flex: { xs: '100%', md: '0 0 30%' } }}>
+        {/* LEFT FORM */}
+        <Card sx={{ width: '30%' }}>
           <CardContent>
 
             <Typography level="h5" mb={2}>
-              Add Program Detail
+              {isEditMode ? "Edit Program Detail" : "Add Program Detail"}
             </Typography>
 
             <Box sx={{ mb: 2 }}>
@@ -103,7 +160,6 @@ const ProgramDetailMaster = () => {
               <Input
                 value={programYearName}
                 onChange={(e) => setProgramYearName(e.target.value)}
-                placeholder="Enter program year"
               />
             </Box>
 
@@ -114,27 +170,46 @@ const ProgramDetailMaster = () => {
                 onChange={(e, newValue) => setProgramId(newValue)}
                 placeholder="Select Program"
               >
-                {programList.map((program) => (
+                {programDetail?.map((program) => (
                   <Option
-                    key={program.program_id}
-                    value={program.program_id}
+                    key={program?.program_id}
+                    value={program?.program_id}
                   >
-                    {program.program_name}
+                    {program?.program_name}
                   </Option>
                 ))}
               </Select>
             </Box>
 
-            <Button fullWidth onClick={handleSubmit}>
-              Add Program Detail
+            <Button fullWidth disabled={loading} onClick={handleSubmit}>
+              {loading
+                ? "Processing..."
+                : isEditMode
+                  ? "Update Program Detail"
+                  : "Add Program Detail"}
             </Button>
+
+            {isEditMode && (
+              <Button
+                fullWidth
+                sx={{ mt: 1 }}
+                color="neutral"
+                onClick={() => {
+                  setProgramYearName('')
+                  setProgramId(null)
+                  setDetailId(null)
+                  setIsEditMode(false)
+                }}
+              >
+                Cancel Edit
+              </Button>
+            )}
 
           </CardContent>
         </Card>
 
-
-        {/* 🔹 RIGHT - TABLE (70%) */}
-        <Card sx={{ flex: { xs: '100%', md: '0 0 70%' } }}>
+        {/* RIGHT TABLE */}
+        <Card sx={{ width: '70%' }}>
           <CardContent>
 
             <Typography level="h5" mb={2}>
@@ -143,7 +218,7 @@ const ProgramDetailMaster = () => {
 
             <MasterTable
               columnDefs={columnDefs}
-              rowData={rowData}
+              rowData={programDetailMast || []}
             />
 
           </CardContent>
@@ -155,4 +230,4 @@ const ProgramDetailMaster = () => {
   )
 }
 
-export default ProgramDetailMaster
+export default memo(ProgramDetailMaster);

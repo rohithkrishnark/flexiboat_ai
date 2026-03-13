@@ -1,23 +1,32 @@
 import React, { useState } from "react";
-import { errorNotify, successNotify, warningNotify } from "../constant/Constant";
+import { Box, Button, Typography, Input, Link } from "@mui/joy";
 import { useNavigate } from "react-router-dom";
-import axiosLogin from "../../src/Axios/axios";
-
+import { errorNotify, infoNotify, successNotify, warningNotify } from "../constant/Constant";
+import axiosLogin from "../Axios/axios";
 
 const Login = () => {
+
+    const navigate = useNavigate();
+
+    const [currentrole, setRole] = useState("user");
+
     const [formData, setFormData] = useState({
         email: "",
         password: "",
     });
 
-    const navigate = useNavigate();
+    const toggleRole = (selectedRole) => {
+        if (currentrole === selectedRole) {
+            setRole("user"); // toggle back to normal user
+        } else {
+            setRole(selectedRole);
+        }
+    };
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-
-    // Handle Login page
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -27,114 +36,229 @@ const Login = () => {
                 password: formData.password,
             };
 
-            // Send request to backend
-            const res = await axiosLogin.post("/user/login", payload); // adjust route if needed
+            const roleApi = currentrole === "user" ? "login" : "faclogin";
 
-            if (res.data.success === 1) {
-                //  Successful login
-                successNotify(res.data.message || "Login successful!");
+            const { data: resData } = await axiosLogin.post(`/user/${roleApi}`, payload);
 
-                // Store user info in localStorage
-                const { user_id, user_name, user_email } = res.data.data;
+            const { success, message, data } = resData;
+            console.log(typeof (success));
 
-                //  Encode as Base64 before storing
-                const userData = btoa(JSON.stringify({ user_id, user_name, user_email }));
-                localStorage.setItem("user", userData);
-
-                console.log("User data stored:", res.data.data);
-
-                // Redirect to dashboard/home
-                navigate("/home");
-            } else {
-                // Backend returned known error but 200 response (rare)
-                warningNotify(res.data.message || "Login failed");
+            if (success === 2) {
+                return infoNotify(message)
             }
+            if (success === 4) {
+                return infoNotify("Admin Verification Pending...!");
+            }
+
+            if (success !== 1) {
+                return warningNotify(message || "Login failed");
+            }
+
+            // success === 1
+            successNotify(message || "Login successful!");
+
+            const { role } = data;
+
+            let userPayload = {};
+            let redirectPath = "";
+
+            if (role === "fac") {
+                const { fac_id, fac_name, user_email, fac_dep_id } = data;
+
+                userPayload = {
+                    logged_id: fac_id,
+                    logged_name: fac_name,
+                    logged_email: user_email,
+                    deparment: fac_dep_id,
+                    logged_role: role
+                };
+                redirectPath = "/faculity/dashboard";
+
+            }
+
+            if (role === "user") {
+                const { user_id, user_name, user_email } = data;
+
+                userPayload = { logged_id: user_id, logged_name: user_name, logged_email: user_email, logged_role: role };
+                redirectPath = "/home";
+            }
+
+            const authData = {
+                role,
+                ...userPayload
+            };
+            localStorage.setItem("authUser", btoa(JSON.stringify(authData)));
+
+            navigate(redirectPath);
 
         } catch (error) {
-            // Backend returned an error response
-            if (error.response) {
-                const status = error.response.status;
-                const message = error.response.data?.message || "Something went wrong";
-
-                if (status === 400) {
-                    warningNotify(message); // Missing required fields
-                } else if (status === 401) {
-                    warningNotify(message); // Invalid email/password
-                } else if (status >= 500) {
-                    errorNotify("Server error. Please try again later.");
-                } else {
-                    errorNotify(message); // Any other backend error
-                }
-
-            } else if (error.request) {
-                // Request made but no response
-                errorNotify("No response from server. Please check your network.");
-            } else {
-                // Other errors
-                errorNotify("An unexpected error occurred.");
-            }
-
-            console.error("Login error:", error);
+            console.error(error);
+            errorNotify("Login failed");
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-black">
-            <div className="w-full max-w-md bg-white rounded-xl shadow-2xl p-8">
-                <h2 className="text-3xl font-bold text-center text-black mb-6">
-                    Login
-                </h2>
+        <Box
+            sx={{
+                minHeight: "100vh",
+                bgcolor: "#0b0b0b",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center"
+            }}
+        >
+            <Box
+                sx={{
+                    width: 420,
+                    bgcolor: "white",
+                    borderRadius: "14px",
+                    p: 4,
+                    boxShadow: "lg"
+                }}
+            >
 
-                <form onSubmit={handleSubmit} className="space-y-5">
-                    {/* Email */}
-                    <div>
-                        <label className="block text-sm font-semibold text-black mb-1">
-                            Email
-                        </label>
-                        <input
-                            type="email"
+                <Typography level="h3" textAlign="center" mb={3}>
+                    Login
+                </Typography>
+
+
+                <Box
+                    sx={{
+                        display: "flex",
+                        gap: 1.5,
+                        justifyContent: "center",
+                        mb: 3
+                    }}
+                >
+                    <Button
+                        size="sm"
+                        variant={currentrole === "student" ? "solid" : "outlined"}
+                        onClick={() => toggleRole("student")}
+                        sx={{
+                            borderRadius: "20px",
+                            px: 2,
+                            fontWeight: 600,
+                            borderWidth: "2px",
+                            borderColor: "#1976d2",
+                            color: currentrole === "student" ? "#fff" : "#1976d2",
+                            bgcolor: currentrole === "student" ? "#1976d2" : "transparent",
+                            transition: "all .2s ease",
+                            "&:hover": {
+                                bgcolor: "#1565c0",
+                                color: "#fff",
+                                transform: "scale(1.05)"
+                            }
+                        }}
+                    >
+                        Student
+                    </Button>
+
+                    <Button
+                        size="sm"
+                        variant={currentrole === "faculty" ? "solid" : "outlined"}
+                        onClick={() => toggleRole("faculty")}
+                        sx={{
+                            borderRadius: "20px",
+                            px: 2,
+                            fontWeight: 600,
+                            borderWidth: "2px",
+                            borderColor: "#2e7d32",
+                            color: currentrole === "faculty" ? "#fff" : "#2e7d32",
+                            bgcolor: currentrole === "faculty" ? "#2e7d32" : "transparent",
+                            transition: "all .2s ease",
+                            "&:hover": {
+                                bgcolor: "#1b5e20",
+                                color: "#fff",
+                                transform: "scale(1.05)"
+                            }
+                        }}
+                    >
+                        Faculty
+                    </Button>
+
+                    <Button
+                        size="sm"
+                        variant={currentrole === "alumni" ? "solid" : "outlined"}
+                        onClick={() => toggleRole("alumni")}
+                        sx={{
+                            borderRadius: "20px",
+                            px: 2,
+                            fontWeight: 600,
+                            borderWidth: "2px",
+                            borderColor: "#7b1fa2",
+                            color: currentrole === "alumni" ? "#fff" : "#7b1fa2",
+                            bgcolor: currentrole === "alumni" ? "#7b1fa2" : "transparent",
+                            transition: "all .2s ease",
+                            "&:hover": {
+                                bgcolor: "#6a1b9a",
+                                color: "#fff",
+                                transform: "scale(1.05)"
+                            }
+                        }}
+                    >
+                        Alumni
+                    </Button>
+                </Box>
+                {/* BACK TO NORMAL USER */}
+
+
+                <form>
+
+                    <Box mb={2}>
+                        <Typography level="body-sm">Email</Typography>
+                        <Input
                             name="email"
+                            type="email"
+                            placeholder="Enter email"
                             value={formData.email}
                             onChange={handleChange}
-                            required
-                            placeholder="Enter email"
-                            className="w-full border border-black px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                         />
-                    </div>
+                    </Box>
 
-                    {/* Password */}
-                    <div>
-                        <label className="block text-sm font-semibold text-black mb-1">
-                            Password
-                        </label>
-                        <input
-                            type="password"
+                    <Box mb={3}>
+                        <Typography level="body-sm">Password</Typography>
+                        <Input
                             name="password"
+                            type="password"
+                            placeholder="Enter password"
                             value={formData.password}
                             onChange={handleChange}
-                            required
-                            placeholder="Enter password"
-                            className="w-full border border-black px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                         />
-                    </div>
+                    </Box>
 
-                    {/* Button */}
-                    <button
-                        type="submit"
-                        className="w-full bg-black text-white py-2 rounded-md font-semibold hover:bg-gray-900 transition"
-                    >
+                    <Button onClick={handleSubmit} fullWidth >
                         Login
-                    </button>
+                    </Button>
+
                 </form>
 
-                <p className="text-center text-sm text-gray-600 mt-5">
-                    Don’t have an account?{" "}
-                    <a href="/signup" className="text-black font-semibold underline">
-                        Sign Up
-                    </a>
-                </p>
-            </div>
-        </div>
+                {/* SIGNUP CONDITION */}
+                {(currentrole === "user" || currentrole === "faculty") && (
+                    <>
+                        <Typography level="body-sm" textAlign="center" mt={3}>
+                            Don’t have an account?{" "}
+                            <Link
+                                sx={{ cursor: "pointer", fontWeight: "bold" }}
+                                onClick={() => navigate("/signup", { state: { currentrole } })}
+                            >
+                                Create account
+                            </Link>
+                        </Typography>
+
+                        <Typography
+                            level="body-xs"
+                            textAlign="center"
+                            sx={{ cursor: "pointer", mb: 2 }}
+                            onClick={() => navigate("/home")}
+                        >
+                            ← Back to normal login
+                        </Typography>
+
+                    </>
+                )}
+
+            </Box>
+        </Box>
     );
 };
 

@@ -5,11 +5,12 @@ import { memo } from 'react'
 import ReusableSidebar from '../../Component/ReusableSidebar'
 import { FACULTY_MENU } from '../../Menu/facultyMenu'
 import ReusableTopBar from '../../Component/ReusableTopBar'
-import Diversity2Icon from '@mui/icons-material/Diversity2'
 import logo from '../../assets/logo.png'
 import SchoolIcon from '@mui/icons-material/School';
+import { getAuthUser } from '../../constant/Constant'
 
 const FaculityLayout = () => {
+    const user = getAuthUser();
     return (
         <Box
             sx={{
@@ -49,7 +50,7 @@ const FaculityLayout = () => {
                     <ReusableTopBar
                         title="Fculity"
                         leftIcon={SchoolIcon}
-                        userName="Shalini Marry Kurian"
+                        userName={user?.logged_name || "Fac Name"}
                         background="#fffdfd"
                         Department="Master of Computer Application"
                     />

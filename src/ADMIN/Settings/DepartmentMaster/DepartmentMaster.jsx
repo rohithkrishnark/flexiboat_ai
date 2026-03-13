@@ -22,7 +22,6 @@ const DepartmentMaster = () => {
     const location = useLocation()
     const title = location.state?.title || "Department Master"
 
-    const [rowData, setRowData] = useState([])
     const [depName, setDepName] = useState('')
     const [depStatus, setDepStatus] = useState(true)
     const [loading, setLoading] = useState(false)

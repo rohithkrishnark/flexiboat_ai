@@ -26,11 +26,11 @@ export const FACULTY_MENU = [
   {
     label: "Assignments",
     icon: AssignmentIcon,
-    path: "/faculty/assignments",
+    path: "assignments",
   },
   {
     label: "Settings",
     icon: SettingsIcon,
-    path: "/faculty/settings",
+    path: "settings",
   },
 ];

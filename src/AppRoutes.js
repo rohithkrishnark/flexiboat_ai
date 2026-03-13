@@ -22,6 +22,7 @@ import FaculityLayout from "./FACULITY/FaculityLayout/FaculityLayout";
 import FaculityDashboard from "./FACULITY/FaculityDashboard/FaculityDashboard";
 import StudentActionDetail from "./FACULITY/DepartmentStudent/StudentActionDetail";
 import AddStudentDetail from "./FACULITY/DepartmentStudent/AddStudentDetail";
+import AboutExploration from "./WebFrontDesign/Pages/AboutExploration";
 
 // import HomeDashboard from "./HomeDashboard";
 // import Profile from "./Profile";
@@ -44,21 +45,12 @@ const router = createBrowserRouter([
   {
     path: "/home",
     element: <Home />, // layout
-    children: [
-      // {
-      //   index: true,
-      //   element: <HomeDashboard />,
-      // },
-      // {
-      //   path: "profile",
-      //   element: <Profile />,
-      // },
-      // {
-      //   path: "settings",
-      //   element: <Settings />,
-      // },
-    ],
   },
+  {
+    path: "/about",
+    element: <AboutExploration />, // layout
+  },
+
   {
     path: "/faculity",
     element: <FaculityLayout />, // layoutAdminLayout

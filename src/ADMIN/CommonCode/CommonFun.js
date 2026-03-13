@@ -1,4 +1,5 @@
 import axiosLogin from "../../Axios/axios";
+import { errorNotify, infoNotify } from "../../constant/Constant";
 
 export const FetchExistingPdf = async () => {
   try {
@@ -90,5 +91,77 @@ export const FetchAllDesignation = async () => {
     return [];
   } catch (error) {
     throw new Error("Failed to fetch designation");
+  }
+};
+
+export const FetchAllProgramDetailMast = async () => {
+  try {
+    const response = await axiosLogin.get("/training/program-detail/get");
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch designation");
+  }
+};
+
+export const FetchAllUserGroup = async () => {
+  try {
+    const response = await axiosLogin.get("/training/group/get");
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch designation");
+  }
+};
+
+export const FetchAllFaculity = async () => {
+  try {
+    const response = await axiosLogin.get("/training/faculty/fetchall");
+    const { success, data, message } = response.data;
+    if (success === 0) return errorNotify(message);
+    if (success === 1 || success === 2) return data;
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch designation");
+  }
+};
+
+export const FetchAllProgramDetaiById = async (id) => {
+  try {
+    const response = await axiosLogin.get(`/training/program-detail/get/${id}`);
+    const { success, data } = response.data;
+
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch designation");
+  }
+};
+
+export const FetchAllStudents = async () => {
+  try {
+    const response = await axiosLogin.get("/students/all");
+    const { success, data, message } = response.data;
+    if (success === 0) {
+      errorNotify(message);
+      return [];
+    }
+
+    if (success === 2) {
+      infoNotify(message);
+      return data || [];
+    }
+
+    if (success === 1) {
+      return data || [];
+    }
+
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch students");
   }
 };
