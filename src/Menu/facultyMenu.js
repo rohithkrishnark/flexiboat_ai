@@ -1,36 +1,55 @@
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import SchoolIcon from "@mui/icons-material/School";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import SettingsIcon from "@mui/icons-material/Settings";
-
+import DashboardCustomizeIcon from "@mui/icons-material/DashboardCustomize";
+import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
+import GroupsIcon from "@mui/icons-material/Groups";
+import DescriptionIcon from "@mui/icons-material/Description";
+import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
+import ChatIcon from "@mui/icons-material/Chat";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 export const FACULTY_MENU = [
   {
     label: "Dashboard",
-    icon: DashboardIcon,
-    path: "dashboard",
+    icon: DashboardCustomizeIcon,
+    path: "",
+  },
+
+  // STUDENTS
+  {
+    label: "Add Student",
+    icon: PersonAddAlt1Icon,
+    path: "addstudents",
   },
   {
-    label: "Students",
-    icon: SchoolIcon,
-    nested: [
-      {
-        label: "Add New",
-        path: "addstudents",
-      },
-      {
-        label: "View Details",
-        path: "viewstudents",
-      },
-    ],
+    label: "View Students",
+    icon: GroupsIcon,
+    path: "viewstudents",
+  },
+
+  // DOCUMENTS / ASSIGNMENT
+  {
+    label: "Add Documents",
+    icon: DescriptionIcon,
+    path: "facassignment",
   },
   {
-    label: "Assignments",
-    icon: AssignmentIcon,
-    path: "assignments",
+    label: "Chat",
+    icon: ChatIcon,
+    path: "faculitychat",
   },
+  {
+    label: "Review Activity",
+    icon: EmojiEventsIcon,
+    path: "reviewactivity",
+  },
+  {
+    label: "Alerts",
+    icon: NotificationsActiveIcon,
+    path: "alerts",
+  },
+  // SETTINGS
   {
     label: "Settings",
-    icon: SettingsIcon,
+    icon: SettingsSuggestIcon,
     path: "settings",
   },
 ];

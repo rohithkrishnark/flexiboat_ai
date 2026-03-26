@@ -12,7 +12,7 @@ import {
     Checkbox
 } from '@mui/joy'
 import { successNotify, warningNotify } from '../../constant/Constant'
-import axiosLogin from '../../Axios/axios'
+import { axiosLogin } from '../../Axios/axios';
 import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
 import CustomeLoader from '../../Component/CustomeLoader';
 import PasswordIcon from '@mui/icons-material/Password';

@@ -1,5 +1,9 @@
-import axiosLogin from "../../Axios/axios";
-import { errorNotify, infoNotify } from "../../constant/Constant";
+import { axiosLogin } from "../../Axios/axios";
+import {
+  errorNotify,
+  infoNotify,
+  warningNotify,
+} from "../../constant/Constant";
 
 export const FetchExistingPdf = async () => {
   try {
@@ -129,6 +133,17 @@ export const FetchAllFaculity = async () => {
     throw new Error("Failed to fetch designation");
   }
 };
+export const getAllActiveAlumini = async () => {
+  try {
+    const response = await axiosLogin.get("/alumini/getall");
+    const { success, data, message } = response.data;
+    if (success === 0) return errorNotify(message);
+    if (success === 1 || success === 2) return data;
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch designation");
+  }
+};
 
 export const FetchAllProgramDetaiById = async (id) => {
   try {
@@ -142,9 +157,226 @@ export const FetchAllProgramDetaiById = async (id) => {
   }
 };
 
-export const FetchAllStudents = async () => {
+export const FetchAllMyConnections = async (user_id, user_type) => {
+  if (!user_id || !user_type) return warningNotify("Id is Missing");
   try {
-    const response = await axiosLogin.get("/students/all");
+    const response = await axiosLogin.post("/student/get-connection", {
+      user_id,
+      user_type,
+    });
+    const { success, data } = response.data;
+    if (success === 1) return data;
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch designation");
+  }
+};
+
+export const FetchAllStudents = async (id) => {
+  try {
+    const response = await axiosLogin.post("/student/all", {
+      dep_id: id,
+    });
+    const { success, data, message } = response.data;
+    if (success === 0) {
+      errorNotify(message);
+      return [];
+    }
+
+    if (success === 2) {
+      infoNotify(message);
+      return data || [];
+    }
+
+    if (success === 1) {
+      return data || [];
+    }
+
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch students");
+  }
+};
+
+export const FetchAllBatchStudent = async (id, prgrm_id, year_id) => {
+  try {
+    const response = await axiosLogin.post("/student/batchstudent", {
+      dep_id: id,
+      std_program_id: prgrm_id,
+      std_program_year: year_id,
+    });
+    const { success, data, message } = response.data;
+    if (success === 0) {
+      errorNotify(message);
+      return [];
+    }
+
+    if (success === 2) {
+      infoNotify(message);
+      return data || [];
+    }
+
+    if (success === 1) {
+      return data || [];
+    }
+
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch students");
+  }
+};
+
+export const fetStudentPosts = async (id) => {
+  if (!id || id === null)
+    return warningNotify("Student Session is Expired Login to Continue");
+  console.log({ id });
+
+  try {
+    const response = await axiosLogin.post("/student/allpost", {
+      std_id: id,
+    });
+    const { success, data, message } = response.data;
+    if (success === 0) {
+      errorNotify(message);
+      return [];
+    }
+
+    if (success === 2) {
+      infoNotify(message);
+      return data || [];
+    }
+
+    if (success === 1) {
+      return data || [];
+    }
+
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch students");
+  }
+};
+
+export const fetStudentMedia = async (id) => {
+  if (!id || id === null)
+    return warningNotify("Student Session is Expired Login to Continue");
+  console.log({ id });
+
+  try {
+    const response = await axiosLogin.get(`/student/fullmedia/${id}`);
+    const { success, data, message } = response.data;
+    if (success === 0) {
+      errorNotify(message);
+      return [];
+    }
+
+    if (success === 2) {
+      infoNotify(message);
+      return data || [];
+    }
+
+    if (success === 1) {
+      return data || [];
+    }
+
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch students");
+  }
+};
+
+export const fetStudentActivity = async (id) => {
+  if (!id || id === null)
+    return warningNotify("Student Session is Expired Login to Continue");
+  console.log({ id });
+
+  try {
+    const response = await axiosLogin.post("/student/activity/allpost", {
+      std_id: id,
+    });
+    const { success, data, message } = response.data;
+    if (success === 0) {
+      errorNotify(message);
+      return [];
+    }
+
+    if (success === 2) {
+      infoNotify(message);
+      return data || [];
+    }
+
+    if (success === 1) {
+      return data || [];
+    }
+
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch students");
+  }
+};
+
+export const fetchProfilePicture = async (id) => {
+  if (!id || id === null)
+    return warningNotify("Student Session is Expired Login to Continue");
+  console.log({ id });
+
+  try {
+    const response = await axiosLogin.get(`/student/myprofilepic/${id}`);
+    const { success, data, message } = response.data;
+    if (success === 0) {
+      errorNotify(message);
+      return [];
+    }
+
+    if (success === 2) {
+      infoNotify(message);
+      return data || [];
+    }
+
+    if (success === 1) {
+      return data || [];
+    }
+
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch students");
+  }
+};
+
+export const fetchLoggedStudetnDetail = async (id) => {
+  if (!id || id === null)
+    return warningNotify("Student Session is Expired Login to Continue");
+  console.log({ id });
+
+  try {
+    const response = await axiosLogin.post("/student/loggedstudentdetail", {
+      std_id: id,
+    });
+    const { success, data, message } = response.data;
+    if (success === 0) {
+      errorNotify(message);
+      return [];
+    }
+    if (success === 2) {
+      infoNotify(message);
+      return data || [];
+    }
+    if (success === 1) {
+      return data || [];
+    }
+
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch students");
+  }
+};
+
+export const fetStudentActivityMedia = async (id) => {
+  if (!id || id === null)
+    return warningNotify("Student Session is Expired Login to Continue");
+  console.log({ id });
+
+  try {
+    const response = await axiosLogin.get(`/student/activity/full/${id}`);
     const { success, data, message } = response.data;
     if (success === 0) {
       errorNotify(message);

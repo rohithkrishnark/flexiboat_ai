@@ -9,20 +9,64 @@ import EditIcon from '@mui/icons-material/Edit'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import { useNavigate } from 'react-router-dom'
 import { useFetchAllStudentDetail } from '../../ADMIN/CommonCode/useQuery'
+import { errorNotify, getAuthUser, infoNotify, successNotify, warningNotify } from '../../constant/Constant'
+import PersonAddDisabledIcon from '@mui/icons-material/PersonAddDisabled';
+import { axiosLogin } from '../../Axios/axios';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import ChatIcon from "@mui/icons-material/Chat";
+
 
 
 const StudentActionDetail = () => {
 
-    const { data: AllStudentData, isLoading, isError, error } = useFetchAllStudentDetail()
+    const navigate = useNavigate();
+    const user = getAuthUser();
 
-    const navigate = useNavigate()
+    const departmentId = user ? user.deparment : null;
+
+    const { data: AllStudentData, isLoading, isError, error, refetch: RefetchStudetn } = useFetchAllStudentDetail(departmentId)
 
     const handleEdit = (row) => {
-        navigate(`/faculity/addstudents/${row.std_id}`)
+        navigate(`/faculity/addstudents/${row.std_id}`, {
+            state: {
+                data: row
+            }
+        })
     }
     const handleView = (row) => {
         navigate(`/faculity/addstudents/${row.std_id}`)
     }
+
+    const HandleInactive = async (studentid, currentStatus) => {
+
+        const newStatus = Number(currentStatus) === 1 ? 0 : 1
+
+        console.log("Sending:", {
+            std_id: studentid,
+            std_status: newStatus
+        })
+
+        try {
+            const { data: resData } = await axiosLogin.post(`/student/inactive`, {
+                std_id: studentid,
+                std_status: newStatus
+            })
+
+            const { success, message } = resData
+
+            if (success === 0) return warningNotify("Error in Updating", message)
+            if (success === 2) return infoNotify(message)
+            if (success === 1) successNotify(message)
+
+            //  Refresh table
+            RefetchStudetn()
+
+        } catch (error) {
+            console.error("Error in Inactivating Student")
+            errorNotify("Error in Updating Status")
+        }
+    }
+
 
     if (isError) {
         return <Typography color="danger">{error.message}</Typography>
@@ -69,11 +113,13 @@ const StudentActionDetail = () => {
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Age</th>
-                                <th>Department</th>
+                                <th>Program</th>
                                 <th>Year</th>
                                 <th>Status</th>
                                 <th>View</th>
                                 <th>Edit</th>
+                                 <th>Chat</th>
+                                <th>inactive</th>
                             </tr>
                         </thead>
 
@@ -84,9 +130,9 @@ const StudentActionDetail = () => {
                                     <td>{row.std_name}</td>
                                     <td>{row.std_email}</td>
                                     <td>{row.std_age}</td>
-                                    <td>{row.std_department}</td>
-                                    <td>{row.std_year}</td>
-                                    <td>{row.std_status === 1 ? "Active" : "Inactive"}</td>
+                                    <td>{row.program_name}</td>
+                                    <td>{row.program_year_name}</td>
+                                    <td>{Number(row.std_status) === 1 ? "Active" : "Inactive"}</td>
 
                                     <td>
                                         <Tooltip title="View Student">
@@ -103,6 +149,42 @@ const StudentActionDetail = () => {
                                                 sx={{ cursor: 'pointer' }}
                                                 onClick={() => handleEdit(row)}
                                             />
+                                        </Tooltip>
+                                    </td>
+                                    <td>
+                                        <Tooltip title="Chat">
+                                            <ChatIcon
+                                                sx={{ cursor: 'pointer' }}
+                                                onClick={() => handleEdit(row)}
+                                            />
+                                        </Tooltip>
+                                    </td>
+
+                                    <td>
+                                        <Tooltip
+                                            title={
+                                                Number(row.std_status) === 1
+                                                    ? "Deactivate Student"
+                                                    : "Activate Student"
+                                            }
+                                        >
+                                            {
+                                                Number(row.std_status) === 1 ? (
+                                                    <PersonAddDisabledIcon
+                                                        sx={{ cursor: 'pointer', color: 'red' }}
+                                                        onClick={() =>
+                                                            HandleInactive(row.std_id, row.std_status)
+                                                        }
+                                                    />
+                                                ) : (
+                                                    <PersonAddIcon
+                                                        sx={{ cursor: 'pointer', color: 'green' }}
+                                                        onClick={() =>
+                                                            HandleInactive(row.std_id, row.std_status)
+                                                        }
+                                                    />
+                                                )
+                                            }
                                         </Tooltip>
                                     </td>
 

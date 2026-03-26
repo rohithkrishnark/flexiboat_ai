@@ -13,16 +13,25 @@ import {
     Textarea
 } from '@mui/joy'
 import SchoolIcon from '@mui/icons-material/School'
-import axiosLogin from '../../Axios/axios'
+import { axiosLogin } from '../../Axios/axios';
 import { getAuthUser, successNotify, warningNotify } from '../../constant/Constant'
 import { useFetchAllDeprtmentDetail, useFetchAllProgramDetail, useFetchAllProgramDetailById } from '../../ADMIN/CommonCode/useQuery'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
+
+
 
 const AddStudentDetail = () => {
 
     const [loading, setLoading] = useState(false)
     const user = getAuthUser();
+    const location = useLocation()
+    const navigate = useNavigate()
+    const EditData = location.state?.data ?? {}
+    const queryClient = useQueryClient()
 
     const [formData, setFormData] = useState({
+        std_id: null,
         std_name: '',
         std_age: '',
         std_email: '',
@@ -31,33 +40,55 @@ const AddStudentDetail = () => {
         std_dep_id: '',
         std_program_id: '',
         std_program_year: '',
-        std_status: true
+        std_status: 1,
+        std_password: '123'
     })
 
 
+    useEffect(() => {
+        if (Object.keys(EditData).length > 0) {
+            setFormData(prev => ({
+                ...prev,
+                std_id: EditData.std_id,
+                std_name: EditData.std_name || '',
+                std_age: EditData.std_age || '',
+                std_email: EditData.std_email || '',
+                std_mobile_no: EditData.std_mobile_no || '',
+                std_address: EditData.std_address || '',
+                std_dep_id: EditData.std_dep_id || '',
+                std_program_id: EditData.std_program_id || '',
+                std_program_year: EditData.std_program_year || '',
+                std_status: Number(EditData.std_status) === 1
+            }));
+        }
+    }, []); // run only once
+
     const { std_program_id } = formData || {}
+
+
     //  Fetch Programs
     const { data: programDetail = [] } = useFetchAllProgramDetail();
     // Fetch Program Years
     const { data: programYearDetail = [] } = useFetchAllProgramDetailById(std_program_id);
-
     // Department 
     const { data: departmentDetail = [] } = useFetchAllDeprtmentDetail()
 
     const handleChange = (e) => {
         const { name, value } = e.target
-        setFormData({ ...formData, [name]: value })
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }))
     }
 
-
     useEffect(() => {
-        if (user?.deparment) {
-            setFormData((prev) => ({
-                ...prev,
-                std_dep_id: user.deparment
-            }))
+        if (user?.fac_dep_id) {
+            setFormData(prev => {
+                if (prev.std_dep_id === user.fac_dep_id) return prev;
+                return { ...prev, std_dep_id: user.fac_dep_id };
+            });
         }
-    }, [user]);
+    }, [user?.fac_dep_id]);
 
     const validate = () => {
 
@@ -92,7 +123,6 @@ const AddStudentDetail = () => {
             warningNotify("Select program year")
             return false
         }
-
         return true
     }
 
@@ -101,18 +131,29 @@ const AddStudentDetail = () => {
         if (!validate()) return
         setLoading(true)
         try {
-
             const payload = {
                 ...formData,
                 std_status: formData.std_status ? 1 : 0
             }
+            const url = formData.std_id
+                ? "/student/update"
+                : "/student/insert"
 
-            const result = await axiosLogin.post(
-                "/student/insert",
-                payload
-            )
+            const result = await axiosLogin.post(url, payload)
             if (result.data.success === 1) {
-                successNotify("Student added successfully")
+                successNotify(
+                    formData.std_id
+                        ? "Student updated successfully"
+                        : "Student added successfully"
+                )
+
+                //  navigate ONLY if id exists (edit case)
+                if (formData.std_id) {
+                    //  invalidate query to refetch updated data
+                    queryClient.invalidateQueries({ queryKey: ["allstudents"] })
+                    navigate("/faculity/viewstudents")
+                }
+
                 setFormData({
                     std_name: '',
                     std_age: '',
@@ -122,10 +163,10 @@ const AddStudentDetail = () => {
                     std_dep_id: '',
                     std_program_id: '',
                     std_program_year: '',
-                    std_status: true
+                    std_status: 1
                 })
             } else {
-                warningNotify("Failed to add student")
+                warningNotify("Operation failed")
             }
         } catch (err) {
             console.error(err)
@@ -246,12 +287,12 @@ const AddStudentDetail = () => {
                                 onChange={(_, value) =>
                                     setFormData({
                                         ...formData,
-                                        std_program_id: value
+                                        std_dep_id: value
                                     })
                                 }
                             >
                                 {departmentDetail
-                                    ?.filter(item => item.dep_status = 1)
+                                    ?.filter(item => item.dep_status === 1)
                                     ?.map((dep) => (
                                         <Option
                                             key={dep.dep_id}
@@ -279,7 +320,7 @@ const AddStudentDetail = () => {
                                 }
                             >
                                 {programDetail
-                                    ?.filter(item => item.program_status = 1)
+                                    ?.filter(item => Number(item.program_status) === 1)
                                     ?.map((prog) => (
                                         <Option
                                             key={prog.program_id}

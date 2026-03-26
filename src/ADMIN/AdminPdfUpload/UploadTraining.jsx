@@ -13,7 +13,7 @@ import PictureAsPdfTwoToneIcon from '@mui/icons-material/PictureAsPdfTwoTone'
 import CloudDoneTwoToneIcon from '@mui/icons-material/CloudDoneTwoTone'
 import { useFetchExistingFile } from '../CommonCode/useQuery'
 import { successNotify, warningNotify } from '../../constant/Constant'
-import axiosLogin from '../../Axios/axios'
+import { axiosLogin } from '../../Axios/axios';
 
 const UploadTraining = () => {
   const fileInputRef = useRef(null)

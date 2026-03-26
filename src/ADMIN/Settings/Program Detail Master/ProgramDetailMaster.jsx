@@ -13,9 +13,10 @@ import EditIcon from '@mui/icons-material/Edit'
 import { useLocation } from 'react-router-dom'
 import MasterWrapper from '../../Components/MasterWrapper'
 import MasterTable from '../CommonMasterComponent/MasterTable'
-import axiosLogin from '../../../Axios/axios'
+// import { axiosLogin } from '../../Axios/axios';
 import { successNotify, warningNotify } from '../../../constant/Constant'
 import { useFetchAllProgramDetail, useFetchAllProgramDetailMast } from '../../CommonCode/useQuery'
+import { axiosLogin } from '../../../Axios/axios'
 
 const ProgramDetailMaster = () => {
 

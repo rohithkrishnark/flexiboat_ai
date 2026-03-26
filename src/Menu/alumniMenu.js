@@ -1,27 +1,72 @@
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import WorkIcon from "@mui/icons-material/Work";
+import PostAddIcon from "@mui/icons-material/PostAdd";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
+import EventNoteIcon from "@mui/icons-material/EventNote";
 import GroupIcon from "@mui/icons-material/Group";
-import SettingsIcon from "@mui/icons-material/Settings";
+import ChatIcon from "@mui/icons-material/Chat";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import PersonIcon from "@mui/icons-material/Person";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 
 export const ALUMNI_MENU = [
+  // DASHBOARD
   {
     label: "Dashboard",
     icon: DashboardIcon,
-    path: "/alumni/dashboard",
+    path: "",
   },
+
+  // JOBS
   {
     label: "My Jobs",
     icon: WorkIcon,
-    path: "/alumni/jobs",
+    path: "post",
   },
+  {
+    label: "Post Job",
+    icon: PostAddIcon,
+    path: "post-job",
+  },
+
+  // JOB FAIR
+  {
+    label: "Create Job Fair",
+    icon: EventNoteIcon,
+    path: "create-jobfair",
+  },
+  {
+    label: "View Job Fair",
+    icon: EventAvailableIcon,
+    path: "job-fair",
+  },
+
+  // COMMUNITY
   {
     label: "Network",
     icon: GroupIcon,
-    path: "/alumni/network",
+    path: "network",
   },
   {
-    label: "Settings",
-    icon: SettingsIcon,
-    path: "/alumni/settings",
+    label: "Chat",
+    icon: ChatIcon,
+    path: "chat",
+  },
+  {
+    label: "My Followers",
+    icon: PeopleAltIcon,
+    path: "follower",
+  },
+
+  // PERSONAL
+  {
+    label: "Profile",
+    icon: PersonIcon,
+    path: "profile",
+  },
+  {
+    label: "Notifications",
+    icon: NotificationsIcon,
+    path: "notification",
   },
 ];

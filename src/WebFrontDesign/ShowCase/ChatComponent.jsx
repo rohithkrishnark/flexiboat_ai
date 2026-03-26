@@ -3,7 +3,10 @@ import { Box, Typography, Button } from "@mui/joy";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
 import '../../App.css'
 import chatbot from '../../assets/chatbot.gif'
+import { useNavigate } from "react-router-dom";
 const ChatComponent = () => {
+
+    const navigate = useNavigate()
 
     return (
         <Box
@@ -101,6 +104,7 @@ const ChatComponent = () => {
                 </Typography>
 
                 <Button
+                    onClick={() => navigate('/chat')}
                     sx={{
                         mt: 2,
                         px: 4,

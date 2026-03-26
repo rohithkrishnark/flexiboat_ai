@@ -21,6 +21,8 @@ const activityGrades = [
     { activity: "Startup Pitch", grades: [91, 89, 94, 92, 90] },
     { activity: "Research Symposium", grades: [87, 90, 85, 88, 92] },
 ];
+
+
 const ActivityAverageAnalytics = () => {
 
     //  Calculate Average for each activity

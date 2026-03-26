@@ -8,8 +8,11 @@ import {
     Typography
 } from "@mui/joy";
 import { warningNotify } from "../constant/Constant";
+import { useNavigate } from "react-router-dom";
 
 const FacultyStep1 = ({ formData, updateField, nextStep }) => {
+
+    const navigate = useNavigate()
 
     const [confirmOpen, setConfirmOpen] = useState(false);
 
@@ -104,6 +107,14 @@ const FacultyStep1 = ({ formData, updateField, nextStep }) => {
                 <Button onClick={handleNext}>
                     Next
                 </Button>
+
+                <Typography  onClick={()=>navigate("/login")} sx={{
+                    fontSize: 10,
+                    color: 'blue',
+                    textDecoration: 'underline',
+                    textAlign: 'center',
+                    cursor:'pointer'
+                }}>Go back to Login</Typography>
 
             </Box>
 

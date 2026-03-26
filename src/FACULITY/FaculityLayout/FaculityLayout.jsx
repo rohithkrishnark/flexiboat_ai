@@ -11,6 +11,11 @@ import { getAuthUser } from '../../constant/Constant'
 
 const FaculityLayout = () => {
     const user = getAuthUser();
+
+    console.log({
+        user
+    });
+
     return (
         <Box
             sx={{
@@ -29,7 +34,7 @@ const FaculityLayout = () => {
                 <ReusableSidebar
                     menuItems={FACULTY_MENU}
                     title="Faculty Panel"
-                    subTitle="FlexiBoard"
+                    subTitle="FlexiBot"
                     logo={logo}
                     logoutPath="/faculty/logout"
                 />
@@ -48,9 +53,9 @@ const FaculityLayout = () => {
                 {/* Top Navbar */}
                 <Box sx={{ flexShrink: 0 }}>
                     <ReusableTopBar
-                        title="Fculity"
+                        title="Fculty"
                         leftIcon={SchoolIcon}
-                        userName={user?.logged_name || "Fac Name"}
+                        userName={user?.fac_name || "Fac Name"}
                         background="#fffdfd"
                         Department="Master of Computer Application"
                     />

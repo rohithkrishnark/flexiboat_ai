@@ -1,11 +1,16 @@
 import axios from "axios";
-import { BACKEND_API } from "../constant/Static";
+import { BACKEND_API, CHATBOT_API } from "../constant/Static";
 
-const axiosLogin = axios.create({
+export const axiosLogin = axios.create({
   baseURL: BACKEND_API,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-export default axiosLogin;
+export const chataxios = axios.create({
+  baseURL: CHATBOT_API,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});

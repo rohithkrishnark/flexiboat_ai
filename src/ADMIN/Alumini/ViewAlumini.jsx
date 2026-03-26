@@ -10,7 +10,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import { useFetchAllAluminDetail } from '../CommonCode/useQuery'
 import { successNotify, warningNotify } from '../../constant/Constant'
 import { useNavigate } from 'react-router-dom'
-import axiosLogin from '../../Axios/axios';
+import { axiosLogin } from '../../Axios/axios';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import AlumniLoginModal from '../AdminModal/AlumniLoginModal'
 import LockOutlineIcon from '@mui/icons-material/LockOutline';
@@ -82,7 +82,7 @@ const ViewAlumini = () => {
       }}
     >
       <Typography level="h4" sx={{ mb: 2, fontWeight: 700 }}>
-        Alumni List
+        Alumini List
       </Typography>
 
       {AllAluminidata?.length === 0 ? (
