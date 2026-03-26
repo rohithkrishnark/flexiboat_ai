@@ -19,7 +19,7 @@ const ReusableTopBar = ({
     showClock = true,
     showMood = true,
     background = '#fffdfd',
-    Department="Master of Computer Application"
+    Department
 }) => {
 
     const [time, setTime] = useState(new Date())

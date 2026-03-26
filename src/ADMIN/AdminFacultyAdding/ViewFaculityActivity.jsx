@@ -9,9 +9,9 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import PersonAddDisabledIcon from '@mui/icons-material/PersonAddDisabled';
 import { useFetchAllFaculity } from '../CommonCode/useQuery'
-import axiosLogin from '../../Axios/axios';
 import { infoNotify, successNotify, warningNotify } from '../../constant/Constant';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import { axiosLogin } from '../../Axios/axios';
 const ViewFaculityActivity = () => {
 
   const { data: AllFaculityDetail,

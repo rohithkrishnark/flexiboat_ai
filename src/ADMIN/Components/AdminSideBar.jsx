@@ -42,7 +42,7 @@ const MENU_ITEMS = [
     path: '/admin/uploadpdf'
   },
   {
-    label: 'Faculity',
+    label: 'Faculty',
     icon: InventoryIcon,
     nested: [
       { label: 'Add Faculty', path: '/admin/addfaculity' },
@@ -146,7 +146,7 @@ const AdminSideBar = () => {
               Admin Dashboard
             </Typography>
             <Typography level="body-sm" sx={{ color: 'white', fontFamily: 'cursive' }}>
-              FlexiBoard
+              FlexiBot
             </Typography>
           </>
         )}

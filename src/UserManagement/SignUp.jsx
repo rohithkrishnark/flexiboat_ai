@@ -28,7 +28,8 @@ const Signup = () => {
         fac_group: "",
         fac_desg_id: "",
         fac_address: "",
-        fac_email: ""
+        fac_email: "",
+        fac_status: 0
     });
 
     const updateField = (field, value) => {
@@ -73,7 +74,6 @@ const Signup = () => {
                         formData={formData}
                         updateField={updateField}
                         prevStep={() => setStep(1)}
-                        navigate={navigate}
                     />
                 )}
 

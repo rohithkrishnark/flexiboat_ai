@@ -1,10 +1,15 @@
 import React from "react";
-import { Box, Input, Button } from "@mui/joy";
-import axiosLogin from "../../src/Axios/axios";
+import { Box, Input, Button, Typography } from "@mui/joy";
+// import { axiosLogin } from '../../Axios/axios';
 import { errorNotify, successNotify, warningNotify } from "../constant/Constant";
+import { useNavigate } from "react-router-dom";
+import { axiosLogin } from "../Axios/axios";
 // import { successNotify, errorNotify, warningNotify } from "../../constant/Constant";
 
 const UserSignup = ({ formData, updateField }) => {
+
+
+    const navigate = useNavigate();
 
     const handleSubmit = async () => {
 
@@ -64,7 +69,13 @@ const UserSignup = ({ formData, updateField }) => {
             />
 
             <Button onClick={handleSubmit}>Sign Up</Button>
-
+            <Typography onClick={() => navigate("/login")} sx={{
+                fontSize: 10,
+                color: 'blue',
+                textDecoration: 'underline',
+                textAlign: 'center',
+                cursor: 'pointer'
+            }}>Go back to Login</Typography>
         </Box>
 
     );

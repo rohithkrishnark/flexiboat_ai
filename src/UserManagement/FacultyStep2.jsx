@@ -11,7 +11,7 @@ import {
 } from "@mui/joy";
 import { useNavigate } from "react-router-dom";
 
-import axiosLogin from "../../src/Axios/axios";
+// import { axiosLogin } from '../../Axios/axios';
 import { errorNotify } from "../constant/Constant";
 import {
     useFetchAllDeprtmentDetail,
@@ -19,6 +19,7 @@ import {
     useFetchAllDesignationDetail
 } from "../ADMIN/CommonCode/useQuery";
 import GlobalLoader from "../Component/GlobalLoader";
+import { axiosLogin } from "../Axios/axios";
 
 const FacultyStep2 = ({ formData, updateField, prevStep }) => {
 

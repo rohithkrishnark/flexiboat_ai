@@ -12,9 +12,9 @@ import EditIcon from '@mui/icons-material/Edit'
 import MasterWrapper from '../../Components/MasterWrapper'
 import { useLocation } from 'react-router-dom'
 import MasterTable from '../CommonMasterComponent/MasterTable'
-import axiosLogin from '../../../Axios/axios'
 import { successNotify, warningNotify } from '../../../constant/Constant'
 import { useFetchAllDeprtmentDetail } from '../../CommonCode/useQuery'
+import { axiosLogin } from '../../../Axios/axios'
 
 
 const DepartmentMaster = () => {

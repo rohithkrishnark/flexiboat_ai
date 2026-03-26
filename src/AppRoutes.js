@@ -23,6 +23,36 @@ import FaculityDashboard from "./FACULITY/FaculityDashboard/FaculityDashboard";
 import StudentActionDetail from "./FACULITY/DepartmentStudent/StudentActionDetail";
 import AddStudentDetail from "./FACULITY/DepartmentStudent/AddStudentDetail";
 import AboutExploration from "./WebFrontDesign/Pages/AboutExploration";
+import FaculityAssignement from "./FACULITY/FaculityAssignement/FaculityAssignement";
+import ChatBot from "./Chatbot/ChatBot";
+import AluminiLayout from "./ALUMINI/AluminiLayout/AluminiLayout";
+import WorkingPage from "./Component/WorkingPage";
+import AlumniDashboard from "./ALUMINI/AluminiDashboard/AlumniDashboard";
+import MyProfile from "./ALUMINI/AluminiProfile/MyProfile";
+import PostJob from "./ALUMINI/AluminiJob/PostJob";
+import MyJobs from "./ALUMINI/AluminiJob/Myjobs";
+import EventDetail from "./ALUMINI/AluminiEvent/EventDetail";
+import ViewEvetnDetail from "./ALUMINI/AluminiEvent/ViewEvetnDetail";
+import Network from "./ALUMINI/AluminiCommunitiy/Network";
+import ChatPage from "./ALUMINI/AluminiCommunitiy/ChatPage";
+import AluminiNotification from "./ALUMINI/AluminiProfile/AluminiNotification";
+import MyNetwork from "./ALUMINI/AluminiCommunitiy/MyNetwork";
+import StudentLayout from "./STUDENTS/StudentLayout/StudentLayout";
+import StudentDashboard from "./STUDENTS/StudentDashboard/StudentDashboard";
+import StudentPost from "./STUDENTS/StudentPost/StudentPost";
+import StudentViewPost from "./STUDENTS/StudentPost/StudentViewPost";
+import MyParticipation from "./STUDENTS/StudentActivity/MyParticiaption";
+import ViewActivities from "./STUDENTS/StudentActivity/ViewActivites";
+import FindAlumini from "./STUDENTS/StudentAlumini/FindAlumini";
+import ViewAluminiPost from "./STUDENTS/StudentAlumini/ViewAluminiPost";
+import MyConnection from "./STUDENTS/StudentAlumini/MyConnection";
+import StudentAlert from "./STUDENTS/StudentAlert/StudentAlert";
+import StudentProfile from "./STUDENTS/StudentProfile/StudentProfile";
+import StudentChat from "./STUDENTS/StudentChat/StudentChat";
+import Facultychat from "./FACULITY/FaculityChat/Facultychat";
+import ReviewActitivity from "./FACULITY/ReviewActivity/ReviewActitivity";
+import FaculityAlertNotification from "./FACULITY/FaculityAlerts/FaculityAlertNotification";
+import StudentGlobalView from "./STUDENTS/StudentGlobalView/StudentGlobalView";
 
 // import HomeDashboard from "./HomeDashboard";
 // import Profile from "./Profile";
@@ -50,13 +80,16 @@ const router = createBrowserRouter([
     path: "/about",
     element: <AboutExploration />, // layout
   },
-
+  {
+    path: "/chat",
+    element: <ChatBot />, // layout
+  },
   {
     path: "/faculity",
     element: <FaculityLayout />, // layoutAdminLayout
     children: [
       {
-        path: "dashboard",
+        path: "",
         // index: true,
         element: <FaculityDashboard />,
       },
@@ -69,48 +102,28 @@ const router = createBrowserRouter([
         element: <StudentActionDetail />,
       },
       {
-        path: "viewfaculity",
-        element: <ViewFaculityActivity />,
+        path: "addstudents/:id",
+        element: <AddStudentDetail />,
       },
       {
-        path: "addalumin",
-        element: <AddAlumin />,
+        path: "facassignment",
+        element: <FaculityAssignement />,
       },
       {
-        path: "addalumin/:id",
-        element: <AddAlumin />,
+        path: "faculitychat",
+        element: <Facultychat />,
       },
       {
-        path: "viewalumini",
-        element: <ViewAlumini />,
+        path: "reviewactivity",
+        element: <ReviewActitivity />,
       },
       {
-        path: "alert",
-        element: <InstantAlert />,
+        path: "alerts",
+        element: <FaculityAlertNotification />,
       },
       {
-        path: "settings",
-        element: <Settings />,
-      },
-      {
-        path: "depmaster",
-        element: <DepartmentMaster />,
-      },
-      {
-        path: "programdtlmast",
-        element: <ProgramDetailMaster />,
-      },
-      {
-        path: "programmast",
-        element: <ProgramMaster />,
-      },
-      {
-        path: "designation",
-        element: <DesignationMaster />,
-      },
-      {
-        path: "usergroup",
-        element: <UserGroupMaster />,
+        path: "*",
+        element: <WorkingPage />, //  fallback inside alumni
       },
       ,
     ],
@@ -120,7 +133,7 @@ const router = createBrowserRouter([
     element: <AdminLayout />, // layoutAdminLayout
     children: [
       {
-        path: "admindashboard",
+        path: "",
         // index: true,
         element: <AdminDashBoard />,
       },
@@ -175,6 +188,120 @@ const router = createBrowserRouter([
       {
         path: "usergroup",
         element: <UserGroupMaster />,
+      },
+      ,
+    ],
+  },
+  {
+    path: "/alumini",
+    element: <AluminiLayout />, // alumini Layout
+    children: [
+      {
+        path: "",
+        // index: true,
+        element: <AlumniDashboard />,
+      },
+      {
+        path: "profile",
+        element: <MyProfile />,
+      },
+      {
+        path: "post-job",
+        element: <PostJob />,
+      },
+      {
+        path: "post",
+        element: <MyJobs />,
+      },
+      {
+        path: "create-jobfair",
+        element: <EventDetail />,
+      },
+      {
+        path: "job-fair",
+        element: <ViewEvetnDetail />,
+      },
+      {
+        path: "network",
+        element: <Network />,
+      },
+      {
+        path: "chat",
+        element: <ChatPage />,
+      },
+      {
+        path: "notification",
+        element: <AluminiNotification />,
+      },
+      {
+        path: "follower",
+        element: <MyNetwork />,
+      },
+
+      {
+        path: "*",
+        element: <WorkingPage />, //  fallback inside alumni
+      },
+      ,
+    ],
+  },
+  {
+    path: "/students",
+    element: <StudentLayout />, // alumini Layout
+    children: [
+      {
+        path: "",
+        // index: true,
+        element: <StudentDashboard />,
+      },
+      {
+        path: "create-post",
+        element: <StudentPost />,
+      },
+      {
+        path: "my-posts",
+        element: <StudentViewPost />,
+      },
+      {
+        path: "my-activities",
+        element: <MyParticipation />,
+      },
+      {
+        path: "view-activities",
+        element: <ViewActivities />,
+      },
+      {
+        path: "find-alumni",
+        element: <FindAlumini />,
+      },
+      {
+        path: "alumni-posts",
+        element: <ViewAluminiPost />,
+      },
+      {
+        path: "my-connections",
+        element: <MyConnection />,
+      },
+      {
+        path: "alerts",
+        element: <StudentAlert />,
+      },
+      {
+        path: "view-profile",
+        element: <StudentProfile />,
+      },
+      {
+        path: "studentchat",
+        element: <StudentChat />,
+      },
+      {
+        path: "studetnglobalview/:std_id",
+        element: <StudentGlobalView />,
+      },
+
+      {
+        path: "*",
+        element: <WorkingPage />, //  fallback inside alumni
       },
       ,
     ],

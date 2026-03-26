@@ -13,7 +13,7 @@ import {
 } from '@mui/joy'
 import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload'
 import { successNotify, warningNotify } from '../../constant/Constant'
-import axiosLogin from '../../Axios/axios'
+import { axiosLogin } from '../../Axios/axios';
 import { isValidEmail } from '../CommonCode/Reusable'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useFetchAllAluminDetail, useFetchAllAluminDetailById } from '../CommonCode/useQuery'
@@ -205,7 +205,7 @@ const AddAlumin = () => {
                     gap: 1
                 }}
             >
-                <AssuredWorkloadIcon /> {isEditMode ? "Edit Alumni Detail" : "Add Alumni Detail"}
+                <AssuredWorkloadIcon /> {isEditMode ? "Edit Alumini Detail" : "Add Alumini Detail"}
             </Typography>
 
             <Box component="form" onSubmit={handleSubmit}>
