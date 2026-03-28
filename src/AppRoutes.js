@@ -53,6 +53,7 @@ import Facultychat from "./FACULITY/FaculityChat/Facultychat";
 import ReviewActitivity from "./FACULITY/ReviewActivity/ReviewActitivity";
 import FaculityAlertNotification from "./FACULITY/FaculityAlerts/FaculityAlertNotification";
 import StudentGlobalView from "./STUDENTS/StudentGlobalView/StudentGlobalView";
+import AluminiGlobalView from "./ALUMINI/AluminiGlobal/AluminiGlobalView";
 
 // import HomeDashboard from "./HomeDashboard";
 // import Profile from "./Profile";
@@ -236,6 +237,10 @@ const router = createBrowserRouter([
       {
         path: "follower",
         element: <MyNetwork />,
+      },
+      {
+        path: "aluminiglobal/:id",
+        element: <AluminiGlobalView />,
       },
 
       {

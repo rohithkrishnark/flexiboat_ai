@@ -397,3 +397,278 @@ export const fetStudentActivityMedia = async (id) => {
     throw new Error("Failed to fetch students");
   }
 };
+
+export const fetchallAluminiPosts = async (id) => {
+  if (!id || id === null)
+    return warningNotify("Alumini Session is Expired Login to Continue");
+
+  try {
+    const response = await axiosLogin.post(`/alumini/posts/getall`, {
+      alum_id: id,
+    });
+    const { success, data, message } = response.data;
+
+    if (success === 0) {
+      errorNotify(message);
+      return [];
+    }
+
+    if (success === 2) {
+      // infoNotify(message);
+      return data || [];
+    }
+
+    if (success === 1) {
+      return data || [];
+    }
+
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch students");
+  }
+};
+
+export const fetchallAluminiEventPosts = async (id) => {
+  if (!id || id === null)
+    return warningNotify("Alumini Session is Expired Login to Continue");
+
+  try {
+    const response = await axiosLogin.post(`/alumini/events/getall`, {
+      alum_id: id,
+    });
+    const { success, data, message } = response.data;
+
+    if (success === 0) {
+      errorNotify(message);
+      return [];
+    }
+
+    if (success === 2) {
+      // infoNotify(message);
+      return data || [];
+    }
+
+    if (success === 1) {
+      return data || [];
+    }
+
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch students");
+  }
+};
+
+export const fetchAllSingleEventMedia = async (id) => {
+  if (!id || id === null)
+    return warningNotify("Alumini Session is Expired Login to Continue");
+
+  try {
+    const response = await axiosLogin.get(`/alumini/event/fullmedia/${id}`);
+
+    const { success, data, message } = response.data;
+
+    if (success === 0) {
+      errorNotify(message);
+      return [];
+    }
+
+    if (success === 2) {
+      // infoNotify(message);
+      return data || [];
+    }
+
+    if (success === 1) {
+      return data || [];
+    }
+
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch students");
+  }
+};
+
+export const fetchAllSingleMedia = async (id) => {
+  if (!id || id === null)
+    return warningNotify("Alumini Session is Expired Login to Continue");
+  console.log({ id });
+
+  try {
+    const response = await axiosLogin.get(`/alumini/post/fullmedia/${id}`);
+    const { success, data, message } = response.data;
+    if (success === 0) {
+      errorNotify(message);
+      return [];
+    }
+
+    if (success === 2) {
+      // infoNotify(message);
+      return data || [];
+    }
+
+    if (success === 1) {
+      return data || [];
+    }
+
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch students");
+  }
+};
+
+export const fetchAluminiDetailSinlge = async (id) => {
+  if (!id || id === null)
+    return warningNotify("Alumini Session is Expired Login to Continue");
+  console.log({ id });
+
+  try {
+    const response = await axiosLogin.post("/alumini/getsingledetail", {
+      alum_id: id,
+    });
+    const { success, data, message } = response.data;
+    if (success === 0) {
+      errorNotify(message);
+      return [];
+    }
+
+    if (success === 2) {
+      return data || [];
+    }
+
+    if (success === 1) {
+      return data || [];
+    }
+
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch students");
+  }
+};
+
+export const fetchAluminiProfilePicture = async (id) => {
+  if (!id || id === null)
+    return warningNotify("Student Session is Expired Login to Continue");
+  console.log({ id });
+
+  try {
+    const response = await axiosLogin.get(`/alumini/myprofilepic/${id}`);
+    const { success, data, message } = response.data;
+    if (success === 0) {
+      errorNotify(message);
+      return [];
+    }
+
+    if (success === 2) {
+      return data || [];
+    }
+
+    if (success === 1) {
+      return data || [];
+    }
+
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch students");
+  }
+};
+
+export const fetchAllaluminiHeading = async (id) => {
+  if (!id || id === null)
+    return warningNotify("Student Session is Expired Login to Continue");
+  console.log({ id });
+
+  try {
+    const response = await axiosLogin.get(`/alumini/profile/${id}`);
+    const { success, data, message } = response.data;
+    if (success === 0) {
+      errorNotify(message);
+      return [];
+    }
+
+    if (success === 2) {
+      return data || [];
+    }
+
+    if (success === 1) {
+      return data || [];
+    }
+
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch students");
+  }
+};
+
+export const fetchAllAluminiEduction = async (id) => {
+  if (!id || id === null)
+    return warningNotify("Student Session is Expired Login to Continue");
+  console.log({ id });
+
+  try {
+    const response = await axiosLogin.get(`/alumini/education/${id}`);
+    const { success, data, message } = response.data;
+    if (success === 0) {
+      errorNotify(message);
+      return [];
+    }
+
+    if (success === 2) {
+      return data || [];
+    }
+
+    if (success === 1) {
+      return data || [];
+    }
+
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch students");
+  }
+};
+
+export const fetchAllAluminiExperience = async (id) => {
+  if (!id || id === null)
+    return warningNotify("Student Session is Expired Login to Continue");
+  console.log({ id });
+
+  try {
+    const response = await axiosLogin.get(`/alumini/experience/${id}`);
+    const { success, data, message } = response.data;
+    if (success === 0) {
+      errorNotify(message);
+      return [];
+    }
+
+    if (success === 2) {
+      return data || [];
+    }
+
+    if (success === 1) {
+      return data || [];
+    }
+
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch students");
+  }
+};
+
+export const getMessages = async ({ user1, user2, user1_type, user2_type }) => {
+  try {
+    const response = await axiosLogin.get(`/chat/messages`, {
+      params: {
+        user1,
+        user2,
+        user1_type,
+        user2_type,
+      },
+    });
+
+    const { success, data } = response.data;
+
+    if (success === 1 || success === 2) return data;
+
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch messages");
+  }
+};

@@ -20,6 +20,7 @@ import {
     useFetchLoggedStudentDetail,
     useFetchProfilePic,
 } from "../../ADMIN/CommonCode/useQuery";
+import { BACKEND_API } from "../../constant/Static";
 
 const StudentGlobalView = () => {
     //const { id } = useParams(); //  student id from URL
@@ -80,12 +81,12 @@ const StudentGlobalView = () => {
                         >
                             {m.type === "video" ? (
                                 <video
-                                    src={`http://localhost:7000${m.path}`}
+                                    src={`${BACKEND_API}${m.path}`}
                                     style={{ width: "100%", height: "100%", objectFit: "cover" }}
                                 />
                             ) : (
                                 <img
-                                    src={`http://localhost:7000${m.path}`}
+                                    src={`${BACKEND_API}${m.path}`}
                                     alt=""
                                     style={{ width: "100%", height: "100%", objectFit: "cover" }}
                                 />
@@ -111,7 +112,7 @@ const StudentGlobalView = () => {
             <Box sx={{ px: 3, mt: -6 }}>
                 <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                     <Avatar
-                        src={`http://localhost:7000${profilePic?.path || ""}`}
+                        src={`${BACKEND_API}${profilePic?.path || ""}`}
                         sx={{
                             width: 90,
                             height: 90,

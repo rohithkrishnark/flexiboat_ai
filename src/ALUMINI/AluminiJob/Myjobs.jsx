@@ -10,50 +10,73 @@ import {
   Chip,
   IconButton,
 } from "@mui/joy";
-
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import EditIcon from "@mui/icons-material/Edit";
+// import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import LinkIcon from "@mui/icons-material/Link";
 
-const mockMyPosts = [
-  {
-    id: 1,
-    type: "job",
-    title: "React Developer",
-    description: "Hiring React devs at Infosys",
-    date: "2 days ago",
-    image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d",
-    link: "https://company.com/job",
-  },
-  {
-    id: 2,
-    type: "event",
-    title: "Campus Job Fair",
-    description: "April 10th hiring event",
-    date: "1 week ago",
-    image: "",
-    link: "",
-  },
-];
+import { errorNotify, getAuthUser, infoNotify, successNotify } from "../../constant/Constant";
+import {
+  useFetchAlumniFullMediaSingle,
+  useFetchSingleAluminiPost,
+} from "../../ADMIN/CommonCode/useQuery";
+import { axiosLogin } from "../../Axios/axios";
+import { BACKEND_API } from "../../constant/Static";
 
 const MyJobs = () => {
   const [filter, setFilter] = useState("all");
 
+  const user = getAuthUser();
+  const alum_id = user?.alum_id;
+
+  const { data: alumninPostDetail = [], refetch: refetchAllPostDetail } =
+    useFetchSingleAluminiPost(alum_id ?? null);
+
+  const { data: alumninPostMediaDetail = [], refetch: refetchAllPostMediaDetail } =
+    useFetchAlumniFullMediaSingle(alum_id ?? null);
+
+  //  Merge Post + Media
+  const postsWithMedia =
+    alumninPostDetail?.map((post) => {
+      const mediaObj = alumninPostMediaDetail?.find(
+        (m) => String(m.postId) === String(post.id)
+      );
+
+      return {
+        ...post,
+        media: mediaObj?.media || [],
+      };
+    }) || [];
+
+  // Filter Data
   const filteredData =
     filter === "all"
-      ? mockMyPosts
-      : mockMyPosts.filter((item) => item.type === filter);
+      ? postsWithMedia
+      : postsWithMedia.filter((item) => item.post_type === filter);
+
+
+  const HandleDeletePost = async (postid) => {
+    if (!postid) return infoNotify("Post Id is Missing")
+    try {
+      const res = await axiosLogin.post("/alumini/posts/indactive", {
+        id: postid
+      });
+      const { message, success } = res.data ?? {}
+      if (success === 0) errorNotify("Error in Deleting")
+      successNotify(message)
+      refetchAllPostDetail()
+      refetchAllPostMediaDetail()
+    } catch (error) {
+      errorNotify("Error in Deleteing Post Try After Some Times")
+    }
+  }
 
   return (
     <Box sx={{ p: 2, bgcolor: "#f4f6f8", minHeight: "100vh" }}>
-      
       {/* HEADER */}
       <Typography level="h4" sx={{ mb: 2 }}>
         My Activity
       </Typography>
 
-      {/* FILTER */}
+      {/* FILTER TABS */}
       <Tabs value={filter} onChange={(e, val) => setFilter(val)} sx={{ mb: 2 }}>
         <TabList>
           <Tab value="all">All</Tab>
@@ -64,121 +87,104 @@ const MyJobs = () => {
         </TabList>
       </Tabs>
 
-      {/* LIST */}
-      {filteredData.length === 0 ? (
+      {/* LIST - 3 cards per row */}
+      {filteredData?.length === 0 ? (
         <Typography>No data available</Typography>
       ) : (
-        filteredData.map((item) => (
-          <Card
-            key={item.id}
-            sx={{
-              mb: 1.5,
-              borderRadius: "12px",
-              boxShadow: "sm",
-              p: 1,
-            }}
-          >
-            <CardContent sx={{ p: 1.5 }}>
-              
-              {/* TOP ROW */}
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mb: 1,
-                }}
-              >
-                <Typography level="title-md">{item.title}</Typography>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: 2,
+          }}
+        >
+          {filteredData?.map((item) => (
+            <Card
+              key={item.id}
+              sx={{
+                borderRadius: "12px",
+                boxShadow: "sm",
+                p: 1,
+                height: 500,
+              }}
+            >
+              <CardContent sx={{ p: 1.5 }}>
 
-                <Chip
-                  size="sm"
-                  variant="soft"
-                  color={
-                    item.type === "job"
-                      ? "primary"
-                      : item.type === "event"
-                      ? "success"
-                      : item.type === "article"
-                      ? "warning"
-                      : "neutral"
-                  }
-                >
-                  {item.type}
-                </Chip>
-              </Box>
-
-              {/* IMAGE */}
-              {item.image && (
-                <Box sx={{ mb: 1 }}>
-                  <img
-                    src={item.image}
-                    alt="post"
-                    style={{
-                      width: "100%",
-                      height: "140px",
-                      objectFit: "cover",
-                      borderRadius: "8px",
-                    }}
-                  />
-                </Box>
-              )}
-
-              {/* DESCRIPTION */}
-              <Typography level="body-sm" sx={{ mb: 1 }}>
-                {item.description}
-              </Typography>
-
-              {/* LINK */}
-              {item.link && (
+                {/* TOP */}
                 <Box
                   sx={{
                     display: "flex",
-                    alignItems: "center",
-                    gap: 1,
+                    justifyContent: "space-between",
                     mb: 1,
                   }}
                 >
-                  <LinkIcon fontSize="small" />
-                  <a
-                    href={item.link}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{ fontSize: "13px", color: "#1976d2" }}
-                  >
-                    {item.link}
-                  </a>
-                </Box>
-              )}
+                  <Typography level="title-md">{item.title}</Typography>
 
-              {/* FOOTER */}
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Typography level="body-xs" sx={{ opacity: 0.6 }}>
-                  {item.date}
+                  <Chip
+                    size="sm"
+                    variant="soft"
+                    color={
+                      item.post_type === "job"
+                        ? "primary"
+                        : item.post_type === "event"
+                          ? "success"
+                          : item.post_type === "article"
+                            ? "warning"
+                            : "neutral"
+                    }
+                  >
+                    {item.post_type}
+                  </Chip>
+                </Box>
+
+                {/* MEDIA */}
+                {item.media?.length > 0 && (
+                  <Box sx={{ mb: 1 }}>
+                    <img
+                      src={`${BACKEND_API}${item.media[0].url}`}
+                      alt="post"
+                      style={{
+                        width: "100%",
+                        height: 330,
+                        objectFit: "cover",
+                        borderRadius: 8,
+                      }}
+                    />
+                  </Box>
+                )}
+
+                {/* DESCRIPTION */}
+                <Typography level="body-sm" sx={{ mb: 1 }}>
+                  {item.description}
                 </Typography>
 
-                {/* ICON ACTIONS */}
-                <Box sx={{ display: "flex", gap: 1 }}>
-                  <IconButton size="sm" variant="plain">
-                    <VisibilityIcon />
-                  </IconButton>
-                  <IconButton size="sm" variant="plain">
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton size="sm" variant="plain" color="danger">
-                    <DeleteIcon />
-                  </IconButton>
+                {/* FOOTER */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography level="body-xs" sx={{ opacity: 0.6 }}>
+                    {new Date(item.created_at).toLocaleDateString()}
+                  </Typography>
+
+                  <Box sx={{ display: "flex", gap: 1 }}>
+
+                    {/* <IconButton size="sm">
+                      <EditIcon />
+                    </IconButton> */}
+                    <IconButton onClick={() => HandleDeletePost(item.id)} size="sm" color="danger">
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
                 </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        ))
+
+              </CardContent>
+            </Card>
+          ))}
+        </Box>
       )}
     </Box>
   );

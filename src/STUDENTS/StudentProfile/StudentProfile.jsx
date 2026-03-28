@@ -23,6 +23,7 @@ import {
 import { getAuthUser, successNotify, errorNotify } from "../../constant/Constant";
 import { axiosLogin } from "../../Axios/axios";
 import { height } from "@mui/system";
+import { BACKEND_API } from "../../constant/Static";
 
 const StudentProfile = () => {
     const [openImageModal, setOpenImageModal] = useState(false);
@@ -50,11 +51,6 @@ const StudentProfile = () => {
     const userData = LoggedUserDetail?.[0] || {};
 
 
-    console.log(
-        MyProfilePicture
-    );
-
-
 
     //  COUNTS
     const PostCount = useMemo(() => StudentPostDetail.length, [StudentPostDetail]);
@@ -70,6 +66,7 @@ const StudentProfile = () => {
             0
         );
     }, [studetnActivityDetail]);
+
 
     //  IMAGE UPLOAD
     const handleImageUpload = (e) => {
@@ -141,7 +138,7 @@ const StudentProfile = () => {
                                 previewImage
                                     ? previewImage
                                     : MyProfilePicture?.path
-                                        ? `http://localhost:7000${MyProfilePicture.path}`
+                                        ? `${BACKEND_API}${MyProfilePicture.path}`
                                         : ""
                             }
                             sx={{
