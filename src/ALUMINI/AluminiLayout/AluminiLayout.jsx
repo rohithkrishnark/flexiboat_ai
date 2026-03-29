@@ -11,9 +11,7 @@ import { ALUMNI_MENU } from '../../Menu/alumniMenu'
 
 const AluminiLayout = () => {
     const user = getAuthUser();
-    console.log({
-        user
-    });
+   
     
     return (
         <Box

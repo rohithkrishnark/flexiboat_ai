@@ -45,10 +45,6 @@ const AluminiGlobalView = () => {
     const viewer_type = currentUser?.role; // alumni / student
 
 
-    console.log({
-        viewer_id,
-        viewer_type
-    });
 
 
     // ================= DATA =================
@@ -76,11 +72,7 @@ const AluminiGlobalView = () => {
     const heading = headingArr?.[0] || {};
 
 
-    console.log({
-        ProfilePic,
-        myConnections
-    });
-
+  
 
 
     const handleConnect = async (id) => {

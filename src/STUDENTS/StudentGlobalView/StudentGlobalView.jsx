@@ -1,17 +1,234 @@
+// import React, { useMemo, useState } from "react";
+// import {
+//     Box,
+//     Typography,
+//     Avatar,
+//     // Button,
+//     Chip,
+//     Tabs,
+//     Tab,
+//     Grid,
+//     Card,
+// } from "@mui/material";
+// import { useParams } from "react-router-dom";
+// import SendRoundedIcon from "@mui/icons-material/SendRounded";
+// import {
+//     useFetchSingleStudentPost,
+//     useFetchSingleStudentMedia,
+//     useFetchSingleStudentActivity,
+//     useFetchStudentActivityMedia,
+//     useFetchLoggedStudentDetail,
+//     useFetchProfilePic,
+// } from "../../ADMIN/CommonCode/useQuery";
+// import { BACKEND_IMAGE } from "../../constant/Static";
+// import { Button } from "@mui/joy";
+
+// const StudentGlobalView = () => {
+//     const { id } = useParams(); //  student id from URL
+
+//     const [tab, setTab] = useState(0);
+//     // const id = 2;y
+//     //  FETCH DATA
+//     const { data: posts = [] } = useFetchSingleStudentPost(id);
+//     const { data: postMedia = [] } = useFetchSingleStudentMedia(id);
+
+//     const { data: activities = [] } = useFetchSingleStudentActivity(id);
+//     const { data: activityMedia = [] } = useFetchStudentActivityMedia(id);
+
+//     const { data: profilePic = {} } = useFetchProfilePic(id);
+//     const { data: studentDetail = [] } = useFetchLoggedStudentDetail(id);
+
+//     const userData = studentDetail?.[0] || {};
+
+//     //  COMBINE POST MEDIA
+//     const postsWithMedia = useMemo(() => {
+//         return posts?.map((post) => {
+//             const media = postMedia?.find((m) => m.id === post.id)?.media || [];
+//             return { ...post, media };
+//         });
+//     }, [posts, postMedia]);
+
+//     //  COMBINE ACTIVITY MEDIA
+//     const activitiesWithMedia = useMemo(() => {
+//         return activities?.map((act) => {
+//             const media =
+//                 activityMedia?.find((m) => m.id === act.id)?.media || [];
+//             return { ...act, media };
+//         });
+//     }, [activities, activityMedia]);
+
+//     //  SKILLS PARSE
+//     const skills = useMemo(() => {
+//         try {
+//             return userData.skills
+//                 ? JSON.parse(userData.skills)
+//                 : ["React", "Node"];
+//         } catch {
+//             return ["React", "Node"];
+//         }
+//     }, [userData.skills]);
+
+//     const renderGrid = (data) => (
+//         <Grid container spacing={1}>
+//             {data.map((item, i) =>
+//                 item.media?.map((m, index) => (
+//                     <Grid item xs={4} key={index}>
+//                         <Card
+//                             sx={{
+//                                 height: 120,
+//                                 overflow: "hidden",
+//                                 borderRadius: 2,
+//                             }}
+//                         >
+//                             {m.type === "video" ? (
+//                                 <video
+//                                     src={`${BACKEND_IMAGE}${m.path}`}
+//                                     style={{ width: "100%", height: "100%", objectFit: "cover" }}
+//                                 />
+//                             ) : (
+//                                 <img
+//                                     src={`${BACKEND_IMAGE}${m.path}`}
+//                                     alt=""
+//                                     style={{ width: "100%", height: "100%", objectFit: "cover" }}
+//                                 />
+//                             )}
+//                         </Card>
+//                     </Grid>
+//                 ))
+//             )}
+//         </Grid>
+//     );
+
+//     return (
+//         <Box sx={{ bgcolor: "#f5f7fb", minHeight: "100vh" }}>
+//             {/*  BANNER */}
+//             <Box
+//                 sx={{
+//                     height: 150,
+//                     background: "linear-gradient(135deg,#6366f1,#ec4899)",
+//                 }}
+//             />
+
+//             {/*  PROFILE */}
+//             <Box sx={{ px: 3, mt: -6 }}>
+//                 <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+//                     <Avatar
+//                         src={`${BACKEND_IMAGE}${profilePic?.path || ""}`}
+//                         sx={{
+//                             width: 90,
+//                             height: 90,
+//                             border: "4px solid white",
+//                         }}
+//                     />
+//                 </Box>
+
+//                 {/*  NAME */}
+//                 <Box sx={{ mt: 1 }}>
+//                     <Typography fontSize={20} fontWeight={700}>
+//                         {userData.std_name}
+//                     </Typography>
+
+//                     <Typography fontSize={14} color="text.secondary">
+//                         {userData.program_name} • {userData.program_year_name}
+//                     </Typography>
+
+//                     <Typography fontSize={12} color="gray">
+//                         {userData.dep_name}
+//                     </Typography>
+//                 </Box>
+
+
+
+//                 {/*  ABOUT */}
+//                 <Box sx={{ mt: 1 }}>
+//                     <Typography fontSize={14} color="text.secondary">
+//                         {userData.bio}
+//                     </Typography>
+//                 </Box>
+
+//                 {/*  SKILLS */}
+//                 <Box sx={{ mt: 2 }}>
+//                     <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+//                         {skills.map((s, i) => (
+//                             <Chip key={i} label={s} />
+//                         ))}
+//                     </Box>
+//                 </Box>
+
+//                 <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
+//                     <Button
+//                         variant="outlined"
+//                         color="success"
+//                         startDecorator={<SendRoundedIcon />}
+//                         // onClick={onMessage}
+//                         sx={{
+//                             borderRadius: "999px",
+//                             px: 2,
+//                             fontWeight: 600,
+//                             textTransform: "none",
+//                             transition: "0.2s",
+//                             "&:hover": {
+//                                 backgroundColor: "success.softBg",
+//                                 transform: "scale(1.05)",
+//                             },
+//                         }}
+//                     >
+//                         Message
+//                     </Button>
+
+//                 </Box>
+
+//                 {/*  TABS */}
+//                 <Tabs
+//                     value={tab}
+//                     onChange={(e, v) => setTab(v)}
+//                     sx={{ mt: 2 }}
+//                 >
+//                     <Tab label="Posts" />
+//                     <Tab label="Videos" />
+//                     <Tab label="Activities" />
+//                 </Tabs>
+//             </Box>
+
+//             {/*  CONTENT */}
+//             <Box sx={{ p: 2 }}>
+//                 {tab === 0 && renderGrid(postsWithMedia)}
+
+//                 {tab === 1 &&
+//                     renderGrid(
+//                         postsWithMedia.map((p) => ({
+//                             ...p,
+//                             media: p.media?.filter((m) => m.type === "video"),
+//                         }))
+//                     )}
+
+//                 {tab === 2 && renderGrid(activitiesWithMedia)}
+//             </Box>
+//         </Box>
+//     );
+// };
+
+// export default StudentGlobalView;
+
+
+
 import React, { useMemo, useState } from "react";
 import {
     Box,
     Typography,
     Avatar,
-    // Button,
     Chip,
     Tabs,
     Tab,
     Grid,
     Card,
+    Modal,
+    IconButton,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import { useParams } from "react-router-dom";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
+
 import {
     useFetchSingleStudentPost,
     useFetchSingleStudentMedia,
@@ -20,15 +237,21 @@ import {
     useFetchLoggedStudentDetail,
     useFetchProfilePic,
 } from "../../ADMIN/CommonCode/useQuery";
+
 import { BACKEND_IMAGE } from "../../constant/Static";
 import { Button } from "@mui/joy";
+import FloatingBackButton from "../../Component/FloatingBackButton";
 
 const StudentGlobalView = () => {
-    const { id } = useParams(); //  student id from URL
+    const { id } = useParams();
 
     const [tab, setTab] = useState(0);
-    // const id = 2;y
-    //  FETCH DATA
+
+    // 🔥 NEW (modal state)
+    const [openPostModal, setOpenPostModal] = useState(false);
+    const [selectedPost, setSelectedPost] = useState(null);
+
+    // FETCH DATA
     const { data: posts = [] } = useFetchSingleStudentPost(id);
     const { data: postMedia = [] } = useFetchSingleStudentMedia(id);
 
@@ -40,7 +263,7 @@ const StudentGlobalView = () => {
 
     const userData = studentDetail?.[0] || {};
 
-    //  COMBINE POST MEDIA
+    // COMBINE POST MEDIA
     const postsWithMedia = useMemo(() => {
         return posts?.map((post) => {
             const media = postMedia?.find((m) => m.id === post.id)?.media || [];
@@ -48,7 +271,7 @@ const StudentGlobalView = () => {
         });
     }, [posts, postMedia]);
 
-    //  COMBINE ACTIVITY MEDIA
+    // COMBINE ACTIVITY MEDIA
     const activitiesWithMedia = useMemo(() => {
         return activities?.map((act) => {
             const media =
@@ -57,7 +280,7 @@ const StudentGlobalView = () => {
         });
     }, [activities, activityMedia]);
 
-    //  SKILLS PARSE
+    // SKILLS PARSE
     const skills = useMemo(() => {
         try {
             return userData.skills
@@ -68,28 +291,46 @@ const StudentGlobalView = () => {
         }
     }, [userData.skills]);
 
+    // 🔥 OPEN MODAL
+    const handleOpenPost = (item) => {
+        setSelectedPost(item);
+        setOpenPostModal(true);
+    };
+
+    // GRID RENDER
     const renderGrid = (data) => (
         <Grid container spacing={1}>
             {data.map((item, i) =>
                 item.media?.map((m, index) => (
                     <Grid item xs={4} key={index}>
                         <Card
+                            onClick={() => handleOpenPost(item)} // 🔥 CLICK
                             sx={{
-                                height: 120,
+                                height: 140, // 🔥 fixed height
+                                width: "100%",
                                 overflow: "hidden",
                                 borderRadius: 2,
+                                cursor: "pointer",
                             }}
                         >
                             {m.type === "video" ? (
                                 <video
                                     src={`${BACKEND_IMAGE}${m.path}`}
-                                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                    style={{
+                                        width: "100%",
+                                        height: "100%",
+                                        objectFit: "cover",
+                                    }}
                                 />
                             ) : (
                                 <img
                                     src={`${BACKEND_IMAGE}${m.path}`}
                                     alt=""
-                                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                    style={{
+                                        width: "100%",
+                                        height: "100%",
+                                        objectFit: "cover",
+                                    }}
                                 />
                             )}
                         </Card>
@@ -101,7 +342,7 @@ const StudentGlobalView = () => {
 
     return (
         <Box sx={{ bgcolor: "#f5f7fb", minHeight: "100vh" }}>
-            {/*  BANNER */}
+            {/* BANNER */}
             <Box
                 sx={{
                     height: 150,
@@ -109,7 +350,7 @@ const StudentGlobalView = () => {
                 }}
             />
 
-            {/*  PROFILE */}
+            {/* PROFILE */}
             <Box sx={{ px: 3, mt: -6 }}>
                 <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                     <Avatar
@@ -122,7 +363,7 @@ const StudentGlobalView = () => {
                     />
                 </Box>
 
-                {/*  NAME */}
+                {/* NAME */}
                 <Box sx={{ mt: 1 }}>
                     <Typography fontSize={20} fontWeight={700}>
                         {userData.std_name}
@@ -137,16 +378,14 @@ const StudentGlobalView = () => {
                     </Typography>
                 </Box>
 
-
-
-                {/*  ABOUT */}
+                {/* ABOUT */}
                 <Box sx={{ mt: 1 }}>
                     <Typography fontSize={14} color="text.secondary">
                         {userData.bio}
                     </Typography>
                 </Box>
 
-                {/*  SKILLS */}
+                {/* SKILLS */}
                 <Box sx={{ mt: 2 }}>
                     <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                         {skills.map((s, i) => (
@@ -155,30 +394,27 @@ const StudentGlobalView = () => {
                     </Box>
                 </Box>
 
+                {/* BUTTON */}
                 <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
                     <Button
                         variant="outlined"
                         color="success"
                         startDecorator={<SendRoundedIcon />}
-                        // onClick={onMessage}
                         sx={{
                             borderRadius: "999px",
                             px: 2,
                             fontWeight: 600,
                             textTransform: "none",
-                            transition: "0.2s",
                             "&:hover": {
-                                backgroundColor: "success.softBg",
                                 transform: "scale(1.05)",
                             },
                         }}
                     >
                         Message
                     </Button>
-
                 </Box>
 
-                {/*  TABS */}
+                {/* TABS */}
                 <Tabs
                     value={tab}
                     onChange={(e, v) => setTab(v)}
@@ -190,7 +426,7 @@ const StudentGlobalView = () => {
                 </Tabs>
             </Box>
 
-            {/*  CONTENT */}
+            {/* CONTENT */}
             <Box sx={{ p: 2 }}>
                 {tab === 0 && renderGrid(postsWithMedia)}
 
@@ -204,6 +440,77 @@ const StudentGlobalView = () => {
 
                 {tab === 2 && renderGrid(activitiesWithMedia)}
             </Box>
+
+            {/* 🔥 MODAL */}
+            <Modal open={openPostModal} onClose={() => setOpenPostModal(false)}>
+                <Box
+                    sx={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        width: "60%",
+                        maxHeight: "80vh",
+                        bgcolor: "#fff",
+                        borderRadius: 3,
+                        p: 2,
+                        overflowY: "auto",
+                    }}
+                >
+                    <IconButton
+                        onClick={() => setOpenPostModal(false)}
+                        sx={{ position: "absolute", right: 10, top: 10 }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+
+                    {/* USER */}
+                    <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+                        <Avatar src={`${BACKEND_IMAGE}${profilePic?.path || ""}`} />
+                        <Box>
+                            <Typography fontWeight={600}>
+                                {userData.std_name}
+                            </Typography>
+                            <Typography fontSize={12} color="gray">
+                                {userData.program_name}
+                            </Typography>
+                        </Box>
+                    </Box>
+
+                    {/* MEDIA */}
+                    {selectedPost?.media?.map((m, i) =>
+                        m.type === "video" ? (
+                            <video
+                                key={i}
+                                src={`${BACKEND_IMAGE}${m.path}`}
+                                controls
+                                style={{
+                                    width: "100%",
+                                    maxHeight: 400,
+                                    marginBottom: 10,
+                                }}
+                            />
+                        ) : (
+                            <img
+                                key={i}
+                                src={`${BACKEND_IMAGE}${m.path}`}
+                                alt=""
+                                style={{
+                                    width: "100%",
+                                    maxHeight: 400,
+                                    marginBottom: 10,
+                                }}
+                            />
+                        )
+                    )}
+
+                    {/* DESCRIPTION */}
+                    <Typography>
+                        {selectedPost?.description || "No description"}
+                    </Typography>
+                </Box>
+            </Modal>
+            <FloatingBackButton/>
         </Box>
     );
 };

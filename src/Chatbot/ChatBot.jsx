@@ -1,37 +1,38 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  Box,
-  // Typography,
-  // IconButton,
-  // Button,
-  // Textarea,
-  // Sheet,
-} from "@mui/joy";
-
-// import MenuIcon from "@mui/icons-material/Menu";
-// import SendIcon from "@mui/icons-material/Send";
-// import AddIcon from "@mui/icons-material/Add";
-// import SmartToyIcon from "@mui/icons-material/SmartToy";
-// import PersonIcon from "@mui/icons-material/Person";
-// import TypingComponent from "./Component/TypingComponent";
-// import ReactMarkdown from "react-markdown";
-
+import { Box } from "@mui/joy";
 import { axiosLogin, chataxios } from "../Axios/axios";
 import { typeMessageReact } from "./CommonCode/Common";
 import { getAuthUser } from "../constant/Constant";
 import Sidebar from "./Component/Sidebar";
 import ChatWindow from "./Component/ChatWindow";
 import ChatInput from "./Component/ChatInput";
-
-const user = getAuthUser();
+import { useFetchLatestChat } from "../ADMIN/CommonCode/useQuery";
+import FloatingBackButton from "../Component/FloatingBackButton";
 
 const ChatBot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [collapsed, setCollapsed] = useState(false);
   const [loading, setLoading] = useState(false);
+
   const chatRef = useRef(null);
   const textareaRef = useRef(null);
+
+  const user = getAuthUser();
+
+  //  FETCH LAST 10 CHATS
+  const { data: LastFewChats ,refetch:FetchLastMessage} = useFetchLatestChat();
+
+  //  NEW CHAT (CLEAR EVERYTHING)
+  const handleNewChat = () => {
+    setMessages([]);
+    setInput("");
+    setLoading(false);
+
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
+  };
 
   // auto scroll
   useEffect(() => {
@@ -55,7 +56,7 @@ const ChatBot = () => {
   };
 
   const sendMessage = async () => {
-    if (!input.trim() || loading) return; //  prevent double send
+    if (!input.trim() || loading) return;
 
     const msg = input;
 
@@ -66,7 +67,7 @@ const ChatBot = () => {
     if (textareaRef.current) textareaRef.current.style.height = "auto";
 
     try {
-      //  add loading message
+      // loading msg
       setMessages((prev) => [
         ...prev,
         { text: "", sender: "bot", loading: true }
@@ -74,11 +75,12 @@ const ChatBot = () => {
 
       const res = await chataxios.post("/chat", {
         query: msg,
+        isLoggedIn: user !== null
       });
 
       const reply = res.data.response || "No response";
 
-      //  replace loading → start typing
+      // replace loading
       setMessages((prev) => {
         const updated = [...prev];
         updated[updated.length - 1] = {
@@ -89,7 +91,7 @@ const ChatBot = () => {
         return updated;
       });
 
-      //  typing animation
+      // typing animation
       typeMessageReact(setMessages, reply, async () => {
         try {
           await axiosLogin.post("/chat/insert", {
@@ -102,6 +104,7 @@ const ChatBot = () => {
         }
 
         setLoading(false);
+        FetchLastMessage()
       });
 
     } catch (err) {
@@ -110,10 +113,9 @@ const ChatBot = () => {
       let errorMsg = "❌ Something went wrong!";
 
       if (err?.response?.status === 429) {
-        errorMsg = "⚠️ Daily AI limit reached. Try again later.";
+        errorMsg = "⚠️ Daily AI limit reached.";
       }
 
-      //  replace loading message (NOT add new one)
       setMessages((prev) => {
         const updated = [...prev];
         updated[updated.length - 1] = {
@@ -127,9 +129,16 @@ const ChatBot = () => {
       setLoading(false);
     }
   };
+
   return (
     <Box sx={{ display: "flex", height: "100vh", bgcolor: "#131314" }}>
-      <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
+
+      <Sidebar
+        collapsed={collapsed}
+        setCollapsed={setCollapsed}
+        onNewChat={handleNewChat}
+        chats={LastFewChats || []}   // ✅ PASS DATA
+      />
 
       <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
         <ChatWindow messages={messages} chatRef={chatRef} />
@@ -142,6 +151,7 @@ const ChatBot = () => {
           textareaRef={textareaRef}
         />
       </Box>
+      <FloatingBackButton/>
     </Box>
   );
 };

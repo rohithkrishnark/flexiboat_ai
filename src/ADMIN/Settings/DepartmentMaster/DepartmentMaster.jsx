@@ -133,8 +133,6 @@ const DepartmentMaster = () => {
     ], [handleEdit])
 
 
-    console.log(departmentDetail)
-    console.log(Array.isArray(departmentDetail))
 
     return (
         <MasterWrapper title={title}>

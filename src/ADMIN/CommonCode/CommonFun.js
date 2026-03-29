@@ -26,10 +26,7 @@ export const FetchAllAluminiDetail = async () => {
     const response = await axiosLogin.get("/training/alumini/fetchall");
     const { success, data } = response.data;
 
-    console.log({
-      success,
-      data,
-    });
+
 
     //  Record exist
     if (success !== 0) return data;
@@ -278,7 +275,7 @@ export const FetchAllBatchStudent = async (id, prgrm_id, year_id) => {
 export const fetStudentPosts = async (id) => {
   if (!id || id === null)
     return warningNotify("Student Session is Expired Login to Continue");
-  console.log({ id });
+  
 
   try {
     const response = await axiosLogin.post("/student/allpost", {
@@ -333,7 +330,7 @@ export const fetStudentMedia = async (id) => {
 export const fetStudentActivity = async (id) => {
   if (!id || id === null)
     return warningNotify("Student Session is Expired Login to Continue");
-  console.log({ id });
+  
 
   try {
     const response = await axiosLogin.post("/student/activity/allpost", {
@@ -362,7 +359,7 @@ export const fetStudentActivity = async (id) => {
 export const fetchProfilePicture = async (id) => {
   if (!id || id === null)
     return warningNotify("Student Session is Expired Login to Continue");
-  console.log({ id });
+  
 
   try {
     const response = await axiosLogin.get(`/student/myprofilepic/${id}`);
@@ -390,7 +387,7 @@ export const fetchProfilePicture = async (id) => {
 export const fetchLoggedStudetnDetail = async (id) => {
   if (!id || id === null)
     return warningNotify("Student Session is Expired Login to Continue");
-  console.log({ id });
+  
 
   try {
     const response = await axiosLogin.post("/student/loggedstudentdetail", {
@@ -417,7 +414,7 @@ export const fetchLoggedStudetnDetail = async (id) => {
 export const fetStudentActivityMedia = async (id) => {
   if (!id || id === null)
     return warningNotify("Student Session is Expired Login to Continue");
-  console.log({ id });
+  
 
   try {
     const response = await axiosLogin.get(`/student/activity/full/${id}`);
@@ -534,7 +531,7 @@ export const fetchAllSingleEventMedia = async (id) => {
 export const fetchAllSingleMedia = async (id) => {
   if (!id || id === null)
     return warningNotify("Alumini Session is Expired Login to Continue");
-  console.log({ id });
+  
 
   try {
     const response = await axiosLogin.get(`/alumini/post/fullmedia/${id}`);
@@ -562,7 +559,7 @@ export const fetchAllSingleMedia = async (id) => {
 export const fetchAluminiDetailSinlge = async (id) => {
   if (!id || id === null)
     return warningNotify("Alumini Session is Expired Login to Continue");
-  console.log({ id });
+  
 
   try {
     const response = await axiosLogin.post("/alumini/getsingledetail", {
@@ -591,7 +588,7 @@ export const fetchAluminiDetailSinlge = async (id) => {
 export const fetchAluminiProfilePicture = async (id) => {
   if (!id || id === null)
     return warningNotify("Student Session is Expired Login to Continue");
-  console.log({ id });
+  
 
   try {
     const response = await axiosLogin.get(`/alumini/myprofilepic/${id}`);
@@ -618,7 +615,7 @@ export const fetchAluminiProfilePicture = async (id) => {
 export const fetchAllaluminiHeading = async (id) => {
   if (!id || id === null)
     return warningNotify("Student Session is Expired Login to Continue");
-  console.log({ id });
+  
 
   try {
     const response = await axiosLogin.get(`/alumini/profile/${id}`);
@@ -645,7 +642,7 @@ export const fetchAllaluminiHeading = async (id) => {
 export const fetchAllAluminiEduction = async (id) => {
   if (!id || id === null)
     return warningNotify("Student Session is Expired Login to Continue");
-  console.log({ id });
+  
 
   try {
     const response = await axiosLogin.get(`/alumini/education/${id}`);
@@ -672,7 +669,7 @@ export const fetchAllAluminiEduction = async (id) => {
 export const fetchAllAluminiExperience = async (id) => {
   if (!id || id === null)
     return warningNotify("Student Session is Expired Login to Continue");
-  console.log({ id });
+  
 
   try {
     const response = await axiosLogin.get(`/alumini/experience/${id}`);
@@ -805,6 +802,31 @@ export const fetchAllStudtnActivityMediaDetail = async () => {
 export const fetchAllAdminAlerts = async () => {
   try {
     const response = await axiosLogin.get(`/training/alert/get`);
+    const { success, data, message } = response.data;
+    if (success === 0) {
+      errorNotify(message);
+      return [];
+    }
+
+    if (success === 2) {
+      infoNotify(message);
+      return data || [];
+    }
+
+    if (success === 1) {
+      return data || [];
+    }
+
+    return [];
+  } catch (error) {
+    throw new Error("Failed to fetch students");
+  }
+};
+
+
+export const fetchlatestChatdtail = async () => {
+  try {
+    const response = await axiosLogin.get(`/chat/recentchat`);
     const { success, data, message } = response.data;
     if (success === 0) {
       errorNotify(message);

@@ -31,6 +31,7 @@ import {
   fetchAluminiProfilePicture,
   fetchchatuser,
   FetchExistingPdf,
+  fetchlatestChatdtail,
   fetchLoggedStudetnDetail,
   fetchProfilePicture,
   fetStudentActivity,
@@ -296,7 +297,7 @@ export const useFectchAluminiExperience = (alum_id) => {
 };
 
 export const useFetchMessages = ({ user1, user2, user1_type, user2_type }) => {
-  console.log({ user1, user2, user1_type, user2_type });
+
 
   return useQuery({
     queryKey: ["messages", user1, user2, user1_type, user2_type],
@@ -397,6 +398,16 @@ export const useFetchAllAlerts = () => {
   return useQuery({
     queryKey: ["adminalert"],
     queryFn: fetchAllAdminAlerts,
+    staleTime: Infinity,
+  });
+};
+
+
+
+export const useFetchLatestChat = () => {
+  return useQuery({
+    queryKey: ["latestchat"],
+    queryFn: fetchlatestChatdtail,
     staleTime: Infinity,
   });
 };

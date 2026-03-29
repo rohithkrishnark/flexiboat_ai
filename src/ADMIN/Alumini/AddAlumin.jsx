@@ -59,10 +59,7 @@ const AddAlumin = () => {
         }
     }, [isEditMode, SingleAluminiDetail]);
 
-    console.log({
-        SingleAluminiDetail
-    });
-
+   
 
     const handleChange = (e) => {
         const { name, value } = e.target

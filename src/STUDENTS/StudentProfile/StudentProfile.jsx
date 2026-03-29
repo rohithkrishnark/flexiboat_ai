@@ -122,7 +122,7 @@ const StudentProfile = () => {
             errorNotify("Update failed");
         }
     };
-    console.log(MyProfilePicture?.path);
+    
 
     return (
         <Box sx={{ height: "90vh", overflowY: "auto", bgcolor: "#f5f7fb" }}>

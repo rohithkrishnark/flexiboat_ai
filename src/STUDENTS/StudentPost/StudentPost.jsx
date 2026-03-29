@@ -73,7 +73,7 @@ const StudentPost = () => {
             if (createResponse.data.success) {
                 const postId = createResponse.data.data.postId;
 
-                console.log({ postId });
+               
 
 
                 // Step 2: Upload media if available
