@@ -21,7 +21,7 @@ import ProfileHeader from "./ProfileHeader";
 import ExperienceSection from "./ExperienceSection";
 import ProfileStats from "./ProfileStats";
 import EducationSection from "./EducationSection";
-import { BACKEND_API } from "../../constant/Static";
+import { BACKEND_IMAGE } from "../../constant/Static";
 
 
 const MyProfile = () => {
@@ -325,7 +325,7 @@ const MyProfile = () => {
                         <Avatar
                             src={
                                 ProfilePic?.path
-                                    ? `${BACKEND_API}${ProfilePic.path}`
+                                    ? `${BACKEND_IMAGE}${ProfilePic.path}`
                                     : ""
                             }
                             sx={{ width: 80, height: 80 }}

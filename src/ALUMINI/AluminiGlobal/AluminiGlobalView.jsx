@@ -30,7 +30,7 @@ import { errorNotify, getAuthUser, successNotify } from "../../constant/Constant
 import ConnectionButton from "./ConnectionButton";
 import GlobalLoader from "../../Component/GlobalLoader";
 import { axiosLogin } from "../../Axios/axios";
-import { BACKEND_API } from "../../constant/Static";
+import { BACKEND_IMAGE } from "../../constant/Static";
 
 const AluminiGlobalView = () => {
     const { id: alum_id } = useParams();
@@ -154,7 +154,7 @@ const AluminiGlobalView = () => {
                     <Avatar
                         src={
                             ProfilePic?.path
-                                ? `${BACKEND_API}${ProfilePic.path}`
+                                ? `${BACKEND_IMAGE}${ProfilePic.path}`
                                 : ""
                         }
                         sx={{ width: 80, height: 80 }}
@@ -229,7 +229,7 @@ const AluminiGlobalView = () => {
                             <Card key={post.id}>
                                 {post.media?.[0] && (
                                     <img
-                                        src={`${BACKEND_API}${post.media[0].url}`}
+                                        src={`${BACKEND_IMAGE}${post.media[0].url}`}
                                         style={{
                                             width: "100%",
                                             height: 180,
@@ -261,7 +261,7 @@ const AluminiGlobalView = () => {
                             <Card key={ev.id} sx={{ mb: 1 }}>
                                 {ev.image && (
                                     <img
-                                        src={`${BACKEND_API}${ev.image}`}
+                                        src={`${BACKEND_IMAGE}${ev.image}`}
                                         style={{
                                             width: "100%",
                                             height: 150,

@@ -67,9 +67,7 @@ const MyNetwork = () => {
   );
 
   const handleView = (user) => {
-    navigate(`/alumini/aluminiglobal/${user.id}`);
-    // setSelectedUser(user);
-    // setOpen(true);
+    navigate(`/common/aluminiglobal/${user.id}`);
   };
 
   return (

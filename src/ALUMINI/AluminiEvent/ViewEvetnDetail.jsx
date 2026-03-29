@@ -17,7 +17,7 @@ import {
   useFetchAlumniFullEventMedia,
   useFetchSingleAluminiEvent,
 } from "../../ADMIN/CommonCode/useQuery";
-import { BACKEND_API } from "../../constant/Static";
+import { BACKEND_IMAGE } from "../../constant/Static";
 
 const ViewEventDetail = () => {
   const [filter, setFilter] = useState("upcoming");
@@ -80,7 +80,7 @@ const ViewEventDetail = () => {
             {event.image && (
               <Box
                 component="img"
-                src={`${BACKEND_API}${event.image}`}
+                src={`${BACKEND_IMAGE}${event.image}`}
                 alt="event"
                 sx={{ width: "100%", height: "140px", objectFit: "cover" }}
               />

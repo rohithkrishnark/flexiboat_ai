@@ -1,230 +1,318 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Box,
   Typography,
   Card,
   CardContent,
   Avatar,
-  Grid,
   TextField,
   Button,
+  Tabs,
+  Tab,
   Modal,
   Paper,
+  Chip,
 } from "@mui/material";
 
-// Mock Data
-const mockActivities = [
-  {
-    id: 1,
-    student: "Rohith Krishna",
-    title: "Onam Dance",
-    caption: "College Onam celebration performance",
-    description: "Participated in group dance and secured 2nd prize.",
-    images: [
-      "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-    ],
-  },
-  {
-    id: 2,
-    student: "Anjali Nair",
-    title: "Tech Fest",
-    caption: "Hackathon participation",
-    description: "Built a smart AI chatbot in 24 hours.",
-    images: [
-      "https://images.unsplash.com/photo-1518770660439-4636190af475",
-    ],
-  },
-];
+import {
+  errorNotify,
+  getAuthUser,
+  successNotify,
+} from "../../constant/Constant";
+
+import {
+  useFetchAllAcitivtyMediaDetail,
+  useFetchAllStudtentAcitivty,
+} from "../../ADMIN/CommonCode/useQuery";
+
+import { BACKEND_IMAGE } from "../../constant/Static";
+import { axiosLogin } from "../../Axios/axios";
 
 const ReviewActivity = () => {
   const [scores, setScores] = useState({});
-  const [openReject, setOpenReject] = useState(false);
-  const [selectedId, setSelectedId] = useState(null);
-  const [reason, setReason] = useState("");
+  const [tab, setTab] = useState(0);
 
-  const handleScoreChange = (id, value) => {
-    setScores({ ...scores, [id]: value });
-  };
+  const [rejectOpen, setRejectOpen] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  const [selectedActivity, setSelectedActivity] = useState(null);
 
-  const handleApprove = (id) => {
-    console.log({
-      activityId: id,
-      score: scores[id],
-      status: "approved",
+  const user = getAuthUser();
+  const depId = user?.fac_dep_id;
+  const loggeduser = user?.fac_id;
+
+  const { data: ActivityDetail, refetch } =
+    useFetchAllStudtentAcitivty(depId);
+
+  const { data: ActivityMediaDetail } =
+    useFetchAllAcitivtyMediaDetail();
+
+  const activityDetails = ActivityDetail || [];
+  const activityMedia = ActivityMediaDetail || [];
+
+  // MERGE DATA
+  const mergedActivities = useMemo(() => {
+    return activityDetails.map((post) => {
+      const match = activityMedia.find(
+        (m) =>
+          Number(m.postId) === Number(post.id) &&
+          Number(m.stdId) === Number(post.student_id)
+      );
+
+      return {
+        ...post,
+        media: match?.media || [],
+      };
     });
+  }, [activityDetails, activityMedia]);
+
+  // FILTERS
+  const pending = mergedActivities.filter((a) => !a.given_staff);
+
+  const approved = mergedActivities.filter(
+    (a) =>
+      Number(a.given_staff) === Number(loggeduser) &&
+      Number(a.rejected) === 0
+  );
+
+  const rejected = mergedActivities.filter(
+    (a) => Number(a.rejected) === 1
+  );
+
+  const getData = () => {
+    if (tab === 0) return pending;
+    if (tab === 1) return approved;
+    return rejected;
   };
 
-  // 🔥 OPEN REJECT MODAL
-  const handleRejectClick = (id) => {
-    setSelectedId(id);
-    setOpenReject(true);
+  // SCORE
+  const handleScoreChange = (id, value) => {
+    setScores((p) => ({ ...p, [id]: value }));
   };
 
-  // 🔥 SUBMIT REJECT
-  const handleRejectSubmit = () => {
-    if (!reason.trim()) {
-      alert("Please enter a reason");
-      return;
+  // APPROVE
+  const handleApprove = async (activity) => {
+    try {
+      const res = await axiosLogin.post(
+        "/student/activity/givescore",
+        {
+          score: scores[activity.id],
+          user_id: loggeduser,
+          activity_id: activity.id,
+        }
+      );
+
+      if (res?.data?.success === 0)
+        return errorNotify("Error in scoring");
+
+      successNotify("Approved successfully");
+      refetch();
+      setScores({});
+    } catch (err) {
+      errorNotify("Error");
+    }
+  };
+
+  // OPEN REJECT
+  const openRejectModal = (activity) => {
+    setSelectedActivity(activity);
+    setRejectOpen(true);
+  };
+
+  // SUBMIT REJECT
+  const handleReject = async () => {
+    if (!rejectReason.trim()) {
+      return errorNotify("Enter reject reason");
     }
 
-    console.log({
-      activityId: selectedId,
-      status: "rejected",
-      reason: reason,
-    });
+    try {
+      const res = await axiosLogin.post(
+        "/student/activity/reject",
+        {
+          activity_id: selectedActivity.id,
+          reject_reason: rejectReason,
+          user_id: loggeduser,
+        }
+      );
 
-    setOpenReject(false);
-    setReason("");
+      if (res?.data?.success === 0)
+        return errorNotify("Reject failed");
+
+      successNotify("Rejected successfully");
+      setRejectOpen(false);
+      setRejectReason("");
+      refetch();
+    } catch (err) {
+      errorNotify("Error rejecting");
+    }
+  };
+
+  // BUTTON STYLE
+  const approveBtn = {
+    background: "linear-gradient(45deg,#22c55e,#16a34a)",
+    color: "#fff",
+    textTransform: "none",
+    fontWeight: 600,
+    borderRadius: 2,
+  };
+
+  const rejectBtn = {
+    border: "1px solid #ef4444",
+    color: "#ef4444",
+    textTransform: "none",
+    fontWeight: 600,
+    borderRadius: 2,
   };
 
   return (
-    <Box
-      sx={{
-        height: "85vh",
-        overflowY: "auto",
-        p: 2,
-        bgcolor: "#f5f7fb",
-        scrollbarWidth: "none",
-        "&::-webkit-scrollbar": { display: "none" },
-      }}
-    >
+    <Box sx={{ height: "85vh", overflowY: "auto", p: 2 ,boxShadow:'lg'}}>
       <Typography fontWeight={700} fontSize={18} mb={2}>
         Review Student Activities
       </Typography>
 
-      <Grid container spacing={2}>
-        {mockActivities.map((activity) => (
-          <Grid item xs={12} md={6} lg={4} key={activity.id}>
+      {/* TABS */}
+      <Tabs value={tab} onChange={(e, v) => setTab(v)}>
+        <Tab label="Pending" />
+        <Tab label="Approved" />
+        <Tab label="Rejected" />
+      </Tabs>
+
+      {/* CARDS */}
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mt: 2 }}>
+        {getData().map((activity) => (
+          <Box
+            key={activity.id}
+            sx={{ flex: "0 0 calc(33.333% - 16px)" }}
+          >
             <Card sx={{ borderRadius: 3 }}>
               <CardContent>
                 {/* HEADER */}
-                <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                  <Avatar sx={{ mr: 1 }} />
+                <Box sx={{ display: "flex", mb: 1 }}>
+                  <Avatar sx={{ mr: 1 }}>
+                    {activity.std_name?.[0]}
+                  </Avatar>
                   <Box>
                     <Typography fontWeight={600}>
-                      {activity.student}
+                      {activity.std_name}
                     </Typography>
-                    <Typography fontSize={12} color="gray">
-                      {activity.title}
-                    </Typography>
+                    <Typography fontSize={12}>Activity</Typography>
                   </Box>
                 </Box>
 
-                {/* CONTENT */}
-                <Typography fontSize={13}>{activity.caption}</Typography>
-                <Typography fontSize={12} color="gray" mb={1}>
+                {/* TEXT */}
+                <Typography>{activity.caption}</Typography>
+                <Typography fontSize={12} color="gray">
                   {activity.description}
                 </Typography>
 
-                {/* IMAGES */}
-                <Box
-                  sx={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(2, 1fr)",
-                    gap: 1,
-                    mb: 1,
-                  }}
-                >
-                  {activity.images.map((img, i) => (
-                    <Box
-                      key={i}
-                      component="img"
-                      src={img}
-                      sx={{
-                        width: "100%",
-                        height: 90,
-                        objectFit: "cover",
-                        borderRadius: 2,
-                      }}
-                    />
-                  ))}
-                </Box>
+                {/* MEDIA */}
+                {activity.media?.map((m, i) => (
+                  <img
+                    key={i}
+                    src={`${BACKEND_IMAGE}${m.url}`}
+                    style={{
+                      width: "100%",
+                      height: 160,
+                      objectFit: "cover",
+                      borderRadius: 8,
+                      marginTop: 8,
+                    }}
+                  />
+                ))}
 
-                {/* SCORE */}
-                <TextField
-                  label="Score"
-                  type="number"
-                  size="small"
-                  fullWidth
-                  value={scores[activity.id] || ""}
-                  onChange={(e) =>
-                    handleScoreChange(activity.id, e.target.value)
-                  }
-                  sx={{ mb: 1 }}
-                />
+                {/* APPROVED CHIP */}
+                {activity?.given_staff && !activity?.rejected && (
+                  <Chip
+                    label={`${activity.activity_score} Mark`}
+                    color="success"
+                    sx={{ mt: 1 }}
+                  />
+                )}
 
-                {/* ACTIONS */}
-                <Box sx={{ display: "flex", gap: 1 }}>
+                {/* REJECTED BOX (FIXED HERE) */}
+                {activity.rejected === 1 && (
+                  <Box
+                    sx={{
+                      mt: 1,
+                      p: 1.5,
+                      bgcolor: "#fee2e2",
+                      borderRadius: 2,
+                    }}
+                  >
+                    <Typography fontSize={12} fontWeight={700} color="error">
+                      Rejected
+                    </Typography>
+
+                    <Typography fontSize={12}>
+                      <b>Reason:</b> {activity.reason || "No reason provided"}
+                    </Typography>
+
+                    <Typography fontSize={11} color="gray">
+                      By Staff ID: {activity.scoregive_staff}
+                    </Typography>
+                  </Box>
+                )}
+
+                {/* SCORE INPUT */}
+                {!activity.given_staff && !activity.rejected && (
+                  <TextField
+                    fullWidth
+                    size="small"
+                    type="number"
+                    label="Score"
+                    value={scores[activity.id] || ""}
+                    onChange={(e) =>
+                      handleScoreChange(activity.id, e.target.value)
+                    }
+                    sx={{ mt: 1 }}
+                  />
+                )}
+              </CardContent>
+
+              {/* ACTIONS */}
+              {!activity.given_staff && !activity.rejected && (
+                <Box sx={{ p: 2, display: "flex", gap: 1 }}>
                   <Button
                     fullWidth
-                    variant="contained"
-                    onClick={() => handleApprove(activity.id)}
-                    sx={{
-                      background:
-                        "linear-gradient(45deg, #22c55e, #16a34a)",
-                      textTransform: "none",
-                    }}
+                    sx={approveBtn}
+                    onClick={() => handleApprove(activity)}
                   >
                     Approve
                   </Button>
 
                   <Button
                     fullWidth
-                    variant="outlined"
-                    color="error"
-                    onClick={() => handleRejectClick(activity.id)}
-                    sx={{ textTransform: "none" }}
+                    sx={rejectBtn}
+                    onClick={() => openRejectModal(activity)}
                   >
                     Reject
                   </Button>
                 </Box>
-              </CardContent>
+              )}
             </Card>
-          </Grid>
+          </Box>
         ))}
-      </Grid>
+      </Box>
 
-      {/* 🔥 REJECT MODAL */}
-      <Modal open={openReject} onClose={() => setOpenReject(false)}>
-        <Paper
-          sx={{
-            width: 400,
-            p: 3,
-            mx: "auto",
-            mt: "15%",
-            borderRadius: 3,
-          }}
-        >
-          <Typography fontWeight={600} mb={1}>
-            Reason for Rejection
-          </Typography>
+      {/* REJECT MODAL */}
+      <Modal open={rejectOpen} onClose={() => setRejectOpen(false)}>
+        <Paper sx={{ width: 400, p: 3, mx: "auto", mt: "15%" }}>
+          <Typography fontWeight={600}>Reject Reason</Typography>
 
           <TextField
+            fullWidth
             multiline
             rows={3}
-            fullWidth
-            placeholder="Enter reason..."
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            sx={{ mb: 2 }}
+            value={rejectReason}
+            onChange={(e) => setRejectReason(e.target.value)}
+            sx={{ mt: 2 }}
           />
 
-          <Box sx={{ display: "flex", gap: 1 }}>
-            <Button
-              fullWidth
-              variant="contained"
-              color="error"
-              onClick={handleRejectSubmit}
-            >
+          <Box sx={{ display: "flex", gap: 1, mt: 2 }}>
+            <Button sx={rejectBtn} fullWidth onClick={handleReject}>
               Submit
             </Button>
 
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => setOpenReject(false)}
-            >
+            <Button fullWidth onClick={() => setRejectOpen(false)}>
               Cancel
             </Button>
           </Box>

@@ -30,7 +30,7 @@ export const errorNotify = (message) => {
 };
 
 
-export const getAuthUser = () => {
+export const  getAuthUser = () => {
   try {
     const storedUser = localStorage.getItem("authUser");
 

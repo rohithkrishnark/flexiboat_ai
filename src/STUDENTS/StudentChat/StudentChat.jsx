@@ -1,59 +1,132 @@
-import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  Avatar,
-  InputBase,
-  IconButton,
-} from "@mui/material";
+import React, { useEffect, useState, useMemo } from "react";
+import { Box, Typography, Avatar, InputBase, IconButton } from "@mui/material";
 
 import SendIcon from "@mui/icons-material/Send";
 import SearchIcon from "@mui/icons-material/Search";
+import { useLocation } from "react-router-dom";
 
-// Dummy Users (Teacher + Alumni)
-const users = [
-  {
-    id: 1,
-    name: "Dr. John (Teacher)",
-    lastMsg: "Submit your assignment",
-    online: true,
-  },
-  {
-    id: 2,
-    name: "Anu (Alumni)",
-    lastMsg: "I’ll guide you 👍",
-    online: false,
-  },
-];
+import { getAuthUser } from "../../constant/Constant";
+import {
+  useFetchMessages,
+  useFetchChatUsers,
+} from "../../ADMIN/CommonCode/useQuery";
 
-// Dummy Messages
-const dummyMessages = {
-  1: [
-    { from: "them", text: "Submit your assignment today." },
-    { from: "me", text: "Sure sir 👍" },
-  ],
-  2: [
-    { from: "them", text: "I’ll guide you 👍" },
-    { from: "me", text: "Thank you!" },
-  ],
-};
+import { axiosLogin } from "../../Axios/axios";
+import { socket } from "../../Utils/Socket/Socket";
 
 const StudentChat = () => {
-  const [selectedUser, setSelectedUser] = useState(users[0]);
-  const [messages, setMessages] = useState(dummyMessages);
+  const user = getAuthUser();
+  const userId = user?.user_id || user?.alum_id;
+
+  const [selectedUser, setSelectedUser] = useState(null);
   const [input, setInput] = useState("");
+  const [search, setSearch] = useState("");
+  const [messages, setMessages] = useState([]);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+  const location = useLocation();
+  const passedUser = location.state?.user;
 
-    const newMsg = { from: "me", text: input };
+  // ✅ FETCH USERS
+  const { data: Users = [], refetch: refetchUsers } =
+    useFetchChatUsers(userId);
 
-    setMessages((prev) => ({
-      ...prev,
-      [selectedUser.id]: [...(prev[selectedUser.id] || []), newMsg],
-    }));
+  // ✅ FILTER USERS
+  const filteredUsers = useMemo(() => {
+    return (Users || []).filter((u) =>
+      (u?.name || "").toLowerCase().includes(search.toLowerCase())
+    );
+  }, [Users, search]);
+
+  //  SELECT USER FROM NAVIGATION
+useEffect(() => {
+  //  priority 1 → navigation user
+  if (passedUser && !selectedUser) {
+    setSelectedUser(passedUser);
+    return;
+  }
+
+  //  priority 2 → first user
+  if (!selectedUser && Users.length > 0) {
+    setSelectedUser(Users[0]);
+  }
+}, [passedUser, Users]);
+
+  //  SOCKET JOIN
+  useEffect(() => {
+    if (!userId) return;
+    socket.emit("join", userId);
+  }, [userId]);
+
+  //  FETCH MESSAGES
+  const { data: messagesData = [] } = useFetchMessages({
+    user1: userId,
+    user2: selectedUser?.id,
+    user1_type: user?.role,
+    user2_type: selectedUser?.type,
+  });
+
+  // ✅ SET MESSAGES FROM API
+  useEffect(() => {
+    if (!selectedUser?.id) return;
+
+    setMessages(
+      (messagesData || []).map((m) => ({
+        text: m.message,
+        sender: m.sender_id === userId ? "me" : "other",
+      }))
+    );
+  }, [messagesData, selectedUser?.id]);
+
+  // ✅ SOCKET LISTENER (NO DUPLICATE)
+  useEffect(() => {
+    const handler = (msg) => {
+      // ✅ ONLY RECEIVE FROM OTHERS
+      if (msg.receiver_id === userId) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            text: msg.message,
+            sender: "other",
+          },
+        ]);
+      }
+
+      refetchUsers(); // update sidebar last message
+    };
+
+    socket.on("new-message", handler);
+
+    return () => socket.off("new-message", handler);
+  }, [userId]);
+
+  // ✅ SEND MESSAGE (OPTIMISTIC UI)
+  const handleSend = async () => {
+    if (!input.trim() || !selectedUser) return;
+
+    const newMsg = {
+      text: input,
+      sender: "me",
+    };
+
+    // 🔥 instant UI update
+    setMessages((prev) => [...prev, newMsg]);
+
+    await axiosLogin.post("/chat/send-message", {
+      user1_id: userId,
+      user1_type: user?.role,
+      user2_id: selectedUser.id,
+      user2_type: selectedUser.type,
+
+      sender_id: userId,
+      sender_type: user?.role,
+      receiver_id: selectedUser.id,
+      receiver_type: selectedUser.type,
+
+      message: input,
+    });
 
     setInput("");
+    refetchUsers();
   };
 
   return (
@@ -69,11 +142,10 @@ const StudentChat = () => {
           flexDirection: "column",
         }}
       >
-        {/* Header */}
+        {/* HEADER */}
         <Box sx={{ p: 2 }}>
           <Typography fontWeight={700}>Chats</Typography>
 
-          {/* Search */}
           <Box
             sx={{
               mt: 1,
@@ -85,16 +157,21 @@ const StudentChat = () => {
             }}
           >
             <SearchIcon fontSize="small" />
-            <InputBase placeholder="Search..." sx={{ ml: 1, fontSize: 13 }} />
+            <InputBase
+              placeholder="Search..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              sx={{ ml: 1, fontSize: 13 }}
+            />
           </Box>
         </Box>
 
-        {/* Chat List */}
+        {/* USER LIST */}
         <Box sx={{ flex: 1, overflowY: "auto" }}>
-          {users.map((user) => (
+          {filteredUsers.map((u) => (
             <Box
-              key={user.id}
-              onClick={() => setSelectedUser(user)}
+              key={u.id}
+              onClick={() => setSelectedUser(u)}
               sx={{
                 display: "flex",
                 alignItems: "center",
@@ -102,34 +179,21 @@ const StudentChat = () => {
                 p: 1.5,
                 cursor: "pointer",
                 bgcolor:
-                  selectedUser?.id === user.id ? "#eef2ff" : "transparent",
+                  selectedUser?.id === u.id ? "#eef2ff" : "transparent",
                 "&:hover": { bgcolor: "#f5f5f5" },
               }}
             >
-              <Box sx={{ position: "relative" }}>
-                <Avatar />
-                {user.online && (
-                  <Box
-                    sx={{
-                      width: 10,
-                      height: 10,
-                      bgcolor: "#22c55e",
-                      borderRadius: "50%",
-                      position: "absolute",
-                      bottom: 0,
-                      right: 0,
-                      border: "2px solid #fff",
-                    }}
-                  />
-                )}
-              </Box>
+              <Avatar>
+                {u.name?.charAt(0)?.toUpperCase()}
+              </Avatar>
 
               <Box>
                 <Typography fontSize={14} fontWeight={600}>
-                  {user.name}
+                  {u.name}
                 </Typography>
+
                 <Typography fontSize={12} color="gray">
-                  {user.lastMsg}
+                  {u.last_message || "Start conversation"}
                 </Typography>
               </Box>
             </Box>
@@ -137,15 +201,10 @@ const StudentChat = () => {
         </Box>
       </Box>
 
-      {/* 🔥 RIGHT CHAT AREA */}
-      <Box
-        sx={{
-          width: "70%",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        {/* Header */}
+      {/* 🔥 RIGHT CHAT */}
+      <Box sx={{ width: "70%", display: "flex", flexDirection: "column" }}>
+        
+        {/* HEADER */}
         <Box
           sx={{
             p: 2,
@@ -156,18 +215,16 @@ const StudentChat = () => {
             gap: 1,
           }}
         >
-          <Avatar />
-          <Box>
-            <Typography fontWeight={600}>
-              {selectedUser?.name}
-            </Typography>
-            <Typography fontSize={12} color="gray">
-              {selectedUser?.online ? "Online" : "Offline"}
-            </Typography>
-          </Box>
+          <Avatar>
+            {selectedUser?.name?.charAt(0)}
+          </Avatar>
+
+          <Typography fontWeight={600}>
+            {selectedUser?.name || "Select Chat"}
+          </Typography>
         </Box>
 
-        {/* Messages */}
+        {/* MESSAGES */}
         <Box
           sx={{
             flex: 1,
@@ -178,13 +235,13 @@ const StudentChat = () => {
             gap: 1,
           }}
         >
-          {(messages[selectedUser.id] || []).map((msg, i) => (
+          {messages.map((msg, i) => (
             <Box
               key={i}
               sx={{
-                alignSelf: msg.from === "me" ? "flex-end" : "flex-start",
-                bgcolor: msg.from === "me" ? "#6366f1" : "#e5e7eb",
-                color: msg.from === "me" ? "#fff" : "#000",
+                alignSelf: msg.sender === "me" ? "flex-end" : "flex-start",
+                bgcolor: msg.sender === "me" ? "#6366f1" : "#e5e7eb",
+                color: msg.sender === "me" ? "#fff" : "#000",
                 px: 2,
                 py: 1,
                 borderRadius: 3,
@@ -197,7 +254,7 @@ const StudentChat = () => {
           ))}
         </Box>
 
-        {/* Input */}
+        {/* INPUT */}
         <Box
           sx={{
             p: 1,

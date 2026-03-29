@@ -1,14 +1,14 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Box, Typography, Input, IconButton } from "@mui/joy";
+import { Box, Typography, Input, IconButton, Avatar } from "@mui/joy";
 
 import SendIcon from "@mui/icons-material/Send";
 import SearchIcon from "@mui/icons-material/Search";
+import { useLocation } from "react-router-dom";
 
 import { getAuthUser } from "../../constant/Constant";
 import {
-  useFetchAllAlumini,
-  useFetchMyConnections,
   useFetchMessages,
+  useFetchChatUsers,
 } from "../../ADMIN/CommonCode/useQuery";
 
 import { axiosLogin } from "../../Axios/axios";
@@ -23,44 +23,34 @@ const ChatPage = () => {
   const [search, setSearch] = useState("");
   const [messages, setMessages] = useState([]);
 
-  // ======================
-  // FETCH USERS
-  // ======================
-  const { data: AllAluminiDetail = [] } = useFetchAllAlumini();
+  const { data: Users = [] ,refetch:fechChatuser} = useFetchChatUsers(userId);
 
-  const { data: myConnections = [] } = useFetchMyConnections({
-    user_id: userId,
-    user_type: user?.role,
-  });
+  const location = useLocation();
+  const passedUser = location.state?.user;
 
-  // ======================
-  // CONNECTED USERS
-  // ======================
-  const connectedIds = useMemo(() => {
-    return new Set(
-      myConnections.map((c) =>
-        Number(c.receiver_id === userId ? c.sender_id : c.receiver_id)
-      )
+  // ✅ stable users
+  const chatUsers = Users || [];
+
+  // ✅ filter only here (IMPORTANT)
+  const filteredUsers = useMemo(() => {
+    return chatUsers.filter((u) =>
+      (u.name || "").toLowerCase().includes(search.toLowerCase())
     );
-  }, [myConnections, userId]);
+  }, [chatUsers, search]);
 
-  const chatUsers = useMemo(() => {
-    return AllAluminiDetail.filter((u) =>
-      connectedIds.has(Number(u.alum_id))
-    ).map((u) => ({
-      id: u.alum_id,
-      name: u.alum_name,
-      type: "alumni",
-      lastMessage: "",
-    }));
-  }, [AllAluminiDetail, connectedIds]);
-
-  // auto select first user
+  // ======================
+  // AUTO SELECT (FIXED)
+  // ======================
   useEffect(() => {
-    if (chatUsers.length > 0 && !selectedUser) {
+    if (passedUser) {
+      setSelectedUser(passedUser);
+      return;
+    }
+
+    if (!selectedUser && chatUsers.length > 0) {
       setSelectedUser(chatUsers[0]);
     }
-  }, [chatUsers]);
+  }, [passedUser, chatUsers]);
 
   // ======================
   // SOCKET JOIN
@@ -72,11 +62,11 @@ const ChatPage = () => {
   }, [userId]);
 
   // ======================
-  // RESET CHAT ON USER CHANGE
+  // RESET CHAT
   // ======================
   useEffect(() => {
-    setMessages([]); // 🔥 important fix
-  }, [selectedUser?.id]);
+    setMessages([]);
+  }, [selectedUser?.id, selectedUser?.type]);
 
   // ======================
   // FETCH MESSAGES
@@ -102,18 +92,15 @@ const ChatPage = () => {
         id: m.id,
         text: m.message,
         sender: m.sender_id === userId ? "me" : "other",
-        conversation_id: m.conversation_id,
       }))
     );
-  }, [messagesData, selectedUser?.id]);
+  }, [messagesData]);
 
   // ======================
-  // REALTIME SOCKET
+  // REALTIME
   // ======================
   useEffect(() => {
     const handler = (msg) => {
-      console.log("🔥 realtime:", msg);
-
       if (
         msg.sender_id === userId ||
         msg.receiver_id === userId
@@ -123,7 +110,6 @@ const ChatPage = () => {
           {
             text: msg.message,
             sender: msg.sender_id === userId ? "me" : "other",
-            conversation_id: msg.conversation_id,
           },
         ]);
       }
@@ -132,7 +118,6 @@ const ChatPage = () => {
     };
 
     socket.on("new-message", handler);
-
     return () => socket.off("new-message", handler);
   }, [userId]);
 
@@ -157,22 +142,16 @@ const ChatPage = () => {
     };
 
     await axiosLogin.post("/chat/send-message", payload);
-
+    fechChatuser()
     setInput("");
   };
-
-  // ======================
-  // SEARCH
-  // ======================
-  const filteredUsers = chatUsers.filter((u) =>
-    u.name.toLowerCase().includes(search.toLowerCase())
-  );
 
   return (
     <Box sx={{ display: "flex", height: "85vh", bgcolor: "#f4f6f8" }}>
       
-      {/* LEFT SIDEBAR */}
-      <Box sx={{ width: 280, bgcolor: "#fff", borderRight: "1px solid #eee" }}>
+      {/* ================= LEFT SIDEBAR ================= */}
+      <Box sx={{ width: 300, bgcolor: "#fff", borderRight: "1px solid #eee" }}>
+        
         <Box sx={{ p: 2 }}>
           <Typography fontWeight={700}>Chats</Typography>
 
@@ -187,26 +166,57 @@ const ChatPage = () => {
           </Box>
         </Box>
 
+        {/* USERS */}
         {filteredUsers.map((u) => (
           <Box
-            key={u.id}
+            key={`${u.type}-${u.id}`}
             onClick={() => setSelectedUser(u)}
             sx={{
+              display: "flex",
+              gap: 1.5,
+              alignItems: "center",
               p: 1.5,
               cursor: "pointer",
-              bgcolor: selectedUser?.id === u.id ? "#eef2ff" : "",
+              borderBottom: "1px solid #f1f1f1",
+              bgcolor:
+                selectedUser?.id === u.id &&
+                selectedUser?.type === u.type
+                  ? "#eef2ff"
+                  : "transparent",
             }}
           >
-            <Typography fontWeight={600}>{u.name}</Typography>
+            {/* AVATAR */}
+            <Avatar sx={{ bgcolor: "#6366f1" }}>
+              {u.name?.charAt(0)}
+            </Avatar>
+
+            {/* NAME + LAST MESSAGE */}
+            <Box sx={{ flex: 1 }}>
+              <Typography fontWeight={600}>
+                {u.name}
+              </Typography>
+
+              <Typography
+                level="body-xs"
+                sx={{
+                  color: "#6b7280",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {u.last_message || "Start conversation"}
+              </Typography>
+            </Box>
           </Box>
         ))}
       </Box>
 
-      {/* RIGHT CHAT */}
+      {/* ================= RIGHT CHAT ================= */}
       <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
         
         {/* HEADER */}
-        <Box sx={{ p: 2, borderBottom: "1px solid #eee" }}>
+        <Box sx={{ p: 2, borderBottom: "1px solid #eee", bgcolor: "#fff" }}>
           <Typography fontWeight={600}>
             {selectedUser?.name || "Select Chat"}
           </Typography>
@@ -241,7 +251,7 @@ const ChatPage = () => {
         </Box>
 
         {/* INPUT */}
-        <Box sx={{ display: "flex", p: 1.5, gap: 1 }}>
+        <Box sx={{ display: "flex", p: 1.5, gap: 1, bgcolor: "#fff" }}>
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}

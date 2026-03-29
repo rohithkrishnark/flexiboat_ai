@@ -1,5 +1,5 @@
 import { Box } from '@mui/joy'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { memo } from 'react'
 import ReusableSidebar from '../../Component/ReusableSidebar'
 import { FACULTY_MENU } from '../../Menu/facultyMenu'
@@ -8,9 +8,11 @@ import logo from '../../assets/logo.png'
 import SchoolIcon from '@mui/icons-material/School';
 import { getAuthUser } from '../../constant/Constant'
 import { STUDENT_MENU } from '../../Menu/studentMenu'
+import FloatingChatBot from '../../Component/FloatingChatBot'
 
 const StudentLayout = () => {
     const user = getAuthUser();
+    const navigate = useNavigate()
     return (
         <Box
             sx={{
@@ -65,6 +67,7 @@ const StudentLayout = () => {
                     <Outlet />
                 </Box>
             </Box>
+            <FloatingChatBot onClick={() => navigate("/chat")} />
         </Box>
     )
 }

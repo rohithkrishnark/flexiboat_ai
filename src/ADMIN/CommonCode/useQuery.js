@@ -1,11 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import {
+  fetchAllActiveStudents,
+  fetchAllAdminAlerts,
   FetchAllAluminiDetail,
   FetchAllAluminiDetailById,
   fetchAllAluminiEduction,
+  fetchAllAluminiEvenMedialDetail,
+  fetchAllAluminiEventDetail,
   fetchallAluminiEventPosts,
   fetchAllAluminiExperience,
   fetchAllaluminiHeading,
+  fetchAllAluminipostDetail,
+  fetchAllAluminipostMediaDetail,
   fetchallAluminiPosts,
   FetchAllBatchStudent,
   FetchAllDeprmentDetail,
@@ -17,10 +23,13 @@ import {
   FetchAllProgramDetailMast,
   fetchAllSingleEventMedia,
   fetchAllSingleMedia,
+  fetchAllStudentActivityDtail,
   FetchAllStudents,
+  fetchAllStudtnActivityMediaDetail,
   FetchAllUserGroup,
   fetchAluminiDetailSinlge,
   fetchAluminiProfilePicture,
+  fetchchatuser,
   FetchExistingPdf,
   fetchLoggedStudetnDetail,
   fetchProfilePicture,
@@ -288,7 +297,7 @@ export const useFectchAluminiExperience = (alum_id) => {
 
 export const useFetchMessages = ({ user1, user2, user1_type, user2_type }) => {
   console.log({ user1, user2, user1_type, user2_type });
-  
+
   return useQuery({
     queryKey: ["messages", user1, user2, user1_type, user2_type],
 
@@ -300,7 +309,94 @@ export const useFetchMessages = ({ user1, user2, user1_type, user2_type }) => {
         user2_type,
       }),
 
-    enabled: !!user1 && !!user2,
+    enabled: !!user1 && !!user2 && !!user1_type && !!user2_type,
+    staleTime: Infinity,
+  });
+};
+
+export const useFetchAllActiveStudents = () => {
+  return useQuery({
+    queryKey: ["activestudent"],
+    queryFn: fetchAllActiveStudents,
+    staleTime: Infinity,
+  });
+};
+
+export const useFetchChatUsers = (userId) => {
+  return useQuery({
+    queryKey: ["chatUsers", userId],
+    queryFn: () => fetchchatuser(userId),
+    enabled: !!userId,
+    staleTime: Infinity,
+  });
+};
+
+
+
+
+export const useFectchAllAlumini = () => {
+  return useQuery({
+    queryKey: ["aluminipost"],
+    queryFn: fetchAllAluminipostDetail,
+    staleTime: Infinity,
+  });
+};
+
+
+export const useFectchAllAluminiPostDetail = () => {
+  return useQuery({
+    queryKey: ["aluminimedia"],
+    queryFn: fetchAllAluminipostMediaDetail,
+    staleTime: Infinity,
+  });
+};
+
+
+
+export const useFectchAllAluminiEventDetail = () => {
+  return useQuery({
+    queryKey: ["aluminievnt"],
+    queryFn: fetchAllAluminiEventDetail,
+    staleTime: Infinity,
+  });
+};
+
+
+export const useFetchAllAluminiEvenMedialDetail = () => {
+  return useQuery({
+    queryKey: ["alumineventmedia"],
+    queryFn: fetchAllAluminiEvenMedialDetail,
+    staleTime: Infinity,
+  });
+};
+
+
+
+
+export const useFetchAllStudtentAcitivty = (dep_id) => {
+  return useQuery({
+    queryKey: ["studentallact"],
+    queryFn: ()=>fetchAllStudentActivityDtail(dep_id),
+    staleTime: Infinity,
+    enabled:!!dep_id
+  });
+};
+
+
+export const useFetchAllAcitivtyMediaDetail = () => {
+  return useQuery({
+    queryKey: ["studentallactmedia"],
+    queryFn: fetchAllStudtnActivityMediaDetail,
+    staleTime: Infinity,
+  });
+};
+
+
+
+export const useFetchAllAlerts = () => {
+  return useQuery({
+    queryKey: ["adminalert"],
+    queryFn: fetchAllAdminAlerts,
     staleTime: Infinity,
   });
 };

@@ -19,7 +19,7 @@ import {
   useFetchSingleAluminiPost,
 } from "../../ADMIN/CommonCode/useQuery";
 import { axiosLogin } from "../../Axios/axios";
-import { BACKEND_API } from "../../constant/Static";
+import { BACKEND_IMAGE } from "../../constant/Static";
 
 const MyJobs = () => {
   const [filter, setFilter] = useState("all");
@@ -141,7 +141,7 @@ const MyJobs = () => {
                 {item.media?.length > 0 && (
                   <Box sx={{ mb: 1 }}>
                     <img
-                      src={`${BACKEND_API}${item.media[0].url}`}
+                      src={`${BACKEND_IMAGE}${item.media[0].url}`}
                       alt="post"
                       style={{
                         width: "100%",

@@ -22,7 +22,10 @@ const StudentActionDetail = () => {
     const navigate = useNavigate();
     const user = getAuthUser();
 
-    const departmentId = user ? user.deparment : null;
+    // console.log({user});
+    
+
+    const departmentId = user ? user.fac_dep_id : null;
 
     const { data: AllStudentData, isLoading, isError, error, refetch: RefetchStudetn } = useFetchAllStudentDetail(departmentId)
 
@@ -34,7 +37,8 @@ const StudentActionDetail = () => {
         })
     }
     const handleView = (row) => {
-        navigate(`/faculity/addstudents/${row.std_id}`)
+        // navigate(`/faculity/addstudents/${row.std_id}`)
+        navigate(`/common/studetnglobalview/${row.std_id}`)
     }
 
     const HandleInactive = async (studentid, currentStatus) => {
@@ -118,7 +122,7 @@ const StudentActionDetail = () => {
                                 <th>Status</th>
                                 <th>View</th>
                                 <th>Edit</th>
-                                 <th>Chat</th>
+                                 {/* <th>Chat</th> */}
                                 <th>inactive</th>
                             </tr>
                         </thead>
@@ -151,14 +155,14 @@ const StudentActionDetail = () => {
                                             />
                                         </Tooltip>
                                     </td>
-                                    <td>
+                                    {/* <td>
                                         <Tooltip title="Chat">
                                             <ChatIcon
                                                 sx={{ cursor: 'pointer' }}
                                                 onClick={() => handleEdit(row)}
                                             />
                                         </Tooltip>
-                                    </td>
+                                    </td> */}
 
                                     <td>
                                         <Tooltip

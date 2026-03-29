@@ -8,6 +8,7 @@ import ChatIcon from "@mui/icons-material/Chat";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import PersonIcon from "@mui/icons-material/Person";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import SchoolIcon from '@mui/icons-material/School';
 
 export const ALUMNI_MENU = [
   // DASHBOARD
@@ -57,7 +58,11 @@ export const ALUMNI_MENU = [
     icon: PeopleAltIcon,
     path: "follower",
   },
-
+{
+    label: "Studetns",
+    icon: SchoolIcon,
+    path: "allstudents",
+  },
   // PERSONAL
   {
     label: "Profile",

@@ -23,7 +23,7 @@ import {
 import { getAuthUser, successNotify, errorNotify } from "../../constant/Constant";
 import { axiosLogin } from "../../Axios/axios";
 import { height } from "@mui/system";
-import { BACKEND_API } from "../../constant/Static";
+import { BACKEND_IMAGE } from "../../constant/Static";
 
 const StudentProfile = () => {
     const [openImageModal, setOpenImageModal] = useState(false);
@@ -138,7 +138,7 @@ const StudentProfile = () => {
                                 previewImage
                                     ? previewImage
                                     : MyProfilePicture?.path
-                                        ? `${BACKEND_API}${MyProfilePicture.path}`
+                                        ? `${BACKEND_IMAGE}${MyProfilePicture.path}`
                                         : ""
                             }
                             sx={{
