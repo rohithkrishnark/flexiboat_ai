@@ -45,11 +45,6 @@ const StudentActionDetail = () => {
 
         const newStatus = Number(currentStatus) === 1 ? 0 : 1
 
-        console.log("Sending:", {
-            std_id: studentid,
-            std_status: newStatus
-        })
-
         try {
             const { data: resData } = await axiosLogin.post(`/student/inactive`, {
                 std_id: studentid,

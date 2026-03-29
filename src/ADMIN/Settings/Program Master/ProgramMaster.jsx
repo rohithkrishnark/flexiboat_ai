@@ -36,10 +36,7 @@ const ProgramMaster = () => {
     refetch: fetchPrograms
   } = useFetchAllProgramDetail();
 
-  console.log({
-    programDetail
-  });
-
+  
 
   //  Edit Click
   const handleEdit = useCallback((row) => {

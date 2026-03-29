@@ -30,27 +30,52 @@ const FindAlumini = () => {
     user_type: "student",
   });
 
- 
+
+
+
+
+  // const connectedIds = new Set(
+  //   myConnections.map((c) => {
+  //     return Number(c.sender_id) === Number(std_id)
+  //       ? Number(c.receiver_id)   // you sent request
+  //       : Number(c.sender_id);    // someone connected to you
+  //   })
+  // );
+
+  // //  sync API data to local state
+  // useEffect(() => {
+  //   if (AllAluminiDetail.length > 0) {
+
+  //     const formatted = AllAluminiDetail
+  //       // .filter((item) => connectedIds.has(Number(item.alum_id)))
+  //       ?.filter((item) => !connectedIds?.has(Number(item.alum_id)))
+  //       ?.map((item) => ({
+  //         id: item.alum_id,
+  //         name: item.alum_name,
+  //         role: item.alum_company_designation,
+  //         company: item.alum_company,
+  //         connected: connectedIds?.has(Number(item.alum_id)), //  mark only
+  //       }));
+
+  //     setUsers(formatted);
+  //   }
+  // }, [AllAluminiDetail, myConnections]);
+
 
   const connectedIds = new Set(
-    myConnections.map((c) => {
-      return Number(c.sender_id) === Number(std_id)
-        ? Number(c.receiver_id)   // you sent request
-        : Number(c.sender_id);    // someone connected to you
-    })
+    myConnections.map((c) => Number(c.receiver_id))
   );
-  //  sync API data to local state
+
   useEffect(() => {
     if (AllAluminiDetail.length > 0) {
 
       const formatted = AllAluminiDetail
-        .filter((item) => connectedIds.has(Number(item.alum_id)))
+        .filter((item) => !connectedIds.has(Number(item.alum_id)))
         .map((item) => ({
           id: item.alum_id,
           name: item.alum_name,
           role: item.alum_company_designation,
           company: item.alum_company,
-          connected: true,
         }));
 
       setUsers(formatted);
@@ -86,6 +111,9 @@ const FindAlumini = () => {
   const filteredUsers = users.filter((user) =>
     user?.name?.toLowerCase().includes(search.toLowerCase())
   );
+
+
+ 
 
   return (
     <Box
@@ -131,7 +159,7 @@ const FindAlumini = () => {
           "&::-webkit-scrollbar": { display: "none" },
         }}
       >
-        {filteredUsers.length === 0 ? (
+        {filteredUsers?.length === 0 ? (
           <Typography>No alumni found</Typography>
         ) : (
           <Box
@@ -141,7 +169,7 @@ const FindAlumini = () => {
               gap: 2,
             }}
           >
-            {filteredUsers.map((user) => (
+            {filteredUsers?.map((user) => (
               <Card
                 key={user.id}
                 sx={{

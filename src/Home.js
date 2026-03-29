@@ -27,10 +27,7 @@ function Home() {
 
   // ✅ SAFE USER
   const user = getAuthUser();
-  console.log({
-    user,
-  });
-
+  
   // ======================================================
   // 🚀 AUTO REDIRECT ON LOAD (FIXED)
   // ======================================================

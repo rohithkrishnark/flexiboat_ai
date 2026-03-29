@@ -11,37 +11,7 @@ import { getAuthUser } from "../../constant/Constant";
 import { useFetchSingleStudentActivity, useFetchStudentActivityMedia } from "../../ADMIN/CommonCode/useQuery";
 import { BACKEND_IMAGE } from "../../constant/Static";
 
-// Dummy Data
-const activities = [
-    {
-        id: 1,
-        caption: "Onam Celebration 🎉",
-        description: "Group dance performance",
-        image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
-        points: 20,
-    },
-    {
-        id: 2,
-        caption: "Football Match ⚽",
-        description: "Inter-department winner",
-        image: "https://images.unsplash.com/photo-1508609349937-5ec4ae374ebf",
-        points: 15,
-    },
-    {
-        id: 3,
-        caption: "Tech Fest 💻",
-        description: "React project",
-        image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-        points: 25,
-    },
-    {
-        id: 4,
-        caption: "Music Fest 🎸",
-        description: "Band performance",
-        image: "https://images.unsplash.com/photo-1511379938547-c1f69419868d",
-        points: 10,
-    },
-];
+
 
 const ViewActivities = () => {
 
@@ -59,10 +29,7 @@ const ViewActivities = () => {
     }) || [];
 
 
-    console.log({
-        postsWithMedia
-    });
-
+ 
 
     return (
         <Box

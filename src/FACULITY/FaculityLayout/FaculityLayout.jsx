@@ -12,9 +12,7 @@ import { getAuthUser } from '../../constant/Constant'
 const FaculityLayout = () => {
     const user = getAuthUser();
 
-    console.log({
-        user
-    });
+    
 
     return (
         <Box

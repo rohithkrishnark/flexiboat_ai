@@ -1,60 +1,105 @@
 import React from "react";
-import { Box, Typography, IconButton, Button, Sheet } from "@mui/joy";
+import { Box, Typography, Button, IconButton } from "@mui/joy";
 import MenuIcon from "@mui/icons-material/Menu";
-import AddIcon from "@mui/icons-material/Add";
 
-const Sidebar = ({ collapsed, setCollapsed }) => {
+const Sidebar = ({ collapsed, setCollapsed, onNewChat, chats }) => {
+
+    const truncate = (text, max = 55) => {
+        if (!text) return "";
+        return text.length > max ? text.slice(0, max) + "..." : text;
+    };
+
     return (
-        <Sheet
+        <Box
             sx={{
                 width: collapsed ? 70 : 260,
-                bgcolor: "#1E1F20",
-                p: 1,
+                bgcolor: "#202123",
+                color: "#fff",
+                p: 2,
                 transition: "0.3s",
                 display: "flex",
                 flexDirection: "column",
+
+                overflowY: "auto",
+
+                // 🔥 HIDE SCROLLBAR
+                scrollbarWidth: "none",
+                "&::-webkit-scrollbar": {
+                    display: "none",
+                },
             }}
         >
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                <IconButton onClick={() => setCollapsed(!collapsed)}>
-                    <MenuIcon />
-                </IconButton>
 
-                {!collapsed && (
-                    <Typography
-                        level="title-md"
-                        sx={{
-                            ml: 1,
-                            background:
-                                "linear-gradient(135deg, #4285f4, #9b72cb, #d96570)",
-                            WebkitBackgroundClip: "text",
-                            WebkitTextFillColor: "transparent",
-                            fontWeight: 600,
-                        }}
-                    >
-                        FLEXIBOT
-                    </Typography>
-                )}
-            </Box>
+            {/* 🔥 TOGGLE BUTTON (RESTORED) */}
+            <IconButton
+                onClick={() => setCollapsed(!collapsed)}
+                sx={{
+                    mb: 2,
+                    color: "#fff",
+                    alignSelf: collapsed ? "center" : "flex-start"
+                }}
+            >
+                <MenuIcon />
+            </IconButton>
 
-            <Button startDecorator={<AddIcon />} sx={{ mb: 2 }} fullWidth={!collapsed}>
-                {!collapsed && "New Chat"}
-            </Button>
-
+            {/* NEW CHAT BUTTON */}
             {!collapsed && (
-                <>
-                    <Typography level="body-xs" sx={{ mb: 1, color: "#C4C7C5" }}>
-                        Recent
-                    </Typography>
-
-                    <Box sx={{ flex: 1 }}>
-                        <Typography level="body-sm" sx={{ color: "#E3E3E3" }}>
-                            Welcome to FLEXIBOT
-                        </Typography>
-                    </Box>
-                </>
+                <Button
+                    onClick={onNewChat}
+                    sx={{
+                        mb: 2,
+                        bgcolor: "#2f2f2f",
+                        "&:hover": { bgcolor: "#3f3f3f" }
+                    }}
+                >
+                    ➕ New Chat
+                </Button>
             )}
-        </Sheet>
+
+            {/* CHAT LIST */}
+            {!collapsed && (
+                <Box
+                    sx={{
+                        flex: 1,
+                        overflowY: "auto",
+                        scrollbarWidth: "none",
+                        "&::-webkit-scrollbar": { display: "none" },
+                    }}
+                >
+                    {chats?.map((chat) => (
+                        <Box
+                            key={chat.id}
+                            sx={{
+                                p: 1.2,
+                                mb: 1,
+                                borderRadius: 2,
+                                cursor: "pointer",
+                                "&:hover": { bgcolor: "#2a2b32" }
+                            }}
+                        >
+                             <Typography
+                                    level="h2"
+                                    sx={{
+                                      background: "linear-gradient(90deg, #4285f4, #d96570)",
+                                      WebkitBackgroundClip: "text",
+                                      WebkitTextFillColor: "transparent",
+                                      fontSize:12
+                                    }}
+                                  >
+                                   {truncate(chat.query)}
+                                  </Typography>
+                            <Typography fontSize={13} fontWeight={600}>
+                                
+                            </Typography>
+
+                            <Typography fontSize={11} color="gray">
+                                {truncate(chat.response)}
+                            </Typography>
+                        </Box>
+                    ))}
+                </Box>
+            )}
+        </Box>
     );
 };
 
