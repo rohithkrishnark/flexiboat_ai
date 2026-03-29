@@ -3,7 +3,7 @@ import {
     Box,
     Typography,
     Avatar,
-    Button,
+    // Button,
     Chip,
     Tabs,
     Tab,
@@ -11,7 +11,7 @@ import {
     Card,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
-
+import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import {
     useFetchSingleStudentPost,
     useFetchSingleStudentMedia,
@@ -20,12 +20,14 @@ import {
     useFetchLoggedStudentDetail,
     useFetchProfilePic,
 } from "../../ADMIN/CommonCode/useQuery";
+import { BACKEND_IMAGE } from "../../constant/Static";
+import { Button } from "@mui/joy";
 
 const StudentGlobalView = () => {
-    //const { id } = useParams(); //  student id from URL
+    const { id } = useParams(); //  student id from URL
 
     const [tab, setTab] = useState(0);
-    const id = 2;
+    // const id = 2;y
     //  FETCH DATA
     const { data: posts = [] } = useFetchSingleStudentPost(id);
     const { data: postMedia = [] } = useFetchSingleStudentMedia(id);
@@ -80,12 +82,12 @@ const StudentGlobalView = () => {
                         >
                             {m.type === "video" ? (
                                 <video
-                                    src={`http://localhost:7000${m.path}`}
+                                    src={`${BACKEND_IMAGE}${m.path}`}
                                     style={{ width: "100%", height: "100%", objectFit: "cover" }}
                                 />
                             ) : (
                                 <img
-                                    src={`http://localhost:7000${m.path}`}
+                                    src={`${BACKEND_IMAGE}${m.path}`}
                                     alt=""
                                     style={{ width: "100%", height: "100%", objectFit: "cover" }}
                                 />
@@ -111,7 +113,7 @@ const StudentGlobalView = () => {
             <Box sx={{ px: 3, mt: -6 }}>
                 <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                     <Avatar
-                        src={`http://localhost:7000${profilePic?.path || ""}`}
+                        src={`${BACKEND_IMAGE}${profilePic?.path || ""}`}
                         sx={{
                             width: 90,
                             height: 90,
@@ -154,8 +156,26 @@ const StudentGlobalView = () => {
                 </Box>
 
                 <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
-                    <Button variant="contained">Message</Button>
-                    <Button variant="outlined">⭐ Rate</Button>
+                    <Button
+                        variant="outlined"
+                        color="success"
+                        startDecorator={<SendRoundedIcon />}
+                        // onClick={onMessage}
+                        sx={{
+                            borderRadius: "999px",
+                            px: 2,
+                            fontWeight: 600,
+                            textTransform: "none",
+                            transition: "0.2s",
+                            "&:hover": {
+                                backgroundColor: "success.softBg",
+                                transform: "scale(1.05)",
+                            },
+                        }}
+                    >
+                        Message
+                    </Button>
+
                 </Box>
 
                 {/*  TABS */}

@@ -4,11 +4,9 @@ import {
   Typography,
   Avatar,
   Input,
-  IconButton,
+
   Chip,
-  Modal,
-  ModalDialog,
-  Divider,
+
   Card,
   CardContent,
   Button,
@@ -17,17 +15,18 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import ChatIcon from "@mui/icons-material/Chat";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import CloseIcon from "@mui/icons-material/Close";
 import { getAuthUser } from "../../constant/Constant";
 import GlobalLoader from "../../Component/GlobalLoader";
 import { useFetchMyConnections } from "../../ADMIN/CommonCode/useQuery";
+import { useNavigate } from "react-router-dom";
 
 
 const MyConnection = () => {
   const [search, setSearch] = useState("");
-  const [open, setOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
 
+
+
+  const navigate = useNavigate()
   const user = getAuthUser();
   const std_id = user?.user_id;
 
@@ -39,24 +38,23 @@ const MyConnection = () => {
 
   //  Format data
   const users = connections.map((item) => ({
-      id: item.receiver_id,
-      name:
-        item.alum_name ||
-        item.student_name ||
-        item.faculty_name,
-      role: item.alum_company_designation || "",
-      company: item.alum_company || "",
-      email: item.alum_email || "",
-      type: item.receiver_type,
-    }));
+    id: item.receiver_id,
+    name:
+      item.alum_name ||
+      item.student_name ||
+      item.faculty_name,
+    role: item.alum_company_designation || "",
+    company: item.alum_company || "",
+    email: item.alum_email || "",
+    type: item.receiver_type,
+  }));
 
   const filteredUsers = users.filter((user) =>
     user.name?.toLowerCase().includes(search.toLowerCase())
   );
 
   const handleView = (user) => {
-    setSelectedUser(user);
-    setOpen(true);
+    navigate(`/common/aluminiglobal/${user.id}`)
   };
 
   return (
@@ -113,11 +111,35 @@ const MyConnection = () => {
               </Box>
 
               <Box sx={{ display: "flex", justifyContent: "center", gap: 1, mt: 2 }}>
-                <Button size="sm" startDecorator={<VisibilityIcon />} onClick={() => handleView(user)}>
+                <Button
+
+                  size="sm" startDecorator={<VisibilityIcon />} onClick={() => handleView(user)}>
                   View
                 </Button>
 
-                <Button size="sm" variant="soft" startDecorator={<ChatIcon />}>
+                <Button
+                  size="sm"
+                  sx={{
+                    // flex: 1,
+                    borderRadius: "8px",
+                    backgroundColor: "#2563eb",
+                    "&:hover": {
+                      backgroundColor: "#1e4fd1"
+                    }
+                  }}
+                  startDecorator={<ChatIcon />}
+                  onClick={() =>
+                    navigate("/students/studentchat", {
+                      state: {
+                        user: {
+                          id: user.id,
+                          name: user.name,
+                          type: "alumni"
+                        }
+                      }
+                    })
+                  }
+                >
                   Chat
                 </Button>
               </Box>
@@ -127,32 +149,7 @@ const MyConnection = () => {
         ))}
       </Box>
 
-      {/* MODAL */}
-      <Modal open={open} onClose={() => setOpen(false)}>
-        <ModalDialog sx={{ width: 400 }}>
-          <IconButton onClick={() => setOpen(false)}>
-            <CloseIcon />
-          </IconButton>
 
-          {selectedUser && (
-            <>
-              <Box sx={{ textAlign: "center" }}>
-                <Avatar sx={{ mx: "auto", width: 80, height: 80 }} />
-                <Typography level="h4">{selectedUser.name}</Typography>
-              </Box>
-
-              <Divider sx={{ my: 2 }} />
-
-              <Typography>🏢 {selectedUser.company}</Typography>
-              <Typography>📧 {selectedUser.email}</Typography>
-
-              <Button fullWidth sx={{ mt: 2 }}>
-                Start Chat
-              </Button>
-            </>
-          )}
-        </ModalDialog>
-      </Modal>
     </Box>
   );
 };

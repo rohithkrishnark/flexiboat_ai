@@ -11,6 +11,10 @@ import { ALUMNI_MENU } from '../../Menu/alumniMenu'
 
 const AluminiLayout = () => {
     const user = getAuthUser();
+    console.log({
+        user
+    });
+    
     return (
         <Box
             sx={{
@@ -50,7 +54,7 @@ const AluminiLayout = () => {
                     <ReusableTopBar
                         title="Alumini"
                         leftIcon={SchoolIcon}
-                        userName={user?.logged_name || "Alumini"}
+                        userName={user?.alum_name || "Alumini"}
                         background="#fffdfd"
                     />
                 </Box>

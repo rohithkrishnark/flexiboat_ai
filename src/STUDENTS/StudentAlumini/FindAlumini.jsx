@@ -30,10 +30,7 @@ const FindAlumini = () => {
     user_type: "student",
   });
 
-  console.log({
-    myConnections
-  });
-
+ 
 
   const connectedIds = new Set(
     myConnections.map((c) => {
@@ -87,7 +84,7 @@ const FindAlumini = () => {
 
   //  SEARCH FILTER
   const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(search.toLowerCase())
+    user?.name?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (

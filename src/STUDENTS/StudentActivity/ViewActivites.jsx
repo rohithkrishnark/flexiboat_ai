@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { getAuthUser } from "../../constant/Constant";
 import { useFetchSingleStudentActivity, useFetchStudentActivityMedia } from "../../ADMIN/CommonCode/useQuery";
+import { BACKEND_IMAGE } from "../../constant/Static";
 
 // Dummy Data
 const activities = [
@@ -87,7 +88,7 @@ const ViewActivities = () => {
                 >
                     {postsWithMedia.map((item) => {
                         const firstImage = item.media?.[0]?.path
-                            ? `http://localhost:7000${item.media[0].path}`
+                            ? `${BACKEND_IMAGE}${item.media[0].path}`
                             : "https://via.placeholder.com/300x140";
 
                         return (

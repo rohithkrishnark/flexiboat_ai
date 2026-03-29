@@ -17,6 +17,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import { getAuthUser } from "../../constant/Constant";
 import { useFetchSingleStudentMedia, useFetchSingleStudentPost } from "../../ADMIN/CommonCode/useQuery";
+import { BACKEND_IMAGE } from "../../constant/Static";
 
 const StudentViewPost = () => {
   const [tab, setTab] = useState(0);
@@ -98,7 +99,7 @@ const StudentViewPost = () => {
             >
               {media?.type === "video" ? (
                 <video
-                  src={`http://localhost:7000${media?.path}`}
+                  src={`${BACKEND_IMAGE}${media?.path}`}
                   style={{ height: 120, width: "100%", objectFit: "cover" }}
                   muted
                   loop
@@ -108,7 +109,7 @@ const StudentViewPost = () => {
               ) : (
                 <CardMedia
                   component="img"
-                  image={`http://localhost:7000${media.path}`}
+                  image={`${BACKEND_IMAGE}${media.path}`}
                   sx={{ height: 120, objectFit: "cover" }}
                 />
               )}
@@ -139,13 +140,13 @@ const StudentViewPost = () => {
               <Box sx={{ width: "60%", bgcolor: "#000", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 {selectedPost.media?.[selectedMediaIndex]?.type === "video" ? (
                   <video
-                    src={`http://localhost:7000${selectedPost.media[selectedMediaIndex]?.path}`}
+                    src={`${BACKEND_IMAGE}${selectedPost.media[selectedMediaIndex]?.path}`}
                     controls
                     style={{ width: "100%", height: "100%", objectFit: "contain" }}
                   />
                 ) : (
                   <img
-                    src={`http://localhost:7000${selectedPost.media?.[selectedMediaIndex]?.path}`}
+                    src={`${BACKEND_IMAGE}${selectedPost.media?.[selectedMediaIndex]?.path}`}
                     alt=""
                     style={{ width: "100%", height: "100%", objectFit: "contain" }}
                   />

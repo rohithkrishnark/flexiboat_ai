@@ -1,15 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, memo } from "react";
 import {
   Box,
   Typography,
   Avatar,
-  Button,
   Card,
   CardContent,
   Input,
   Tabs,
   TabList,
   Tab,
+  Chip,
 } from "@mui/joy";
 
 import {
@@ -18,94 +18,98 @@ import {
   FaShare,
 } from "react-icons/fa";
 
-const mockPosts = [
-  {
-    id: 1,
-    type: "job",
-    user: "Rohith Krishna",
-    role: "Frontend Developer • Infosys",
-    content: "We are hiring React Developers.",
-    image: "https://images.unsplash.com/photo-1551434678-e076c223a692",
-    time: "2h ago",
-  },
-  {
-    id: 2,
-    type: "highlight",
-    user: "Anu Thomas",
-    role: "Software Engineer • TCS",
-    content: "Got promoted to Senior Developer.",
-    image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d",
-    time: "5h ago",
-  },
-  {
-    id: 3,
-    type: "event",
-    user: "College Admin",
-    role: "Placement Cell",
-    content: "Job Fair on April 10th. Register now.",
-    image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d",
-    time: "1d ago",
-  },
-  {
-    id: 4,
-    type: "article",
-    user: "Vishnu Raj",
-    role: "Backend Developer • Amazon",
-    content: "How I cracked my first tech job.",
-    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-    time: "2d ago",
-  },
-];
+import {
+  useFectchAllAlumini,
+  useFectchAllAluminiEventDetail,
+  useFectchAllAluminiPostDetail,
+  useFetchAllAluminiEvenMedialDetail,
+} from "../../ADMIN/CommonCode/useQuery";
+
+import { BACKEND_IMAGE } from "../../constant/Static";
+import { useNavigate } from "react-router-dom";
 
 const AlumniDashboard = () => {
   const [filter, setFilter] = useState("all");
 
+  const { data: fetchAllPostFiles } = useFectchAllAluminiPostDetail(); // media
+  const { data: fechAllPostDetail } = useFectchAllAlumini(); // posts
+
+  const { data: fechAllEventDetail } = useFectchAllAluminiEventDetail(); // events
+  const { data: fechAllEventMediaDetail } = useFetchAllAluminiEvenMedialDetail(); // event media
+
+  const navigate = useNavigate();
+
+  const posts = fechAllPostDetail || [];
+  const postMedia = fetchAllPostFiles || [];
+
+  const events = fechAllEventDetail || [];
+  const eventMedia = fechAllEventMediaDetail || [];
+
+  // ✅ MERGE POSTS
+  const mergedPosts = useMemo(() => {
+    return posts.map((post) => {
+      const match = postMedia.find(
+        (m) =>
+          Number(m.postId) === Number(post.id) &&
+          Number(m.alumId) === Number(post.alum_id)
+      );
+
+      return {
+        ...post,
+        type: "post",
+        media: match?.media || [],
+      };
+    });
+  }, [posts, postMedia]);
+
+  // ✅ MERGE EVENTS
+  const mergedEvents = useMemo(() => {
+    return events.map((event) => {
+      const match = eventMedia.find(
+        (m) =>
+          Number(m.postId) === Number(event.id) &&
+          Number(m.alumId) === Number(event.user_id)
+      );
+
+      return {
+        ...event,
+        type: "event",
+        post_type: "event", // for filter
+        alum_id: event.user_id,
+        media: match?.media || [],
+      };
+    });
+  }, [events, eventMedia]);
+
+  // ✅ COMBINE BOTH
+  const allFeed = [...mergedPosts, ...mergedEvents];
+
+  // ✅ FILTER
   const filteredPosts =
     filter === "all"
-      ? mockPosts
-      : mockPosts.filter((post) => post.type === filter);
+      ? allFeed
+      : allFeed.filter((p) => p.post_type === filter);
+
+  const handleOpen = (id) => {
+    navigate(`/common/aluminiglobal/${id}`);
+  };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        height: "100vh",
-        bgcolor: "#f3f4f6",
-        overflow: "hidden",
-      }}
-    >
-      {/* CENTER FEED */}
-      <Box
-        sx={{
-          flex: 1,
-          overflowY: "auto",
-          p: 2,
-          "&::-webkit-scrollbar": { display: "none" },
-          scrollbarWidth: "none",
-        }}
-      >
-        {/* CREATE POST */}
-        <Card sx={{ mb: 2, borderRadius: "12px" }}>
+    <Box sx={{ display: "flex", height: "100vh", bgcolor: "#eef2f7" }}>
+      <Box sx={{ flex: 1, overflowY: "auto", p: 2 }}>
+
+        {/* CREATE */}
+        <Card sx={{ mb: 2, borderRadius: "16px" }}>
           <CardContent>
             <Box sx={{ display: "flex", gap: 1 }}>
               <Avatar />
-              <Input
-                placeholder="Share something..."
-                sx={{ flex: 1, borderRadius: "20px" }}
-              />
-            </Box>
-
-            <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
-              <Button size="sm">Job</Button>
-              <Button size="sm">Article</Button>
-              <Button size="sm">Highlight</Button>
-              <Button size="sm">Event</Button>
+              <Input placeholder="Share something..." sx={{ flex: 1 }} />
             </Box>
           </CardContent>
         </Card>
 
         {/* FILTER */}
-        <Tabs value={filter} onChange={(e, val) => setFilter(val)} sx={{ mb: 2 }}>
+        <Tabs value={filter} onChange={(e, v) => setFilter(v)} sx={{ mb: 2 }}>
           <TabList>
             <Tab value="all">All</Tab>
             <Tab value="job">Jobs</Tab>
@@ -115,103 +119,87 @@ const AlumniDashboard = () => {
           </TabList>
         </Tabs>
 
-        {/* POSTS */}
-        {filteredPosts.map((post) => (
-          <Card
-            key={post.id}
-            sx={{
-              mb: 2,
-              borderRadius: "12px",
-              transition: "0.2s",
-              "&:hover": { boxShadow: "md" },
-            }}
-          >
+        {/* FEED */}
+        {filteredPosts.map((item) => (
+          <Card key={item.id} sx={{ mb: 2, borderRadius: "16px" }}>
             <CardContent>
-              
+
               {/* HEADER */}
-              <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                <Avatar sx={{ mr: 1 }} />
+              <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
+                <Avatar
+                  sx={{ cursor: "pointer" }}
+                  onClick={() => handleOpen(item.alum_id)}
+                >
+                  {item.alum_name?.[0] || "A"}
+                </Avatar>
+
                 <Box>
-                  <Typography level="body-sm">{post.user}</Typography>
-                  <Typography level="body-xs" sx={{ opacity: 0.6 }}>
-                    {post.role} • {post.time}
+                  <Typography fontWeight="bold">
+                    {item.alum_name || "Unknown"}
+                  </Typography>
+                  <Typography level="body-xs">
+                    {item.alum_company_designation || ""}
                   </Typography>
                 </Box>
               </Box>
 
-              {/* CONTENT */}
-              <Typography sx={{ mb: 1 }}>{post.content}</Typography>
+              {/* TYPE */}
+              <Chip size="sm" sx={{ mb: 1 }}>
+                {item.post_type}
+              </Chip>
 
-              {/* IMAGE */}
-              {post.image && (
-                <Box
-                  component="img"
-                  src={post.image}
-                  alt="post"
-                  sx={{
-                    width: "100%",
-                    height: "200px",
-                    objectFit: "cover",
-                    borderRadius: "8px",
-                    mb: 1,
-                  }}
-                />
+              {/* TITLE */}
+              <Typography fontWeight="lg">{item.title}</Typography>
+
+              {/* DESC */}
+              <Typography level="body-sm" sx={{ mb: 1 }}>
+                {item.description}
+              </Typography>
+
+              {/* EVENT EXTRA */}
+              {item.type === "event" && (
+                <Typography level="body-xs" sx={{ mb: 1 }}>
+                  📅 {new Date(item.event_date).toDateString()}
+                </Typography>
+              )}
+
+              {/* MEDIA */}
+              {item.media?.length > 0 && (
+                <Box sx={{ display: "grid", gap: 1 }}>
+                  {item.media.map((m) => (
+                    <img
+                      key={m.id}
+                      src={`${BACKEND_IMAGE}${m.url}`}
+                      alt=""
+                      style={{
+                        width: "100%",
+                        height: "200px",
+                        objectFit: "cover",
+                        borderRadius: "10px",
+                      }}
+                    />
+                  ))}
+                </Box>
               )}
 
               {/* ACTIONS */}
-              <Box
+              {/* <Box
                 sx={{
                   display: "flex",
                   justifyContent: "space-around",
-                  borderTop: "1px solid #eee",
-                  pt: 1,
+                  mt: 1,
                 }}
               >
-                <Button size="sm" variant="plain" startDecorator={<FaRegThumbsUp />}>
-                  Like
-                </Button>
-
-                <Button size="sm" variant="plain" startDecorator={<FaRegComment />}>
-                  Comment
-                </Button>
-
-                <Button size="sm" variant="plain" startDecorator={<FaShare />}>
-                  Share
-                </Button>
-              </Box>
+                <FaRegThumbsUp />
+                <FaRegComment />
+                <FaShare />
+              </Box> */}
             </CardContent>
           </Card>
         ))}
-      </Box>
-
-      {/* RIGHT PANEL */}
-      <Box
-        sx={{
-          width: "300px",
-          p: 2,
-          position: "sticky",
-          top: 0,
-          height: "100vh",
-        }}
-      >
-        <Card sx={{ mb: 2, borderRadius: "12px" }}>
-          <CardContent>
-            <Typography level="title-md">Notifications</Typography>
-            <Typography level="body-sm">New job posted</Typography>
-            <Typography level="body-sm">Someone liked your post</Typography>
-          </CardContent>
-        </Card>
-
-        <Card sx={{ borderRadius: "12px" }}>
-          <CardContent>
-            <Typography level="title-md">Trending</Typography>
-            <Typography level="body-sm">React Developer Jobs</Typography>
-            <Typography level="body-sm">AI Articles</Typography>
-          </CardContent>
-        </Card>
       </Box>
     </Box>
   );
 };
 
-export default AlumniDashboard;
+export default memo(AlumniDashboard);

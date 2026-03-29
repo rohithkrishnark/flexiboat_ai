@@ -44,7 +44,6 @@ import StudentViewPost from "./STUDENTS/StudentPost/StudentViewPost";
 import MyParticipation from "./STUDENTS/StudentActivity/MyParticiaption";
 import ViewActivities from "./STUDENTS/StudentActivity/ViewActivites";
 import FindAlumini from "./STUDENTS/StudentAlumini/FindAlumini";
-import ViewAluminiPost from "./STUDENTS/StudentAlumini/ViewAluminiPost";
 import MyConnection from "./STUDENTS/StudentAlumini/MyConnection";
 import StudentAlert from "./STUDENTS/StudentAlert/StudentAlert";
 import StudentProfile from "./STUDENTS/StudentProfile/StudentProfile";
@@ -53,6 +52,9 @@ import Facultychat from "./FACULITY/FaculityChat/Facultychat";
 import ReviewActitivity from "./FACULITY/ReviewActivity/ReviewActitivity";
 import FaculityAlertNotification from "./FACULITY/FaculityAlerts/FaculityAlertNotification";
 import StudentGlobalView from "./STUDENTS/StudentGlobalView/StudentGlobalView";
+import AluminiGlobalView from "./ALUMINI/AluminiGlobal/AluminiGlobalView";
+import AluminiStudentList from "./ALUMINI/AluminiStudents/AluminiStudentList";
+import AuthProtectedRoute from "./Utils/Protected/RoleProtectedRoute";
 
 // import HomeDashboard from "./HomeDashboard";
 // import Profile from "./Profile";
@@ -86,7 +88,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/faculity",
-    element: <FaculityLayout />, // layoutAdminLayout
+    element: (
+      <AuthProtectedRoute allowedRoles={["faculty"]}>
+        <FaculityLayout />
+      </AuthProtectedRoute>
+    ), // layoutAdminLayout
     children: [
       {
         path: "",
@@ -130,7 +136,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    element: <AdminLayout />, // layoutAdminLayout
+    element: (
+      <AuthProtectedRoute allowedRoles={["admin"]}>
+        <AdminLayout />
+      </AuthProtectedRoute>
+    ), // layoutAdminLayout
     children: [
       {
         path: "",
@@ -194,7 +204,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/alumini",
-    element: <AluminiLayout />, // alumini Layout
+    element: (
+      <AuthProtectedRoute allowedRoles={["alumni"]}>
+        <AluminiLayout />
+      </AuthProtectedRoute>
+    ), // alumini Layout
     children: [
       {
         path: "",
@@ -237,7 +251,14 @@ const router = createBrowserRouter([
         path: "follower",
         element: <MyNetwork />,
       },
-
+      {
+        path: "aluminiglobal/:id",
+        element: <AluminiGlobalView />,
+      },
+      {
+        path: "allstudents",
+        element: <AluminiStudentList />,
+      },
       {
         path: "*",
         element: <WorkingPage />, //  fallback inside alumni
@@ -246,8 +267,28 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "/common",
+    // element: <StudentLayout />, // alumini Layout
+    children: [
+      {
+        path: "aluminiglobal/:id",
+        element: <AluminiGlobalView />,
+      },
+      {
+        path: "studetnglobalview/:id",
+        element: <StudentGlobalView />,
+      },
+
+      ,
+    ],
+  },
+  {
     path: "/students",
-    element: <StudentLayout />, // alumini Layout
+    element: (
+      <AuthProtectedRoute allowedRoles={["student"]}>
+        <StudentLayout />
+      </AuthProtectedRoute>
+    ),
     children: [
       {
         path: "",
@@ -276,7 +317,7 @@ const router = createBrowserRouter([
       },
       {
         path: "alumni-posts",
-        element: <ViewAluminiPost />,
+        element: <AlumniDashboard />,
       },
       {
         path: "my-connections",
@@ -294,10 +335,10 @@ const router = createBrowserRouter([
         path: "studentchat",
         element: <StudentChat />,
       },
-      {
-        path: "studetnglobalview/:std_id",
-        element: <StudentGlobalView />,
-      },
+      // {
+      //   path: "studetnglobalview/:id",
+      //   element: <StudentGlobalView />,
+      // },
 
       {
         path: "*",

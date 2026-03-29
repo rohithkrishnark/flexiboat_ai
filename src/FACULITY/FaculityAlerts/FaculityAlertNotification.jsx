@@ -1,46 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
   Chip,
-  Avatar,
-  IconButton,
 } from "@mui/material";
 
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import { socket } from "../../Utils/Socket/Socket";
 
-// 🔥 Dummy Alerts
-const alerts = [
-  {
-    id: 1,
-    title: "New Assignment Submitted",
-    message: "Rahul Krishna submitted Assignment 3.",
-    type: "info",
-    time: "2 min ago",
-    unread: true,
-  },
-  {
-    id: 2,
-    title: "Evaluation Pending",
-    message: "You have 12 submissions pending for review.",
-    type: "warning",
-    time: "1 hour ago",
-    unread: true,
-  },
-  {
-    id: 3,
-    title: "System Update",
-    message: "Portal will be down for maintenance tonight.",
-    type: "success",
-    time: "Yesterday",
-    unread: false,
-  },
-];
+const STORAGE_KEY = "faculty_alerts";
 
-// 🔥 ICON + COLOR BASED ON TYPE
 const getTypeStyle = (type) => {
   switch (type) {
     case "warning":
@@ -65,6 +37,47 @@ const getTypeStyle = (type) => {
 };
 
 const FaculityAlertNotification = () => {
+  const [alerts, setAlerts] = useState([]);
+
+  // ✅ LOAD FROM LOCALSTORAGE
+  useEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      setAlerts(JSON.parse(stored));
+    }
+  }, []);
+
+  // ✅ SAVE TO LOCALSTORAGE ON CHANGE
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(alerts));
+  }, [alerts]);
+
+  // ✅ SOCKET LISTENER
+  useEffect(() => {
+    socket.on("new-activity", (data) => {
+      const newAlert = {
+        id: Date.now(),
+        title: data.caption || "New Activity",
+        message: data.description || "You have a new update",
+        type: "info",
+        time: "Just now",
+        unread: true,
+      };
+
+      setAlerts((prev) => [newAlert, ...prev]);
+    });
+
+    return () => {
+      socket.off("new-activity");
+    };
+  }, []);
+
+  // ✅ CLICK = REMOVE ONLY THAT ALERT
+  const handleRemove = (id) => {
+    const updated = alerts.filter((a) => a.id !== id);
+    setAlerts(updated);
+  };
+
   return (
     <Box
       sx={{
@@ -72,21 +85,12 @@ const FaculityAlertNotification = () => {
         overflowY: "auto",
         bgcolor: "#f4f6f8",
         p: 2,
-
-        // hide scrollbar
         "&::-webkit-scrollbar": { display: "none" },
         scrollbarWidth: "none",
       }}
     >
       {/* HEADER */}
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 1,
-          mb: 2,
-        }}
-      >
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
         <NotificationsActiveIcon color="primary" />
         <Typography fontWeight={700} fontSize={18}>
           Alerts & Notifications
@@ -101,6 +105,7 @@ const FaculityAlertNotification = () => {
           return (
             <Box
               key={alert.id}
+              onClick={() => handleRemove(alert.id)}   // ✅ CLICK TO REMOVE
               sx={{
                 display: "flex",
                 gap: 2,
@@ -109,15 +114,12 @@ const FaculityAlertNotification = () => {
                 bgcolor: "#fff",
                 boxShadow: "0 3px 10px rgba(0,0,0,0.05)",
                 alignItems: "flex-start",
-                position: "relative",
+                cursor: "pointer",
                 transition: "0.2s",
-
-                "&:hover": {
-                  transform: "translateY(-2px)",
-                },
+                "&:hover": { transform: "scale(1.01)" },
               }}
             >
-              {/* LEFT ICON */}
+              {/* ICON */}
               <Box
                 sx={{
                   bgcolor: style.bg,
@@ -144,14 +146,9 @@ const FaculityAlertNotification = () => {
                 </Typography>
               </Box>
 
-              {/* STATUS */}
+              {/* NEW BADGE */}
               {alert.unread && (
-                <Chip
-                  label="New"
-                  size="small"
-                  color="primary"
-                  sx={{ height: 20, fontSize: 10 }}
-                />
+                <Chip label="New" size="small" color="primary" />
               )}
             </Box>
           );

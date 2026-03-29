@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
     Box,
     Typography,
@@ -10,46 +10,29 @@ import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import InfoIcon from "@mui/icons-material/Info";
+import ChatIcon from "@mui/icons-material/Chat";
+import WorkIcon from "@mui/icons-material/Work";
 
-// Dummy Alerts Data
-const alerts = [
-    {
-        id: 1,
-        title: "New Activity Added",
-        message: "Onam Dance Event has been added. Participate now!",
-        time: "2h ago",
-        type: "info",
-        unread: true,
-    },
-    {
-        id: 2,
-        title: "Submission Deadline",
-        message: "Assignment 3 deadline is tomorrow!",
-        time: "5h ago",
-        type: "warning",
-        unread: true,
-    },
-    {
-        id: 3,
-        title: "Points Credited",
-        message: "You earned 20 points for Hackathon 🎉",
-        time: "1d ago",
-        type: "success",
-        unread: false,
-    },
-    {
-        id: 4,
-        title: "Profile Updated",
-        message: "Your profile details were successfully updated.",
-        time: "2d ago",
-        type: "info",
-        unread: false,
-    },
-];
+import { socket } from "../../Utils/Socket/Socket";
+import { getAuthUser } from "../../constant/Constant";
 
-// Icon + Color mapping
+const STORAGE_KEY = "student_alerts";
+
+/* ---------------- ICON + STYLE ---------------- */
 const getAlertStyle = (type) => {
     switch (type) {
+        case "chat":
+            return {
+                icon: <ChatIcon />,
+                color: "#6366f1",
+                bg: "#eef2ff",
+            };
+        case "post":
+            return {
+                icon: <WorkIcon />,
+                color: "#22c55e",
+                bg: "#f0fdf4",
+            };
         case "warning":
             return {
                 icon: <WarningAmberIcon />,
@@ -72,6 +55,161 @@ const getAlertStyle = (type) => {
 };
 
 const StudentAlert = () => {
+
+    const [alerts, setAlerts] = useState([]);
+
+    const user = getAuthUser();
+    const userId = user?.user_id || user?.student_id;
+
+    /* ---------------- LOAD FROM STORAGE ---------------- */
+    useEffect(() => {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            setAlerts(JSON.parse(saved));
+        }
+    }, []);
+
+    /* ---------------- SAVE ---------------- */
+    const saveAlerts = (data) => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    };
+
+    /* ---------------- SOCKET ---------------- */
+    // useEffect(() => {
+    //     if (!userId) return;
+
+    //     socket.connect();
+    //     socket.emit("join", userId);
+
+    //     // 🔥 CHAT MESSAGE
+    //     socket.on("new-message", (msg) => {
+    //         if (msg.receiver_id === userId) {
+    //             setAlerts((prev) => {
+    //                 const updated = [
+    //                     {
+    //                         id: Date.now(),
+    //                         title: "New Message",
+    //                         message: msg.message,
+    //                         time: "Just now",
+    //                         type: "chat",
+    //                         unread: true,
+    //                     },
+    //                     ...prev,
+    //                 ];
+    //                 saveAlerts(updated);
+    //                 return updated;
+    //             });
+    //         }
+    //     });
+
+    //     // 🔥 NEW POST FROM ALUMNI
+    //     socket.on("new-post", (data) => {
+    //         setAlerts((prev) => {
+    //             const updated = [
+    //                 {
+    //                     id: Date.now(),
+    //                     title: "New Post",
+    //                     message: data?.title || "New update",
+    //                     time: "Just now",
+    //                     type: "post",
+    //                     unread: true,
+    //                 },
+    //                 ...prev,
+    //             ];
+    //             saveAlerts(updated);
+    //             return updated;
+    //         });
+    //     });
+
+    //     return () => {
+    //         socket.off("new-message");
+    //         socket.off("new-post");
+    //     };
+    // }, [userId]);
+
+
+useEffect(() => {
+    if (!userId) return;
+
+    socket.connect();
+    socket.emit("join", userId);
+
+    // 🔥 CHAT MESSAGE
+    socket.on("new-message", (msg) => {
+        if (msg.receiver_id === userId) {
+            setAlerts((prev) => {
+                const updated = [
+                    {
+                        id: Date.now(),
+                        title: "New Message",
+                        message: msg.message,
+                        time: "Just now",
+                        type: "chat",
+                        unread: true,
+                    },
+                    ...prev,
+                ];
+                saveAlerts(updated);
+                return updated;
+            });
+        }
+    });
+
+    // 🔥 NEW POST
+    socket.on("new-post", (data) => {
+        setAlerts((prev) => {
+            const updated = [
+                {
+                    id: Date.now(),
+                    title: "New Post",
+                    message: data?.title || "New update",
+                    time: "Just now",
+                    type: "post",
+                    unread: true,
+                },
+                ...prev,
+            ];
+            saveAlerts(updated);
+            return updated;
+        });
+    });
+
+    // 🔥 NEW ALERT (ADDED THIS)
+    socket.on("new_alert", (data) => {
+        setAlerts((prev) => {
+            const updated = [
+                {
+                    id: data.alert_id || Date.now(),
+                    title: data.title || "Alert",
+                    message: data.message,
+                    time: "Just now",
+                    type: "Admin Alert",
+                    unread: true,
+                },
+                ...prev,
+            ];
+            saveAlerts(updated);
+            return updated;
+        });
+    });
+
+    return () => {
+        socket.off("new-message");
+        socket.off("new-post");
+        socket.off("new_alert");
+    };
+}, [userId]);
+
+
+    /* ---------------- CLICK REMOVE ---------------- */
+    const handleRemove = (id) => {
+        setAlerts((prev) => {
+            const updated = prev.filter((a) => a.id !== id);
+            saveAlerts(updated);
+            return updated;
+        });
+    };
+
     return (
         <Box
             sx={{
@@ -80,8 +218,6 @@ const StudentAlert = () => {
                 bgcolor: "#f4f6f8",
                 px: 2,
                 py: 2,
-
-                // Hide scrollbar
                 scrollbarWidth: "none",
                 "&::-webkit-scrollbar": { display: "none" },
             }}
@@ -103,12 +239,17 @@ const StudentAlert = () => {
 
             {/* ALERT LIST */}
             <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+                {alerts.length === 0 && (
+                    <Typography textAlign="center">No alerts</Typography>
+                )}
+
                 {alerts.map((alert) => {
                     const style = getAlertStyle(alert.type);
 
                     return (
                         <Box
                             key={alert.id}
+                            onClick={() => handleRemove(alert.id)}
                             sx={{
                                 display: "flex",
                                 gap: 2,
@@ -119,6 +260,7 @@ const StudentAlert = () => {
                                 borderLeft: `5px solid ${style.color}`,
                                 position: "relative",
                                 transition: "0.2s",
+                                cursor: "pointer",
                                 "&:hover": {
                                     transform: "translateY(-2px)",
                                 },

@@ -1,7 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import {
+  fetchAllActiveStudents,
+  fetchAllAdminAlerts,
   FetchAllAluminiDetail,
   FetchAllAluminiDetailById,
+  fetchAllAluminiEduction,
+  fetchAllAluminiEvenMedialDetail,
+  fetchAllAluminiEventDetail,
+  fetchallAluminiEventPosts,
+  fetchAllAluminiExperience,
+  fetchAllaluminiHeading,
+  fetchAllAluminipostDetail,
+  fetchAllAluminipostMediaDetail,
+  fetchallAluminiPosts,
   FetchAllBatchStudent,
   FetchAllDeprmentDetail,
   FetchAllDesignation,
@@ -10,8 +21,15 @@ import {
   FetchAllProgramDetaiById,
   FetchAllProgramDetail,
   FetchAllProgramDetailMast,
+  fetchAllSingleEventMedia,
+  fetchAllSingleMedia,
+  fetchAllStudentActivityDtail,
   FetchAllStudents,
+  fetchAllStudtnActivityMediaDetail,
   FetchAllUserGroup,
+  fetchAluminiDetailSinlge,
+  fetchAluminiProfilePicture,
+  fetchchatuser,
   FetchExistingPdf,
   fetchLoggedStudetnDetail,
   fetchProfilePicture,
@@ -20,6 +38,7 @@ import {
   fetStudentMedia,
   fetStudentPosts,
   getAllActiveAlumini,
+  getMessages,
 } from "./CommonFun";
 
 export const useFetchExistingFile = () => {
@@ -192,5 +211,192 @@ export const useFetchMyConnections = ({ user_id, user_type }) => {
     queryFn: () => FetchAllMyConnections(user_id, user_type),
     staleTime: Infinity,
     enabled: !!user_id && !!user_type,
+  });
+};
+
+export const useFetchSingleAluminiPost = (alum_id) => {
+  return useQuery({
+    queryKey: ["alumidposts", alum_id],
+    queryFn: () => fetchallAluminiPosts(alum_id),
+    staleTime: Infinity,
+    enabled: !!alum_id,
+  });
+};
+
+export const useFetchAlumniFullMediaSingle = (alum_id) => {
+  return useQuery({
+    queryKey: ["alumsingle", alum_id],
+    queryFn: () => fetchAllSingleMedia(alum_id),
+    staleTime: Infinity,
+    enabled: !!alum_id,
+  });
+};
+
+export const useFetchSingleAluminiEvent = (alum_id) => {
+  return useQuery({
+    queryKey: ["aluminievent", alum_id],
+    queryFn: () => fetchallAluminiEventPosts(alum_id),
+    staleTime: Infinity,
+    enabled: !!alum_id,
+  });
+};
+
+export const useFetchAlumniFullEventMedia = (alum_id) => {
+  return useQuery({
+    queryKey: ["aluminieventpost", alum_id],
+    queryFn: () => fetchAllSingleEventMedia(alum_id),
+    staleTime: Infinity,
+    enabled: !!alum_id,
+  });
+};
+
+export const useFetchSingleAluminiDetail = (alum_id) => {
+  return useQuery({
+    queryKey: ["singlealumini", alum_id],
+    queryFn: () => fetchAluminiDetailSinlge(alum_id),
+    staleTime: Infinity,
+    enabled: !!alum_id,
+  });
+};
+
+export const useFetchAluminiProfilePic = (alum_id) => {
+  return useQuery({
+    queryKey: ["aluminiprofilepic", alum_id],
+    queryFn: () => fetchAluminiProfilePicture(alum_id),
+    staleTime: Infinity,
+    enabled: !!alum_id,
+  });
+};
+
+export const useFectchAluminiHeading = (alum_id) => {
+  return useQuery({
+    queryKey: ["aluminiheading", alum_id],
+    queryFn: () => fetchAllaluminiHeading(alum_id),
+    staleTime: Infinity,
+    enabled: !!alum_id,
+  });
+};
+
+export const useFectchAluminiEducation = (alum_id) => {
+  return useQuery({
+    queryKey: ["alumedu", alum_id],
+    queryFn: () => fetchAllAluminiEduction(alum_id),
+    staleTime: Infinity,
+    enabled: !!alum_id,
+  });
+};
+
+export const useFectchAluminiExperience = (alum_id) => {
+  return useQuery({
+    queryKey: ["alumexp", alum_id],
+    queryFn: () => fetchAllAluminiExperience(alum_id),
+    staleTime: Infinity,
+    enabled: !!alum_id,
+  });
+};
+
+export const useFetchMessages = ({ user1, user2, user1_type, user2_type }) => {
+  console.log({ user1, user2, user1_type, user2_type });
+
+  return useQuery({
+    queryKey: ["messages", user1, user2, user1_type, user2_type],
+
+    queryFn: () =>
+      getMessages({
+        user1,
+        user2,
+        user1_type,
+        user2_type,
+      }),
+
+    enabled: !!user1 && !!user2 && !!user1_type && !!user2_type,
+    staleTime: Infinity,
+  });
+};
+
+export const useFetchAllActiveStudents = () => {
+  return useQuery({
+    queryKey: ["activestudent"],
+    queryFn: fetchAllActiveStudents,
+    staleTime: Infinity,
+  });
+};
+
+export const useFetchChatUsers = (userId) => {
+  return useQuery({
+    queryKey: ["chatUsers", userId],
+    queryFn: () => fetchchatuser(userId),
+    enabled: !!userId,
+    staleTime: Infinity,
+  });
+};
+
+
+
+
+export const useFectchAllAlumini = () => {
+  return useQuery({
+    queryKey: ["aluminipost"],
+    queryFn: fetchAllAluminipostDetail,
+    staleTime: Infinity,
+  });
+};
+
+
+export const useFectchAllAluminiPostDetail = () => {
+  return useQuery({
+    queryKey: ["aluminimedia"],
+    queryFn: fetchAllAluminipostMediaDetail,
+    staleTime: Infinity,
+  });
+};
+
+
+
+export const useFectchAllAluminiEventDetail = () => {
+  return useQuery({
+    queryKey: ["aluminievnt"],
+    queryFn: fetchAllAluminiEventDetail,
+    staleTime: Infinity,
+  });
+};
+
+
+export const useFetchAllAluminiEvenMedialDetail = () => {
+  return useQuery({
+    queryKey: ["alumineventmedia"],
+    queryFn: fetchAllAluminiEvenMedialDetail,
+    staleTime: Infinity,
+  });
+};
+
+
+
+
+export const useFetchAllStudtentAcitivty = (dep_id) => {
+  return useQuery({
+    queryKey: ["studentallact"],
+    queryFn: ()=>fetchAllStudentActivityDtail(dep_id),
+    staleTime: Infinity,
+    enabled:!!dep_id
+  });
+};
+
+
+export const useFetchAllAcitivtyMediaDetail = () => {
+  return useQuery({
+    queryKey: ["studentallactmedia"],
+    queryFn: fetchAllStudtnActivityMediaDetail,
+    staleTime: Infinity,
+  });
+};
+
+
+
+export const useFetchAllAlerts = () => {
+  return useQuery({
+    queryKey: ["adminalert"],
+    queryFn: fetchAllAdminAlerts,
+    staleTime: Infinity,
   });
 };

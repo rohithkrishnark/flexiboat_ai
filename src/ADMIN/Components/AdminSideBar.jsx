@@ -26,7 +26,7 @@ const MENU_ITEMS = [
   {
     label: 'Dashboard',
     icon: DashboardIcon,
-    path: '/admin/admindashboard'
+    path: ''
   },
   {
     label: 'Alumini',
@@ -44,10 +44,11 @@ const MENU_ITEMS = [
   {
     label: 'Faculty',
     icon: InventoryIcon,
-    nested: [
-      { label: 'Add Faculty', path: '/admin/addfaculity' },
-      { label: 'View Faculity', path: '/admin/viewfaculity' }
-    ]
+    path: '/admin/viewfaculity'
+    // nested: [
+    //   // { label: 'Add Faculty', path: '/admin/addfaculity' },
+    //   { label: 'View Faculity', path: '/admin/viewfaculity' }
+    // ]
   },
   {
     label: 'Alert',
@@ -212,7 +213,7 @@ const AdminSideBar = () => {
         icon={LogoutIcon}
         label="Logout"
         open={open}
-        onClick={() => navigate('/logout')}
+        onClick={() => navigate('/home')}
       />
     </Box>
   )
