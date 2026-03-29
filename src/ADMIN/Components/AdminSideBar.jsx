@@ -102,6 +102,12 @@ const AdminSideBar = () => {
     }
   }
 
+  const confirmLogout = () => {
+    // Clear only the specific localStorage key
+    localStorage.removeItem("authUser");
+    navigate("/home");
+  };
+
   return (
     <Box
       sx={{
@@ -213,7 +219,7 @@ const AdminSideBar = () => {
         icon={LogoutIcon}
         label="Logout"
         open={open}
-        onClick={() => navigate('/home')}
+        onClick={confirmLogout}
       />
     </Box>
   )

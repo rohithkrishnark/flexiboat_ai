@@ -27,7 +27,7 @@ function Home() {
 
   // ✅ SAFE USER
   const user = getAuthUser();
-  
+
   // ======================================================
   // 🚀 AUTO REDIRECT ON LOAD (FIXED)
   // ======================================================
@@ -118,17 +118,28 @@ function Home() {
       setLoginMessage(message);
       setMessageType("success");
 
+      console.log("entering");
+
       // ✅ STORE SAFE OBJECT
+      // localStorage.setItem(
+      //   "authUser",
+      //   JSON.stringify({
+      //     loggedIn: true,
+      //     role: "admin",
+      //   }),
+      // );
+
       localStorage.setItem(
         "authUser",
-        JSON.stringify({
-          loggedIn: true,
-          role: role || "admin",
-        }),
+        btoa(
+          JSON.stringify({
+            loggedIn: true,
+            role: "admin",
+          }),
+        ),
       );
-
+      setShowAdminModal(false);
       setTimeout(() => {
-        setShowAdminModal(false);
         setUsername("");
         setPassword("");
         setLoginMessage("");
@@ -188,7 +199,7 @@ function Home() {
           >
             <Typography
               level="h4"
-              sx={{ fontWeight: 800, textAlign: "center" }}
+              sx={{ fontWeight: 800, textAlign: "center", color: "#ffff" }}
             >
               🔐 Admin Access
             </Typography>
