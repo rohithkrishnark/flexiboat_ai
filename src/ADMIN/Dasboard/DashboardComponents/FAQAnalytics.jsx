@@ -1,28 +1,51 @@
-import React, { useState } from 'react';
-import { Box, Typography, Divider, List, ListItem, ListItemText } from '@mui/material';
+import React, { useMemo, useState } from 'react';
+import {
+  Box,
+  Typography,
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+} from '@mui/material';
 import { BarChart } from '@mui/x-charts';
 import ContactSupportTwoToneIcon from '@mui/icons-material/ContactSupportTwoTone';
-
-const faqAnalytics = [
-  { question: 'How to reset my password?', count: 120 },
-  { question: 'How to contact support?', count: 90 },
-  { question: 'How to track my order?', count: 70 },
-  { question: 'Refund policy?', count: 50 },
-  { question: 'How do I change my email address?', count: 85 },
-  { question: 'How to cancel my order?', count: 65 },
-  { question: 'What payment methods are accepted?', count: 95 },
-  { question: 'Is cash on delivery available?', count: 40 },
-  { question: 'How long does delivery take?', count: 110 },
-  { question: 'Can I update my shipping address?', count: 55 },
-  { question: 'Why is my payment failing?', count: 75 },
-  { question: 'How to apply a discount coupon?', count: 60 },
-  { question: 'How do I delete my account?', count: 30 },
-  { question: 'Is my data secure?', count: 45 },
-];
+import { useFetchLatestChat } from '../../CommonCode/useQuery';
 
 const FAQAnalytics = () => {
+  
   const [showAll, setShowAll] = useState(false);
   const visibleCount = 5;
+
+
+  const { data: chatData = [] } = useFetchLatestChat();
+
+  //  PROCESS DATA (GROUP BY QUESTION)
+  const faqAnalytics = useMemo(() => {
+    const map = {};
+
+    chatData?.forEach((item) => {
+      let question = item.query;
+
+      if (!question) return;
+
+      //  CLEAN + NORMALIZE
+      question = question
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s]/gi, '') // remove symbols
+        .replace(/\s+/g, ' ');
+
+      map[question] = (map[question] || 0) + 1;
+    });
+    //  convert to array
+    const result = Object.keys(map).map((q) => ({
+      question: q,
+      count: map[q],
+    }));
+
+    //  sort highest first
+    return result.sort((a, b) => b.count - a.count);
+  }, [chatData]);
 
   return (
     <Box
@@ -39,8 +62,12 @@ const FAQAnalytics = () => {
     >
       {/* LEFT: FAQ LIST */}
       <Box sx={{ width: '50%' }}>
-        <Typography variant="h6" fontWeight="bold" sx={{ fontSize: 14,fontWeight:800 }}>
-         <ContactSupportTwoToneIcon sx={{fontSize:14}}/> Frequently Asked Questions & FAQ Analytics
+        <Typography
+          variant="h6"
+          sx={{ fontSize: 14, fontWeight: 800, display: 'flex', gap: 1 }}
+        >
+          <ContactSupportTwoToneIcon sx={{ fontSize: 16 }} />
+          Frequently Asked Questions & Analytics
         </Typography>
 
         <Divider sx={{ mb: 1 }} />
@@ -52,7 +79,7 @@ const FAQAnalytics = () => {
             pr: 1,
           }}
         >
-          {(showAll ? faqAnalytics : faqAnalytics.slice(0, visibleCount))?.map(
+          {(showAll ? faqAnalytics : faqAnalytics.slice(0, visibleCount)).map(
             (faq, index) => (
               <ListItem key={index} disablePadding>
                 <ListItemText
@@ -95,14 +122,17 @@ const FAQAnalytics = () => {
         )}
       </Box>
 
-      {/* RIGHT: ANALYTICS CHART */}
+      {/* RIGHT: BAR CHART */}
       <Box sx={{ width: '60%' }}>
-
         <BarChart
           xAxis={[
             {
               scaleType: 'band',
-              data: faqAnalytics.map((faq) => faq.question),
+              data: faqAnalytics.map((faq) =>
+                faq.question.length > 15
+                  ? faq.question.slice(0, 15) + '...'
+                  : faq.question
+              ),
             },
           ]}
           series={[

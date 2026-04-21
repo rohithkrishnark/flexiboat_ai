@@ -9,6 +9,7 @@ import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import ChatIcon from "@mui/icons-material/Chat";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import EditDocumentIcon from "@mui/icons-material/EditDocument";
 
 export const STUDENT_MENU = [
   {
@@ -63,6 +64,12 @@ export const STUDENT_MENU = [
     label: "Chat",
     icon: ChatIcon, // 💬
     path: "studentchat",
+  },
+
+  {
+    label: "View Documents",
+    icon: EditDocumentIcon, // 🔔 active alerts
+    path: "facdocument",
   },
 
   // ALERTS

@@ -1,10 +1,5 @@
 import { Box } from '@mui/joy'
-// import InfoCard from '../Dasboard/DashboardComponents/InfoCard'
-// import FAQAnalytics from './DashboardComponents/FAQAnalytics'
-// import UserFeedbackWithChart from './DashboardComponents/UserFeedbackWithChart';
-// import UserFeedbackWithChart from '../../ADMIN/Dasboard/DashboardComponents/UserFeedbackWithChart';
-// import SocialMediaCard from './DashboardComponents/SocialMediaCard';
-// import FAQAnalytics from '../../ADMIN/Dasboard/DashboardComponents/FAQAnalytics';
+
 import InstagramIcon from '@mui/icons-material/Instagram';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
@@ -13,7 +8,54 @@ import InfoCard from '../../ADMIN/Dasboard/DashboardComponents/InfoCard';
 import SocialMediaCard from '../../ADMIN/Dasboard/DashboardComponents/SocialMediaCard';
 import ActivityAverageAnalytics from './ActivityAverageAnalytics';
 import FacultyGradeDistribution from './FacultyGradeDistribution';
+import { getAuthUser } from '../../constant/Constant';
+import { useFetchAllStudentDetail, useFetchAllStudtentAcitivty } from '../../ADMIN/CommonCode/useQuery';
+import { getWeeklyStats } from '../../ADMIN/CommonCode/Reusable';
+import { useMemo } from 'react';
 const FaculityDashboard = () => {
+
+
+    const user = getAuthUser();
+
+    const departmentId = user ? user.fac_dep_id : null;
+
+    const { data: AllStudentData = [] } = useFetchAllStudentDetail(departmentId);
+
+    console.log({
+        AllStudentData
+    });
+
+    const { data: ActivityDetail = [] } =
+        useFetchAllStudtentAcitivty(departmentId);
+
+    //  FILTER COUNTS
+    const approved = ActivityDetail.filter(
+        (a) => a.given_staff && a.rejected === 0
+    );
+
+    const pending = ActivityDetail.filter(
+        (a) => !a.given_staff && a.rejected === 0
+    );
+
+    const rejected = ActivityDetail.filter(
+        (a) => a.rejected === 1
+    );
+
+    //  WEEKLY STATS
+    const { weeklyActivity, weeklyScore } =
+        getWeeklyStats(ActivityDetail);
+
+
+    const yearDistribution = useMemo(() => {
+        const map = {};
+
+        AllStudentData?.forEach((s) => {
+            const key = s.program_year_name || "Unknown";
+            map[key] = (map[key] || 0) + 1;
+        });
+
+        return Object.values(map);
+    }, [AllStudentData]);
 
     return (
         <Box
@@ -32,29 +74,29 @@ const FaculityDashboard = () => {
             >
                 <InfoCard
                     title="Total Students"
-                    total={120}
-                    weeklyData={[12, 15, 14, 20, 18, 22, 19]}
+                    total={AllStudentData?.length ?? 0}
+                    weeklyData={yearDistribution}
                     color="#6366f1"
                 />
 
                 <InfoCard
-                    title="Attendance"
-                    total={540}
-                    weeklyData={[50, 62, 70, 65, 80, 75, 90]}
+                    title="Activity Approved"
+                    total={approved.length}
+                    weeklyData={weeklyScore} //  show score trend
                     color="#22c55e"
                 />
 
                 <InfoCard
-                    title="Assignment Submissions"
-                    total={45}
-                    weeklyData={[5, 6, 4, 8, 7, 9, 6]}
+                    title="Activity Pending"
+                    total={pending.length}
+                    weeklyData={weeklyActivity} //  show activity count
                     color="#f59e0b"
                 />
 
                 <InfoCard
-                    title="Pending Evaluations"
-                    total={890}
-                    weeklyData={[90, 110, 105, 130, 125, 140, 150]}
+                    title="Activity Rejected"
+                    total={rejected.length}
+                    weeklyData={weeklyActivity}
                     color="#ef4444"
                 />
             </Box>
@@ -73,7 +115,7 @@ const FaculityDashboard = () => {
                     boxShadow: 'lg',
                     borderRadius: 5
                 }}>
-                   <ActivityAverageAnalytics />
+                    <ActivityAverageAnalytics data={ActivityDetail} />
                 </Box>
                 <Box
                     sx={{
@@ -87,7 +129,7 @@ const FaculityDashboard = () => {
                         flexDirection: 'column',
                     }}
                 >
-                    <FacultyGradeDistribution />
+                    <FacultyGradeDistribution data={ActivityDetail} />
                 </Box>
             </Box>
 

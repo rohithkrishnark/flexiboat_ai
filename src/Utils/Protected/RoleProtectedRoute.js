@@ -1,29 +1,33 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { getAuthUser } from "../../constant/Constant";
 
 const AuthProtectedRoute = ({ children, allowedRoles }) => {
+  const user = getAuthUser();
+  const location = useLocation();
 
-  const user = getAuthUser(); // ✅ already decoded object
+  // ✅ 1. If no restriction → public route
+  if (!allowedRoles) return children;
 
-
-
-  // ❌ Not logged in
-  if (!user || !user.loggedIn) {
-    return <Navigate to="/login" replace />;
+  // ✅ 2. Not logged in → go login
+  if (!user) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
-  // ❌ No role found
-  if (!user.role) {
-    return <Navigate to="/login" replace />;
-  }
+  // ✅ 3. Role-based redirect (IMPORTANT FIX)
+  const roleHomeMap = {
+    admin: "/admin",
+    fac: "/faculity",
+    alumni: "/alumini",
+    student: "/students",
+  };
 
-  // ❌ Role not allowed
+  // ✅ 4. If role NOT allowed → redirect to their own dashboard
   if (!allowedRoles.includes(user.role)) {
-    return <Navigate to="/home" replace />;
+    return <Navigate to={roleHomeMap[user.role] || "/home"} replace />;
   }
 
-  // ✅ Authorized
+  // ✅ 5. Authorized
   return children;
 };
 

@@ -164,7 +164,7 @@ const ReviewActivity = () => {
   };
 
   return (
-    <Box sx={{ height: "85vh", overflowY: "auto", p: 2 ,boxShadow:'lg'}}>
+    <Box sx={{ height: "85vh", overflowY: "auto", p: 2, boxShadow: 'lg' }}>
       <Typography fontWeight={700} fontSize={18} mb={2}>
         Review Student Activities
       </Typography>
@@ -183,7 +183,7 @@ const ReviewActivity = () => {
             key={activity.id}
             sx={{ flex: "0 0 calc(33.333% - 16px)" }}
           >
-            <Card sx={{ borderRadius: 3 }}>
+            <Card sx={{ borderRadius: 3,height:'100%' }}>
               <CardContent>
                 {/* HEADER */}
                 <Box sx={{ display: "flex", mb: 1 }}>

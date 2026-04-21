@@ -7,7 +7,62 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import SocialMediaCard from './DashboardComponents/SocialMediaCard';
 import FacebookTwoToneIcon from '@mui/icons-material/FacebookTwoTone';
+import { useFetchAllActiveStudents, useFetchAllAlumini, useFetchAllEnqiury, useFetchAllFaculity } from '../CommonCode/useQuery';
+import { useMemo } from 'react';
 const AdminDashBoard = () => {
+
+  const { data: AllAluminiDetail = [], isLoading: LoadingAlumini, } = useFetchAllAlumini();
+  const { data: AllStudentData = [] } = useFetchAllActiveStudents();
+  const { data: AllFaculityDetail } = useFetchAllFaculity();
+  const { data: filtered = [] } = useFetchAllEnqiury();
+
+  const yearDistribution = useMemo(() => {
+    const map = {};
+
+    AllStudentData?.forEach((s) => {
+      const key = s.program_year_name || "Unknown";
+      map[key] = (map[key] || 0) + 1;
+    });
+
+    return Object.values(map);
+  }, [AllStudentData]);
+
+  const alumniExperienceData = useMemo(() => {
+    const map = {};
+
+    AllAluminiDetail?.forEach((a) => {
+      const exp = a.alum_experience || "0";
+      map[exp] = (map[exp] || 0) + 1;
+    });
+
+    return Object.values(map);
+  }, [AllAluminiDetail]);
+
+  const facultyDeptData = useMemo(() => {
+    const map = {};
+
+    AllFaculityDetail?.forEach((f) => {
+      const dept = f.dep_name || "Unknown";
+      map[dept] = (map[dept] || 0) + 1;
+    });
+
+    return Object.values(map);
+  }, [AllFaculityDetail]);
+
+
+  const enquiryTrend = useMemo(() => {
+    const map = {};
+
+    filtered?.forEach((e) => {
+      const date = new Date(e.created_at).toLocaleDateString();
+      map[date] = (map[date] || 0) + 1;
+    });
+
+    return Object.values(map);
+  }, [filtered]);
+
+
+  
 
   return (
     <Box
@@ -26,29 +81,29 @@ const AdminDashBoard = () => {
       >
         <InfoCard
           title="Total Alumni"
-          total={120}
-          weeklyData={[12, 15, 14, 20, 18, 22, 19]}
+          total={AllAluminiDetail?.length}
+          weeklyData={alumniExperienceData}
           color="#6366f1"
         />
 
         <InfoCard
-          title="Total Users"
-          total={540}
-          weeklyData={[50, 62, 70, 65, 80, 75, 90]}
+          title="Total Students"
+          total={AllStudentData?.length}
+          weeklyData={yearDistribution}
           color="#22c55e"
         />
 
         <InfoCard
           title="Total Faculty"
-          total={45}
-          weeklyData={[5, 6, 4, 8, 7, 9, 6]}
+          total={AllFaculityDetail?.length}
+          weeklyData={facultyDeptData}
           color="#f59e0b"
         />
 
         <InfoCard
-          title="Total Students"
-          total={890}
-          weeklyData={[90, 110, 105, 130, 125, 140, 150]}
+          title="Total Enquiry"
+          total={filtered?.length}
+          weeklyData={enquiryTrend}
           color="#ef4444"
         />
       </Box>

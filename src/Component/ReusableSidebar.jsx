@@ -5,7 +5,7 @@ import {
   List,
   ListItem,
   ListItemButton,
-  ListItemContent,
+  // ListItemContent,
   Divider,
   Modal,
   Button,
@@ -121,7 +121,7 @@ const ReusableSidebar = ({
       {/* Menu */}
       <List sx={{ flexGrow: 1 }}>
         {menuItems.map((item) => (
-          <React.Fragment key={item.label}>
+          <div key={item.label}>
             <MenuItem
               {...item}
               open={open}
@@ -162,15 +162,15 @@ const ReusableSidebar = ({
                           color: "#9ca3af",
                         }}
                       />
-                      <ListItemContent sx={{ color: "white" }}>
+                      <span style={{ color: "white" }}>
                         {sub.label}
-                      </ListItemContent>
+                      </span>
                     </ListItemButton>
                   </ListItem>
                 ))}
               </Box>
             )}
-          </React.Fragment>
+          </div>
         ))}
       </List>
 

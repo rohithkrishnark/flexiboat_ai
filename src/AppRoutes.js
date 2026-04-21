@@ -55,6 +55,9 @@ import StudentGlobalView from "./STUDENTS/StudentGlobalView/StudentGlobalView";
 import AluminiGlobalView from "./ALUMINI/AluminiGlobal/AluminiGlobalView";
 import AluminiStudentList from "./ALUMINI/AluminiStudents/AluminiStudentList";
 import AuthProtectedRoute from "./Utils/Protected/RoleProtectedRoute";
+import AdminEnquiry from "./ADMIN/AdminEnquiry/AdminEnquiry";
+import ViewFaculityAssignments from "./FACULITY/FaculityAssignement/ViewFaculityAssignments";
+import ViewFaculityDocumens from "./STUDENTS/FacDocuments/ViewFaculityDocumens";
 
 // import HomeDashboard from "./HomeDashboard";
 // import Profile from "./Profile";
@@ -89,7 +92,7 @@ const router = createBrowserRouter([
   {
     path: "/faculity",
     element: (
-      <AuthProtectedRoute allowedRoles={["faculty"]}>
+      <AuthProtectedRoute allowedRoles={["fac"]}>
         <FaculityLayout />
       </AuthProtectedRoute>
     ), // layoutAdminLayout
@@ -103,6 +106,11 @@ const router = createBrowserRouter([
         path: "addstudents",
         element: <AddStudentDetail />,
       },
+      {
+        path: "documents",
+        element: <ViewFaculityAssignments />,
+      },
+
       {
         path: "viewstudents",
         element: <StudentActionDetail />,
@@ -147,6 +155,11 @@ const router = createBrowserRouter([
         // index: true,
         element: <AdminDashBoard />,
       },
+      {
+        path: "enquiry",
+        element: <AdminEnquiry />,
+      },
+
       {
         path: "uploadpdf",
         element: <UploadTraining />,
@@ -299,6 +312,12 @@ const router = createBrowserRouter([
         path: "create-post",
         element: <StudentPost />,
       },
+
+      {
+        path: "facdocument",
+        element: <ViewFaculityDocumens />,
+      },
+
       {
         path: "my-posts",
         element: <StudentViewPost />,
