@@ -155,6 +155,7 @@ function Home() {
     }
   };
 
+
   return (
     <div className="parent">
       <Navbar />

@@ -3,8 +3,11 @@ import { Box, Typography, Button, Card, CardContent } from "@mui/joy";
 // import Navbar from "./Component/Navbar";
 import ai from "../../src/assets/newai.gif";
 import brain from "../../src/assets/newbrain.png";
+import loutmatha from "../../src/assets/loutmatha.png";
+
 
 function Main() {
+
 
     const texts = [
         "Get instant answers, in-depth academic guidance, and concept explanations powered by advanced AI, designed to support learning.",
@@ -32,6 +35,19 @@ function Main() {
 
         return () => clearInterval(interval);
     }, []);
+
+    const handleNavScroll = (e, id) => {
+        e.preventDefault();
+        const element = document.getElementById(id);
+        if (element) {
+            element.scrollIntoView({
+                behavior: "smooth",
+            });
+        }
+    };
+
+
+
 
     return (
         <Box id="home" sx={{ height: "100vh", bgcolor: "#000000" }}>
@@ -92,6 +108,7 @@ function Main() {
                     </Typography>
 
                     <Button
+                        onClick={(e) => handleNavScroll(e, "chat")}
                         size="lg"
                         sx={{
                             mt: 4,
@@ -107,10 +124,10 @@ function Main() {
                 {/* RIGHT SIDE */}
                 <Box>
                     <img
-                        src={brain}
-                        alt="brain"
+                        src={loutmatha}
+                        alt="loutmatha"
                         style={{
-                            width: "420px",
+                            width: "100%",
                             maxWidth: "100%",
                         }}
                     />

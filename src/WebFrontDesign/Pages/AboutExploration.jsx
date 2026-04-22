@@ -69,11 +69,16 @@ const AboutExploration = () => {
         {/* PLATFORM INTRO */}
         <Box
           sx={{
-            maxWidth: 1100,
+            maxWidth: 1000,
             mx: "auto",
             py: 12,
             px: 4,
-            textAlign: "center"
+            textAlign: "center",
+            display:'flex',
+            alignItems:'center',
+            justifyContent:'center',
+            flexDirection:'column',
+            height:'100vh'
           }}
         >
           <Typography level="h1" sx={{ fontSize: 48, mb: 3, color: "#651bdb" }}>
