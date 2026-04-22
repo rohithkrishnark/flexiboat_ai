@@ -30,6 +30,11 @@ const AddStudentDetail = () => {
     const EditData = location.state?.data ?? {}
     const queryClient = useQueryClient()
 
+    console.log({
+        user
+    });
+    
+
     const [formData, setFormData] = useState({
         std_id: null,
         std_name: '',

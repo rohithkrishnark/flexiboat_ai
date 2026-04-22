@@ -13,54 +13,111 @@ const About = () => {
 
   const navigate = useNavigate();
 
+  const sectionRef = useRef();
+
+  // useEffect(() => {
+  //   // hide text initially
+  //   // gsap.set([headingRef.current, descRef.current], {
+  //   //   opacity: 0,
+  //   //   textContent: ""
+  //   // });
+
+  //   // const tl = gsap.timeline({
+  //   //   scrollTrigger: {
+  //   //     trigger: "#about-section",
+  //   //     start: "top 70%",
+  //   //     once: true
+  //   //   }
+  //   // });
+
+  //   const section = document.getElementById("about-section");
+  //   if (!section) return;
+
+  //   const tl = gsap.timeline({
+  //     scrollTrigger: {
+  //       trigger: section,
+  //       start: "top 70%",
+  //       once: true
+  //     }
+  //   });
+
+
+  //   tl.to(headingRef.current, {
+  //     opacity: 1,
+  //     duration: 0.3
+  //   })
+
+  //     .to(headingRef.current, {
+  //       duration: 2,
+  //       scrambleText: {
+  //         text: "Building Intelligent Knowledge Systems",
+  //         chars: "upperCase",
+  //         speed: 0.4
+  //       }
+  //     })
+
+  //     .to(descRef.current, {
+  //       opacity: 1,
+  //       duration: 0.3
+  //     })
+
+  //     .to(descRef.current, {
+  //       duration: 3,
+  //       scrambleText: {
+  //         text: "Our platform transforms static documents into dynamic AI knowledge. Teams can instantly search, understand, and interact with their organization’s information through intelligent conversations.Our platform transforms static documents into dynamic AI knowledge. Teams can instantly search, understand, and interact with their organization’s information through intelligent conversations Our platform transforms static documents into dynamic AI knowledge. Teams can instantly search, understand, and interact with their organization’s information through intelligent conversations.Our platform transforms static documents into dynamic AI knowledge. Teams can instantly search, understand, and interact with their organization’s information through intelligent conversations ",
+  //         chars: "lowerCase ",
+  //         speed: 0.3
+  //       }
+  //     });
+
+  // }, []);
+
+
   useEffect(() => {
-    // hide text initially
-    gsap.set([headingRef.current, descRef.current], {
-      opacity: 0,
-      textContent: ""
-    });
+    if (!sectionRef.current) return;
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: "#about-section",
-        start: "top 70%",
-        once: true
-      }
-    });
+    const ctx = gsap.context(() => {
+      gsap.set([headingRef.current, descRef.current], {
+        opacity: 0,
+        textContent: ""
+      });
 
-    tl.to(headingRef.current, {
-      opacity: 1,
-      duration: 0.3
-    })
-
-      .to(headingRef.current, {
-        duration: 2,
-        scrambleText: {
-          text: "Building Intelligent Knowledge Systems",
-          chars: "upperCase",
-          speed: 0.4
-        }
-      })
-
-      .to(descRef.current, {
-        opacity: 1,
-        duration: 0.3
-      })
-
-      .to(descRef.current, {
-        duration: 3,
-        scrambleText: {
-          text: "Our platform transforms static documents into dynamic AI knowledge. Teams can instantly search, understand, and interact with their organization’s information through intelligent conversations.Our platform transforms static documents into dynamic AI knowledge. Teams can instantly search, understand, and interact with their organization’s information through intelligent conversations Our platform transforms static documents into dynamic AI knowledge. Teams can instantly search, understand, and interact with their organization’s information through intelligent conversations.Our platform transforms static documents into dynamic AI knowledge. Teams can instantly search, understand, and interact with their organization’s information through intelligent conversations ",
-          chars: "lowerCase ",
-          speed: 0.3
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 70%",
+          once: true
         }
       });
 
+      tl.to(headingRef.current, { opacity: 1, duration: 0.3 })
+        .to(headingRef.current, {
+          duration: 2,
+          scrambleText: {
+            text: "Building Intelligent Knowledge Systems",
+            chars: "upperCase",
+            speed: 0.4
+          }
+        })
+        .to(descRef.current, { opacity: 1, duration: 0.3 })
+        .to(descRef.current, {
+          duration: 3,
+          scrambleText: {
+            text: "Your long text...",
+            chars: "lowerCase",
+            speed: 0.3
+          }
+        });
+
+    }, sectionRef);
+
+    return () => ctx.revert(); // ✅ VERY IMPORTANT
   }, []);
 
   return (
     <Box
-      id="about"
+      ref={sectionRef}
+      id="about-section"
       sx={{
         width: '100%',
         position: 'relative',

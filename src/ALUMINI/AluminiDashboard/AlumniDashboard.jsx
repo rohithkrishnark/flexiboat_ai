@@ -81,10 +81,10 @@ const AlumniDashboard = () => {
     });
   }, [events, eventMedia]);
 
-  // ✅ COMBINE BOTH
+  //  COMBINE BOTH
   const allFeed = [...mergedPosts, ...mergedEvents];
 
-  // ✅ FILTER
+  //  FILTER
   const filteredPosts =
     filter === "all"
       ? allFeed

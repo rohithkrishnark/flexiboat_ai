@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Box,
   Typography,
@@ -6,29 +6,39 @@ import {
   List,
   ListItem,
   ListItemText,
-  Rating,
 } from '@mui/material';
 import FeedbackTwoToneIcon from '@mui/icons-material/FeedbackTwoTone';
-import { PieChart } from '@mui/x-charts';
 import Person3TwoToneIcon from '@mui/icons-material/Person3TwoTone';
+import { PieChart } from '@mui/x-charts';
+import { useFetchLatestChat } from '../../CommonCode/useQuery';
 
-const staticFeedback = [
-  { rating: 5, comment: 'The chatbot solved my issue in seconds.' },
-  { rating: 4, comment: 'Website UI is clean and easy to use.' },
-  { rating: 3, comment: 'Bot replies are sometimes repetitive.' },
-  { rating: 5, comment: 'Very smooth experience overall.' },
-  { rating: 2, comment: 'Website loading is slow on mobile.' },
-  { rating: 4, comment: 'Helpful answers but needs more examples.' },
-];
-
-// Pie data
-const ratingCounts = [1, 2, 3, 4, 5].map((star) => ({
-  id: star,
-  value: staticFeedback.filter((f) => f.rating === star).length,
-  label: `${star} Star`,
-}));
 
 const UserFeedbackWithChart = () => {
+
+  const { data: chatData = [] } = useFetchLatestChat();
+
+  //  GROUP BY DATE (for chart)
+  const chartData = useMemo(() => {
+    const map = {};
+    chatData?.forEach((item) => {
+      const date = new Date(item.created_at).toLocaleDateString();
+      map[date] = (map[date] || 0) + 1;
+    });
+
+    return Object.keys(map).map((date, index) => ({
+      id: index,
+      value: map[date],
+      label: date,
+    }));
+  }, [chatData]);
+
+  //  LATEST FIRST
+  const sortedChats = useMemo(() => {
+    return [...chatData].sort(
+      (a, b) => new Date(b.created_at) - new Date(a.created_at)
+    );
+  }, [chatData]);
+
   return (
     <Box
       sx={{
@@ -46,12 +56,12 @@ const UserFeedbackWithChart = () => {
       {/* HEADER */}
       <Typography fontWeight={700} sx={{ fontSize: 14 }}>
         <FeedbackTwoToneIcon sx={{ fontSize: 14, mr: 0.5 }} />
-        User Feedback
+        User Interactions
       </Typography>
 
       <Divider />
 
-      {/* FLEX CONTENT */}
+      {/* CONTENT */}
       <Box
         sx={{
           flex: 1,
@@ -60,7 +70,7 @@ const UserFeedbackWithChart = () => {
           overflow: 'hidden',
         }}
       >
-        {/* LEFT: PIE CHART */}
+        {/* LEFT: PIE CHART (Messages per day) */}
         <Box
           sx={{
             flex: 1,
@@ -72,7 +82,7 @@ const UserFeedbackWithChart = () => {
           <PieChart
             series={[
               {
-                data: ratingCounts,
+                data: chartData,
                 innerRadius: 30,
                 outerRadius: 60,
               },
@@ -81,7 +91,7 @@ const UserFeedbackWithChart = () => {
           />
         </Box>
 
-        {/* RIGHT: FEEDBACK LIST */}
+        {/* RIGHT: CHAT LIST */}
         <Box
           sx={{
             flex: 1,
@@ -99,19 +109,24 @@ const UserFeedbackWithChart = () => {
               msOverflowStyle: 'none',
             }}
           >
-            {staticFeedback.map((item, index) => (
+            {sortedChats.map((item, index) => (
               <ListItem key={index} alignItems="flex-start">
                 <ListItemText
                   primary={
                     <Typography fontSize={12} fontWeight={600}>
-                     <Person3TwoToneIcon sx={{fontSize:14}}/> Anonymous User
+                      <Person3TwoToneIcon sx={{ fontSize: 14 }} /> Anonymous User
                     </Typography>
                   }
                   secondary={
                     <>
-                      <Rating value={item.rating} readOnly size="small" />
-                      <Typography fontSize={12} color="gray">
-                        {item.comment}
+                      {/* USER QUESTION */}
+                      <Typography fontSize={12} color="#111" fontWeight={500}>
+                        Q: {item.query}
+                      </Typography>
+
+                      {/* BOT RESPONSE */}
+                      <Typography fontSize={11} color="gray">
+                        A: {item.response}
                       </Typography>
                     </>
                   }

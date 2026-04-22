@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import {
     Box,
     Typography,
@@ -9,118 +9,123 @@ import {
     FormControl,
     FormLabel,
     Grid,
-    Checkbox,
     Card
 } from '@mui/joy'
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+
 import { axiosLogin } from '../../Axios/axios';
 import {
     useFetchAllProgramDetail,
     useFetchAllProgramDetailById,
-    useFetchAllStudentofSeperateDep
+    // useFetchDocumentDetails,
+    // useFetchDocumentFiles
 } from '../../ADMIN/CommonCode/useQuery'
 import { getAuthUser, successNotify, warningNotify } from '../../constant/Constant'
+// import { combineDocuments } from '../../ADMIN/CommonCode/Reusable';
 
 const FaculityAssignement = () => {
 
+    const fileRef = useRef();
+
     const user = getAuthUser();
-    const departmentId = user ? user.deparment : null;
-
-
+    const departmentId = user ? user.fac_dep_id : null;
 
     const [formData, setFormData] = useState({
-        activity_name: '',
-        activity_point: '',
+        title: '',
+        description: '',
+        file: null,
         std_program_id: '',
         std_program_year: '',
-        isAll: true,
-        selected_students: []
     })
-    const { data: programDetail = [] } = useFetchAllProgramDetail();
-    const { data: programYearDetail = [] } = useFetchAllProgramDetailById(formData?.std_program_id);
-    const { data: AllStudentData = [] } =
-        useFetchAllStudentofSeperateDep(departmentId, formData?.std_program_id, formData?.std_program_year)
-    const [assignedList, setAssignedList] = useState([])
 
-    // handle change
+    const { data: programDetail = [] } = useFetchAllProgramDetail();
+    const { data: programYearDetail = [] } =
+        useFetchAllProgramDetailById(formData?.std_program_id);
+
+
+    // const { data: documentFiles = [] } =
+    //     useFetchDocumentFiles(user?.fac_id);
+
+    // const { data: documentDetails = [] } =
+    //     useFetchDocumentDetails(user?.fac_id);
+
+
+    // const combinedData = combineDocuments(documentDetails, documentFiles);
+
+    
+    // input change
     const handleChange = (e) => {
         const { name, value } = e.target
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }))
+        setFormData(prev => ({ ...prev, [name]: value }))
     }
 
-    // handle student select
-    const handleStudentSelect = (_, value) => {
+    // file upload
+    const handleFileChange = (e) => {
+        const file = e.target.files[0]
+
+        if (!file) return;
+
+        if (file.type !== "application/pdf") {
+            return warningNotify("Only PDF files allowed")
+        }
+
         setFormData(prev => ({
             ...prev,
-            selected_students: value
+            file
         }))
     }
 
     // submit
     const handleSubmit = async () => {
 
-        if (!formData.activity_name) {
-            return warningNotify("Enter activity name")
-        }
-
-        if (!formData.activity_point) {
-            return warningNotify("Enter points")
-        }
-
-        if (!formData.std_program_id) {
-            return warningNotify("Select program")
-        }
-
-        if (!formData.std_program_year) {
-            return warningNotify("Select program year")
-        }
-
-        if (!formData.isAll && formData.selected_students.length === 0) {
-            return warningNotify("Select students")
-        }
+        if (!formData.title) return warningNotify("Enter title")
+        if (!formData.description) return warningNotify("Enter description")
+        if (!formData.file) return warningNotify("Upload PDF")
+        if (!formData.std_program_id) return warningNotify("Select program")
+        if (!formData.std_program_year) return warningNotify("Select year")
 
         try {
-            const payload = {
-                activity_name: formData.activity_name,
-                activity_point: formData.activity_point,
+            //  STEP 1: Insert metadata
+            const metaRes = await axiosLogin.post("/student/insert-fac-documents", {
+                title: formData.title,
+                description: formData.description,
                 program_id: formData.std_program_id,
                 program_year: formData.std_program_year,
-                students: formData.isAll
-                    ? AllStudentData
-                        .filter(std =>
-                            std.std_program_id === formData.std_program_id &&
-                            std.std_program_year === formData.std_program_year
-                        )
-                        .map(s => s.std_id)
-                    : formData.selected_students
+                department_id: departmentId,
+                uploaded_by: user.fac_id
+            });
+
+            if (metaRes.data.success !== 1) {
+                return warningNotify("Failed to save details");
             }
 
-            const res = await axiosLogin.post("/activity/assign", payload)
+            const document_id = metaRes.data.document_id;
 
-            if (res.data.success === 1) {
-                successNotify("Activity Assigned")
+            //  STEP 2: Upload file
+            const fileData = new FormData();
+            fileData.append("files", formData.file);
+            fileData.append("document_id", document_id);
+            fileData.append("department_id", departmentId);
+            fileData.append("uploaded_by", user.fac_id);
 
-                setAssignedList(prev => [
-                    ...prev,
-                    {
-                        ...formData,
-                        date: new Date().toLocaleString()
-                    }
-                ])
+            const fileRes = await axiosLogin.post("/student/upload-document", fileData, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            });
+
+            if (fileRes.data.success === 1) {
+                successNotify("PDF Uploaded Successfully")
 
                 setFormData({
-                    activity_name: '',
-                    activity_point: '',
+                    title: '',
+                    description: '',
+                    file: null,
                     std_program_id: '',
                     std_program_year: '',
-                    isAll: true,
-                    selected_students: []
                 })
-
             } else {
-                warningNotify("Failed")
+                warningNotify("File upload failed")
             }
 
         } catch (err) {
@@ -132,187 +137,150 @@ const FaculityAssignement = () => {
     return (
         <Box
             sx={{
-                flex: 1,
-                minWidth: 0,
-                bgcolor: '#ffffff',
-                borderRadius: 2,
-                boxShadow: 'sm',
-                px: 3,
-                height: '100%'
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                mt: 3
             }}
         >
+            <Box sx={{ width: '65%' }}>
 
-            <Typography level="h3" sx={{ mb: 3 }}>
-                Add Documents
-            </Typography>
+                <Card sx={{ p: 3, borderRadius: 3, boxShadow: 'lg' }}>
 
-            <Grid container spacing={2}>
+                    <Typography level="h3" sx={{ mb: 2 }}>
+                        📄 Upload Study Material
+                    </Typography>
 
-                {/* Activity Name */}
-                <Grid xs={12} md={6}>
-                    <FormControl>
-                        <FormLabel>Activity Name</FormLabel>
-                        <Input
-                            name="activity_name"
-                            value={formData.activity_name}
-                            onChange={handleChange}
-                            placeholder="Eg: Onam Dance"
-                        />
-                    </FormControl>
-                </Grid>
+                    <Grid container spacing={2}>
 
-                {/* Points */}
-                <Grid xs={12} md={6}>
-                    <FormControl>
-                        <FormLabel>Points</FormLabel>
-                        <Input
-                            type="number"
-                            name="activity_point"
-                            value={formData.activity_point}
-                            onChange={handleChange}
-                            placeholder="Eg: 20"
-                        />
-                    </FormControl>
-                </Grid>
+                        {/* TITLE */}
+                        <Grid xs={12}>
+                            <FormControl>
+                                <FormLabel>Title</FormLabel>
+                                <Input
+                                    name="title"
+                                    value={formData.title}
+                                    onChange={handleChange}
+                                />
+                            </FormControl>
+                        </Grid>
 
-                {/* Program */}
-                <Grid xs={12} md={6}>
-                    <FormControl>
-                        <FormLabel>Program</FormLabel>
-                        <Select
-                            placeholder="Select program"
-                            value={formData.std_program_id}
-                            onChange={(_, value) =>
-                                setFormData(prev => ({
-                                    ...prev,
-                                    std_program_id: value,
-                                    std_program_year: '',
-                                    selected_students: []
-                                }))
-                            }
-                        >
-                            {programDetail
-                                ?.filter(item => Number(item.program_status) === 1)
-                                ?.map((prog) => (
-                                    <Option
-                                        key={prog.program_id}
-                                        value={prog.program_id}
-                                    >
-                                        {prog.program_name}
-                                    </Option>
-                                ))}
-                        </Select>
-                    </FormControl>
-                </Grid>
+                        {/* DESCRIPTION */}
+                        <Grid xs={12}>
+                            <FormControl>
+                                <FormLabel>Description</FormLabel>
+                                <Input
+                                    name="description"
+                                    value={formData.description}
+                                    onChange={handleChange}
+                                />
+                            </FormControl>
+                        </Grid>
 
-                {/* Program Year */}
-                <Grid xs={12} md={6}>
-                    <FormControl>
-                        <FormLabel>Program Year</FormLabel>
-                        <Select
-                            placeholder="Select Program Year"
-                            value={formData.std_program_year}
-                            onChange={(_, value) =>
-                                setFormData(prev => ({
-                                    ...prev,
-                                    std_program_year: value,
-                                    selected_students: []
-                                }))
-                            }
-                            disabled={!formData.std_program_id}
-                        >
-                            {programYearDetail?.map((year) => (
-                                <Option
-                                    key={year?.prgm_mast_dtl_slno}
-                                    value={year?.prgm_mast_dtl_slno}
+                        {/* PROGRAM */}
+                        <Grid xs={12} md={6}>
+                            <FormControl>
+                                <FormLabel>Program</FormLabel>
+                                <Select
+                                    value={formData.std_program_id}
+                                    onChange={(_, value) =>
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            std_program_id: value,
+                                            std_program_year: ''
+                                        }))
+                                    }
                                 >
-                                    {year?.program_year_name}
-                                </Option>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Grid>
+                                    {programDetail
+                                        ?.filter(p => Number(p.program_status) === 1)
+                                        ?.map((prog) => (
+                                            <Option key={prog.program_id} value={prog.program_id}>
+                                                {prog.program_name}
+                                            </Option>
+                                        ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
 
-                {/* Assign to all */}
-                <Grid xs={12}>
-                    <Checkbox
-                        label="Assign to All Students"
-                        checked={formData.isAll}
-                        onChange={(e) =>
-                            setFormData(prev => ({
-                                ...prev,
-                                isAll: e.target.checked
-                            }))
-                        }
-                    />
-                </Grid>
-
-                {/* Select Students */}
-                {!formData.isAll && (
-                    <Grid xs={12}>
-                        <FormControl>
-                            <FormLabel>Select Students</FormLabel>
-                            <Select
-                                multiple
-                                value={formData.selected_students}
-                                onChange={handleStudentSelect}
-                            >
-                                {AllStudentData
-                                    .filter(std =>
-                                        std.std_program_id === formData.std_program_id &&
-                                        std.std_program_year === formData.std_program_year
-                                    )
-                                    .map((std) => (
+                        {/* YEAR */}
+                        <Grid xs={12} md={6}>
+                            <FormControl>
+                                <FormLabel>Program Year</FormLabel>
+                                <Select
+                                    value={formData.std_program_year}
+                                    disabled={!formData.std_program_id}
+                                    onChange={(_, value) =>
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            std_program_year: value
+                                        }))
+                                    }
+                                >
+                                    {programYearDetail?.map((year) => (
                                         <Option
-                                            key={std.std_id}
-                                            value={std.std_id}
+                                            key={year.prgm_mast_dtl_slno}
+                                            value={year.prgm_mast_dtl_slno}
                                         >
-                                            {std.std_name}
+                                            {year.program_year_name}
                                         </Option>
                                     ))}
-                            </Select>
-                        </FormControl>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+
+                        {/* FILE UPLOAD */}
+                        <Grid xs={12}>
+                            <Box
+                                onClick={() => fileRef.current.click()}
+                                sx={{
+                                    border: '2px dashed #ccc',
+                                    borderRadius: 2,
+                                    p: 3,
+                                    textAlign: 'center',
+                                    cursor: 'pointer',
+                                    transition: '0.3s',
+                                    '&:hover': {
+                                        borderColor: '#1976d2',
+                                        background: '#f5faff'
+                                    }
+                                }}
+                            >
+                                <UploadFileIcon sx={{ fontSize: 40 }} />
+
+                                <Typography mt={1}>
+                                    Click to upload PDF
+                                </Typography>
+
+                                <Typography fontSize={12} color="gray">
+                                    Only .pdf files allowed
+                                </Typography>
+
+                                <input
+                                    ref={fileRef}
+                                    type="file"
+                                    accept="application/pdf"
+                                    hidden
+                                    onChange={handleFileChange}
+                                />
+
+                                {formData.file && (
+                                    <Typography mt={1} color="success">
+                                        ✅ {formData.file.name}
+                                    </Typography>
+                                )}
+                            </Box>
+                        </Grid>
+
+                        {/* SUBMIT */}
+                        <Grid xs={12}>
+                            <Button fullWidth size="lg" onClick={handleSubmit}>
+                                Upload PDF
+                            </Button>
+                        </Grid>
+
                     </Grid>
-                )}
-
-                {/* Submit */}
-                <Grid xs={12}>
-                    <Button onClick={handleSubmit}>
-                        Assign Activity
-                    </Button>
-                </Grid>
-
-            </Grid>
-
-            {/* ================= LIST ================= */}
-
-            <Typography level="h4" sx={{ mt: 5, mb: 2 }}>
-                Assigned Activities
-            </Typography>
-
-            {assignedList.map((item, index) => (
-                <Card key={index} sx={{ mb: 2, p: 2 }}>
-                    <Typography fontWeight="lg">
-                        {item.activity_name}
-                    </Typography>
-                    <Typography>
-                        Points: {item.activity_point}
-                    </Typography>
-                    <Typography>
-                        Program ID: {item.std_program_id}
-                    </Typography>
-                    <Typography>
-                        Year: {item.std_program_year}
-                    </Typography>
-                    <Typography>
-                        Type: {item.isAll ? "All Students" : "Individual"}
-                    </Typography>
-                    <Typography level="body2">
-                        {item.date}
-                    </Typography>
                 </Card>
-            ))}
-
+            </Box>
         </Box>
     )
 }

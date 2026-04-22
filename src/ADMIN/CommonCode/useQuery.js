@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   fetchAllActiveStudents,
   fetchAllAdminAlerts,
+  fetchAllAlertNotify,
   FetchAllAluminiDetail,
   FetchAllAluminiDetailById,
   fetchAllAluminiEduction,
@@ -14,8 +15,12 @@ import {
   fetchAllAluminipostMediaDetail,
   fetchallAluminiPosts,
   FetchAllBatchStudent,
+  fetchAllDepartmentDocument,
+  fetchAllDepartmentDocumentFile,
   FetchAllDeprmentDetail,
   FetchAllDesignation,
+  fetchAllDocuemntDetail,
+  fetchAllEnquiries,
   FetchAllFaculity,
   FetchAllMyConnections,
   FetchAllProgramDetaiById,
@@ -31,6 +36,8 @@ import {
   fetchAluminiProfilePicture,
   fetchchatuser,
   FetchExistingPdf,
+  fetchFacDocumentDetails,
+  fetchFacDocumentFiles,
   fetchlatestChatdtail,
   fetchLoggedStudetnDetail,
   fetchProfilePicture,
@@ -119,6 +126,39 @@ export const useFetchAllProgramDetailById = (id) => {
   return useQuery({
     queryKey: ["pgmdtlbyid", id],
     queryFn: () => FetchAllProgramDetaiById(id),
+    staleTime: Infinity,
+  });
+};
+
+//new
+export const useFetchDocumentFiles = (id) => {
+  return useQuery({
+    queryKey: ["facdoumentsfile", id],
+    queryFn: () => fetchFacDocumentFiles(id),
+    staleTime: Infinity,
+  });
+};
+
+export const useFetchAllDepartmentDocument = (id) => {
+  return useQuery({
+    queryKey: ["depdocument", id],
+    queryFn: () => fetchAllDocuemntDetail(id),
+    staleTime: Infinity,
+  });
+};
+
+export const useFetchDocumentDetails = (id) => {
+  return useQuery({
+    queryKey: ["facdoumentsdetail", id],
+    queryFn: () => fetchFacDocumentDetails(id),
+    staleTime: Infinity,
+  });
+};
+
+export const useFetchAllDeparmentDocuements = (id) => {
+  return useQuery({
+    queryKey: ["fetchalldepdoc", id],
+    queryFn: () => fetchAllDepartmentDocumentFile(id),
     staleTime: Infinity,
   });
 };
@@ -297,8 +337,6 @@ export const useFectchAluminiExperience = (alum_id) => {
 };
 
 export const useFetchMessages = ({ user1, user2, user1_type, user2_type }) => {
-
-
   return useQuery({
     queryKey: ["messages", user1, user2, user1_type, user2_type],
 
@@ -332,9 +370,6 @@ export const useFetchChatUsers = (userId) => {
   });
 };
 
-
-
-
 export const useFectchAllAlumini = () => {
   return useQuery({
     queryKey: ["aluminipost"],
@@ -342,7 +377,6 @@ export const useFectchAllAlumini = () => {
     staleTime: Infinity,
   });
 };
-
 
 export const useFectchAllAluminiPostDetail = () => {
   return useQuery({
@@ -352,8 +386,6 @@ export const useFectchAllAluminiPostDetail = () => {
   });
 };
 
-
-
 export const useFectchAllAluminiEventDetail = () => {
   return useQuery({
     queryKey: ["aluminievnt"],
@@ -361,7 +393,6 @@ export const useFectchAllAluminiEventDetail = () => {
     staleTime: Infinity,
   });
 };
-
 
 export const useFetchAllAluminiEvenMedialDetail = () => {
   return useQuery({
@@ -371,18 +402,14 @@ export const useFetchAllAluminiEvenMedialDetail = () => {
   });
 };
 
-
-
-
 export const useFetchAllStudtentAcitivty = (dep_id) => {
   return useQuery({
     queryKey: ["studentallact"],
-    queryFn: ()=>fetchAllStudentActivityDtail(dep_id),
+    queryFn: () => fetchAllStudentActivityDtail(dep_id),
     staleTime: Infinity,
-    enabled:!!dep_id
+    enabled: !!dep_id,
   });
 };
-
 
 export const useFetchAllAcitivtyMediaDetail = () => {
   return useQuery({
@@ -392,7 +419,13 @@ export const useFetchAllAcitivtyMediaDetail = () => {
   });
 };
 
-
+export const useFetchAllEnqiury = () => {
+  return useQuery({
+    queryKey: ["enquiryy"],
+    queryFn: fetchAllEnquiries,
+    staleTime: Infinity,
+  });
+};
 
 export const useFetchAllAlerts = () => {
   return useQuery({
@@ -402,12 +435,19 @@ export const useFetchAllAlerts = () => {
   });
 };
 
-
-
 export const useFetchLatestChat = () => {
   return useQuery({
     queryKey: ["latestchat"],
     queryFn: fetchlatestChatdtail,
     staleTime: Infinity,
+  });
+};
+
+export const useFetchAlertNotify = (logged_role) => {
+  return useQuery({
+    queryKey: ["alertnotify", logged_role],
+    queryFn: () => fetchAllAlertNotify(logged_role),
+    staleTime: Infinity,
+    enabled: !!logged_role,
   });
 };

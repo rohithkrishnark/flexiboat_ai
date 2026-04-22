@@ -5,7 +5,7 @@ import {
   List,
   ListItem,
   ListItemButton,
-  ListItemContent,
+  // ListItemContent,
   Divider
 } from '@mui/joy'
 import { useNavigate } from 'react-router-dom'
@@ -21,6 +21,8 @@ import AdjustIcon from '@mui/icons-material/Adjust'
 import CampaignIcon from '@mui/icons-material/Campaign';
 import adminlogo from '../AdminAssets/logo.png'
 import MenuItem from './MenuItem'
+import MarkAsUnreadIcon from '@mui/icons-material/MarkAsUnread';
+
 
 const MENU_ITEMS = [
   {
@@ -54,6 +56,11 @@ const MENU_ITEMS = [
     label: 'Alert',
     icon: CampaignIcon,
     path: '/admin/alert'
+  },
+  {
+    label: 'Enquiry',
+    icon: MarkAsUnreadIcon,
+    path: '/admin/enquiry'
   },
   {
     label: 'Setting',
@@ -162,14 +169,16 @@ const AdminSideBar = () => {
       <Divider />
 
       {/* Menu */}
-      <List sx={{ flexGrow: 1 }}>
+      <List sx={{ flexGrow: 1}}>
         {MENU_ITEMS.map(item => (
-          <React.Fragment key={item.label}>
+          <div key={item.label}>
             <MenuItem
               {...item}
               open={open}
               active={activeMenu === item.label}
+              sx={{ color: "white" }}
               onClick={() => handleMenuClick(item)}
+
               endIcon={
                 item.nested && open && (
                   <ExpandMoreIcon
@@ -203,15 +212,15 @@ const AdminSideBar = () => {
                           color: '#9ca3af'
                         }}
                       />
-                      <ListItemContent sx={{ color: 'white' }}>
+                      <span style={{ color: "white" }}>
                         {sub.label}
-                      </ListItemContent>
+                      </span>
                     </ListItemButton>
                   </ListItem>
                 ))}
               </Box>
             )}
-          </React.Fragment>
+          </div>
         ))}
       </List>
 

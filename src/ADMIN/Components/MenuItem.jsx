@@ -3,7 +3,7 @@ import {
     ListItem,
     ListItemButton,
     ListItemDecorator,
-    ListItemContent,
+    // ListItemContent,
 } from '@mui/joy'
 const MenuItem = ({ icon: Icon, label, open, onClick, endIcon,active  }) => {
     return (
@@ -23,9 +23,9 @@ const MenuItem = ({ icon: Icon, label, open, onClick, endIcon,active  }) => {
 
                 {open && (
                     <>
-                        <ListItemContent sx={{ color: 'white' }}>
+                        <span style={{ color: 'white' }}>
                             {label}
-                        </ListItemContent>
+                        </span>
                         {endIcon}
                     </>
                 )}

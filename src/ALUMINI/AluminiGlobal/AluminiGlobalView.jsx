@@ -31,6 +31,7 @@ import ConnectionButton from "./ConnectionButton";
 import GlobalLoader from "../../Component/GlobalLoader";
 import { axiosLogin } from "../../Axios/axios";
 import { BACKEND_IMAGE } from "../../constant/Static";
+import FloatingBackButton from "../../Component/FloatingBackButton";
 
 const AluminiGlobalView = () => {
     const { id: alum_id } = useParams();
@@ -166,7 +167,7 @@ const AluminiGlobalView = () => {
                         </Typography>
                     </Box>
                 </Box>
-                <ConnectionButton
+                {/* <ConnectionButton
                     isOwner={Number(viewer_id) === Number(alum_id)}
                     isConnected={isConnected}
                     onFollow={() => handleConnect()}
@@ -174,7 +175,7 @@ const AluminiGlobalView = () => {
                         console.log("Message clicked");
                         // navigate to chat
                     }}
-                />
+                /> */}
 
                 {/* STATS */}
                 <Box sx={{ display: "flex", gap: 1, mt: 2 }}>
@@ -378,6 +379,7 @@ const AluminiGlobalView = () => {
                 )}
 
             </Box>
+             <FloatingBackButton/>
         </Box>
     );
 };

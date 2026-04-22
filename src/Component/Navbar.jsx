@@ -12,9 +12,10 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Person2Icon from "@mui/icons-material/Person2";
-import { Divider, Tooltip } from "@mui/joy";
+import {  Divider, Tooltip } from "@mui/joy";
 import { useNavigate } from "react-router-dom";
 import { getAuthUser } from "../constant/Constant";
+import { Box } from "@mui/material";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -99,7 +100,7 @@ const Navbar = () => {
             </a>
           </li>
           <li>
-            <a href="#about" onClick={(e) => handleNavScroll(e, "about")}>
+            <a href="#about-section" onClick={(e) => handleNavScroll(e, "about-section")}>
               About
             </a>
           </li>
@@ -117,7 +118,7 @@ const Navbar = () => {
           {/* ================= USER ICON ================= */}
           <li>
             <IconButton onClick={handleIconClick} sx={{ color: "white" }}>
-              
+
               {/* LOGGED IN */}
               {isLoggedIn ? (
                 <Person2Icon sx={{ fontSize: 20 }} />
@@ -152,14 +153,14 @@ const Navbar = () => {
               transformOrigin={{ vertical: "top", horizontal: "right" }}
             >
               {isLoggedIn && (
-                <>
+                <Box>
                   <MenuItem onClick={handleResetPassword}>
                     Reset Password
                   </MenuItem>
                   <MenuItem onClick={handleLogout}>
                     Logout
                   </MenuItem>
-                </>
+                </Box>
               )}
             </Menu>
           </li>
@@ -193,7 +194,7 @@ const Navbar = () => {
         <List>
           {[
             { name: "Home", id: "home" },
-            { name: "About", id: "about" },
+            { name: "About", id: "about-section" },
             { name: "Chat", id: "chat" },
             { name: "Contact", id: "contactus" },
           ].map((item) => (

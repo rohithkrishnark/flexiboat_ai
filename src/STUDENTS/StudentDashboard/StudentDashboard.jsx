@@ -8,11 +8,46 @@ import ActivityAverageAnalytics from '../../FACULITY/FaculityDashboard/ActivityA
 import FacultyGradeDistribution from '../../FACULITY/FaculityDashboard/FacultyGradeDistribution';
 import SocialMediaCard from '../../ADMIN/Dasboard/DashboardComponents/SocialMediaCard';
 import MonthlyHeatmap from './MonthlyHeatmap';
+import { getAuthUser } from '../../constant/Constant';
+import { useFetchMyConnections, useFetchSingleStudentActivity, useFetchSingleStudentPost } from '../../ADMIN/CommonCode/useQuery';
+import { getWeeklyCount, getWeeklyStats } from '../../ADMIN/CommonCode/Reusable';
 // import InfoCard from '../../ADMIN/Dasboard/DashboardComponents/InfoCard';
 // import SocialMediaCard from '../../ADMIN/Dasboard/DashboardComponents/SocialMediaCard';
 // import ActivityAverageAnalytics from './ActivityAverageAnalytics';
 // import FacultyGradeDistribution from './FacultyGradeDistribution';
 const StudentDashboard = () => {
+
+
+    const user = getAuthUser();
+    const std_id = user?.user_id;
+
+    const { data: studetnActivityDetail = [] } = useFetchSingleStudentActivity(std_id ?? null);
+    const { data: StudentPostDetail = [] } = useFetchSingleStudentPost(std_id ?? null);
+    const { data: connections = [] } =
+        useFetchMyConnections({
+            user_id: std_id,
+            user_type: "student",
+        });
+
+
+
+    const totalScore = studetnActivityDetail?.reduce(
+        (sum, item) => sum + (item.activity_score || 0),
+        0
+    );
+    const totalAcitivity = studetnActivityDetail?.length;
+    const totalPosts = StudentPostDetail?.length;
+    const totalConnections = connections?.length;
+    const { weeklyActivity, weeklyScore } = getWeeklyStats(studetnActivityDetail);
+    const weeklyReports = getWeeklyCount(StudentPostDetail);
+    const weeklyConnections = getWeeklyCount(connections);
+
+
+
+    console.log({
+        studetnActivityDetail
+    });
+
 
     return (
         <Box
@@ -31,29 +66,29 @@ const StudentDashboard = () => {
             >
                 <InfoCard
                     title="My Activities"
-                    total={12}
-                    weeklyData={[1, 2, 1, 3, 2, 2, 1]}
+                    total={totalAcitivity}
+                    weeklyData={weeklyActivity}
                     color="#6366f1"
                 />
 
                 <InfoCard
                     title="Activity Points"
-                    total={240}
-                    weeklyData={[20, 30, 25, 40, 35, 50, 40]}
+                    total={totalScore}
+                    weeklyData={weeklyScore}
                     color="#22c55e"
                 />
 
                 <InfoCard
-                    title="Assignments Submitted"
-                    total={18}
-                    weeklyData={[2, 3, 2, 4, 3, 2, 2]}
+                    title="Total Posts"
+                    total={totalPosts}
+                    weeklyData={weeklyReports}
                     color="#f59e0b"
                 />
 
                 <InfoCard
-                    title="Pending Tasks"
-                    total={5}
-                    weeklyData={[1, 1, 0, 1, 1, 0, 1]}
+                    title="My Connections"
+                    total={totalConnections}
+                    weeklyData={weeklyConnections}
                     color="#ef4444"
                 />
             </Box>
@@ -86,7 +121,7 @@ const StudentDashboard = () => {
                         flexDirection: 'column',
                     }}
                 >
-                    <FacultyGradeDistribution />
+                    <FacultyGradeDistribution data={studetnActivityDetail} />
                 </Box>
             </Box>
 
