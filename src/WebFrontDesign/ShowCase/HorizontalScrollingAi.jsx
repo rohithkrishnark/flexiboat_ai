@@ -107,7 +107,7 @@ const HorizontalScrollingAi = () => {
                 and campus services.
               </Typography>
 
-              <Button
+              {/* <Button
                 size="lg"
                 sx={{
                   bgcolor: "#6c7cff",
@@ -115,7 +115,7 @@ const HorizontalScrollingAi = () => {
                 }}
               >
                 Explore AI System
-              </Button>
+              </Button> */}
             </Box>
 
             <Box sx={featureGrid}>
@@ -172,13 +172,13 @@ const HorizontalScrollingAi = () => {
                 to build a powerful AI knowledge base.
               </Typography>
 
-              <Button
+              {/* <Button
                 size="lg"
                 variant="outlined"
                 sx={{ borderColor: "#6c7cff", color: "#6c7cff" }}
               >
                 How AI Works
-              </Button>
+              </Button> */}
             </Box>
 
             <Box sx={featureGrid}>
@@ -235,7 +235,7 @@ const HorizontalScrollingAi = () => {
                 receive intelligent answers instantly.
               </Typography>
 
-              <Button
+              {/* <Button
                 size="lg"
                 sx={{
                   bgcolor: "#6c7cff",
@@ -243,7 +243,7 @@ const HorizontalScrollingAi = () => {
                 }}
               >
                 Try Chatbot
-              </Button>
+              </Button> */}
             </Box>
 
             <Box sx={featureGrid}>
@@ -300,7 +300,7 @@ const HorizontalScrollingAi = () => {
                 an intelligent digital campus.
               </Typography>
 
-              <Button
+              {/* <Button
                 size="lg"
                 sx={{
                   bgcolor: "#6c7cff",
@@ -308,7 +308,7 @@ const HorizontalScrollingAi = () => {
                 }}
               >
                 Get Started
-              </Button>
+              </Button> */}
             </Box>
 
             <Box sx={featureGrid}>
