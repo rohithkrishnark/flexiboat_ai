@@ -214,7 +214,7 @@ export const fetchFacDocumentFiles = async (id) => {
 };
 
 export const fetchAllDepartmentDocumentFile = async (id) => {
-  if(!id) return warningNotify("Department Id is Missing!")
+  if (!id) return warningNotify("Department Id is Missing!")
   try {
     const response = await axiosLogin.get(
       `/student/documents/department/${id}`,
@@ -916,9 +916,11 @@ export const fetchAllEnquiries = async () => {
   }
 };
 
-export const fetchlatestChatdtail = async () => {
+export const fetchlatestChatdtail = async (user_id) => {
   try {
-    const response = await axiosLogin.get(`/chat/recentchat`);
+    const response = await axiosLogin.post(`/chat/recentchat`, {
+      userid: user_id
+    });
     const { success, data, message } = response.data;
     if (success === 0) {
       errorNotify(message);

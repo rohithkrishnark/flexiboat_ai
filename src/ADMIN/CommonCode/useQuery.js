@@ -435,11 +435,12 @@ export const useFetchAllAlerts = () => {
   });
 };
 
-export const useFetchLatestChat = () => {
+export const useFetchLatestChat = (user) => {
   return useQuery({
-    queryKey: ["latestchat"],
-    queryFn: fetchlatestChatdtail,
+    queryKey: ["latestchat", user?.user_id], // optional but better for caching per user
+    queryFn: ()=>fetchlatestChatdtail(user?.user_id),
     staleTime: Infinity,
+    enabled: !!user, //  prevents query when user is null/undefined
   });
 };
 

@@ -8,6 +8,7 @@ import SELMA from '../../assets/louthfac/SELMA JOSEPH.jpg'
 import SHERIN from '../../assets/louthfac/SHERIN JOSEPH.jpg'
 import sureshkumar from '../../assets/louthfac/sureshkumar s.jpg'
 import lourth from '../../assets/louth.jpg'
+import FloatingAboutBackButton from "./FloatingAboutBackButton";
 
 const features = [
   {
@@ -65,6 +66,7 @@ const AboutExploration = () => {
   return (
     <PageLoader>
       <Box sx={{ width: "100%", bgcolor: "#000", color: "#fff" }}>
+        <FloatingAboutBackButton fallbackPath="/home" />
 
         {/* PLATFORM INTRO */}
         <Box

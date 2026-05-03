@@ -147,7 +147,7 @@ const AddAlumin = () => {
             const action = isEditMode ? 'updated' : 'added';
 
             if (response.data.success === 1) {
-                successNotify(`Alumni ${action} successfully ddd`);
+                successNotify(`Alumni ${action} successfully`);
 
                 // Clear form only if adding, not editing
                 if (!isEditMode) {

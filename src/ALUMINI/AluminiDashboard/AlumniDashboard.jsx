@@ -96,7 +96,24 @@ const AlumniDashboard = () => {
 
   return (
     <Box sx={{ display: "flex", height: "100vh", bgcolor: "#eef2f7" }}>
-      <Box sx={{ flex: 1, overflowY: "auto", p: 2 }}>
+     <Box
+  sx={{
+    flex: 1,
+    overflowY: "auto",
+    p: 2,
+
+    // hide scrollbar (Firefox)
+    scrollbarWidth: "none",
+
+    // hide scrollbar (IE + Edge legacy)
+    msOverflowStyle: "none",
+
+    // hide scrollbar (Chrome, Safari)
+    "&::-webkit-scrollbar": {
+      display: "none"
+    }
+  }}
+>
 
         {/* CREATE */}
         <Card sx={{ mb: 2, borderRadius: "16px" }}>

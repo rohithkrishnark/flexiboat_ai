@@ -33,7 +33,7 @@ const AddStudentDetail = () => {
     console.log({
         user
     });
-    
+
 
     const [formData, setFormData] = useState({
         std_id: null,
@@ -113,11 +113,19 @@ const AddStudentDetail = () => {
             warningNotify("Email is required")
             return false
         }
-
         if (!formData.std_mobile_no) {
-            warningNotify("Mobile number required")
-            return false
+            warningNotify("Mobile number required");
+            return false;
         }
+
+        // strict Indian mobile validation
+        const mobileRegex = /^[6-9]\d{9}$/;
+
+        if (!mobileRegex.test(formData.std_mobile_no)) {
+            warningNotify("Enter a valid 10-digit mobile number");
+            return false;
+        }
+
 
         if (!formData.std_program_id) {
             warningNotify("Select program")
@@ -262,7 +270,15 @@ const AddStudentDetail = () => {
                             <Input
                                 name="std_mobile_no"
                                 value={formData.std_mobile_no}
-                                onChange={handleChange}
+                                onChange={(e) => {
+                                    const value = e.target.value.replace(/\D/g, "");
+                                    if (value.length <= 10) {
+                                        setFormData({
+                                            ...formData,
+                                            std_mobile_no: value
+                                        });
+                                    }
+                                }}
                                 placeholder="Mobile number"
                             />
                         </FormControl>
