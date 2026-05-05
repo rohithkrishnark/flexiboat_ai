@@ -103,7 +103,7 @@ const About = () => {
         .to(descRef.current, {
           duration: 3,
           scrambleText: {
-            text: "Your long text...",
+            text: "Our platform transforms static documents into dynamic AI knowledge. Teams can instantly search, understand, and interact with their organization’s information through intelligent conversations. Our platform transforms static documents into dynamic AI knowledge. Teams can instantly search, understand, and interact with their organization’s information through intelligent conversations. Our platform transforms static documents into dynamic AI knowledge. Teams can instantly search, understand, and interact with their organization’s information through intelligent conversations. Our platform transforms static documents into dynamic AI knowledge. Teams can instantly search, understand, and interact with their organization’s information through intelligent conversations",
             chars: "lowerCase",
             speed: 0.3
           }

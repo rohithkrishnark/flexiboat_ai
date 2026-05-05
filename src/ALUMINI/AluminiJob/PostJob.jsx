@@ -105,7 +105,7 @@ const PostJob = () => {
         location: postData.location,
         salary: postData.salary,
         event_date: post_type === "event" ? postData.eventDate : null,
-        alum_name:alum_name
+        alum_name: alum_name
       });
 
       if (res.data.success) {
@@ -202,7 +202,11 @@ const PostJob = () => {
           {tab === 2 && (
             <TextField
               type="date"
+              value={postData.eventDate}
               onChange={(e) => handleChange("eventDate", e.target.value)}
+              inputProps={{
+                min: new Date().toISOString().split("T")[0]
+              }}
             />
           )}
 

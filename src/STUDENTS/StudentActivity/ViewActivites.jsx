@@ -53,7 +53,7 @@ const ViewActivities = () => {
                         gap: 2,
                     }}
                 >
-                    {postsWithMedia.map((item) => {
+                    {postsWithMedia?.map((item) => {
                         const firstImage = item.media?.[0]?.path
                             ? `${BACKEND_IMAGE}${item.media[0].path}`
                             : "https://via.placeholder.com/300x140";

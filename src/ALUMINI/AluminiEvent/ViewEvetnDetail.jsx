@@ -2,7 +2,6 @@ import React, { useState, useMemo } from "react";
 import {
   Box,
   Typography,
-  Button,
   Card,
   CardContent,
   Chip,
@@ -18,6 +17,7 @@ import {
   useFetchSingleAluminiEvent,
 } from "../../ADMIN/CommonCode/useQuery";
 import { BACKEND_IMAGE } from "../../constant/Static";
+import { isBefore, startOfDay } from "date-fns";
 
 const ViewEventDetail = () => {
   const [filter, setFilter] = useState("upcoming");
@@ -40,18 +40,35 @@ const ViewEventDetail = () => {
     return map;
   }, [alumninEventMediaDetail]);
 
-  // ✅ Merge event + image
-  const events = useMemo(() => {
-    return alumninEventDetail.map((event) => ({
+  //  Merge event + image
+  // const events = useMemo(() => {
+  //   return alumninEventDetail.map((event) => ({
+  //     ...event,
+  //     image: mediaMap[event.id] || event.banner_image || null,
+  //   }));
+  // }, [alumninEventDetail, mediaMap]);
+
+  const today = startOfDay(new Date());
+
+const events = useMemo(() => {
+  return alumninEventDetail?.map((event) => {
+    const eventDate = startOfDay(new Date(event?.event_date));
+
+    return {
       ...event,
       image: mediaMap[event.id] || event.banner_image || null,
-    }));
-  }, [alumninEventDetail, mediaMap]);
+      computedStatus: isBefore(eventDate, today)
+        ? "completed"
+        : "upcoming",
+    };
+  });
+}, [alumninEventDetail, mediaMap]);
 
-  // ✅ filter by status
-  const filteredEvents = events.filter(
-    (event) => event.status === filter
-  );
+  //  filter by status
+  const filteredEvents = events?.filter(
+  (event) => event.computedStatus === filter
+);
+
 
   return (
     <Box sx={{ height: "90vh", overflow: "hidden", bgcolor: "#f4f4f4" }}>

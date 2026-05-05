@@ -21,7 +21,7 @@ const ChatBot = () => {
   const user = getAuthUser();
 
   //  FETCH LAST 10 CHATS
-  const { data: LastFewChats ,refetch:FetchLastMessage} = useFetchLatestChat();
+  const { data: LastFewChats, refetch: FetchLastMessage } = useFetchLatestChat(user);
 
   //  NEW CHAT (CLEAR EVERYTHING)
   const handleNewChat = () => {
@@ -95,7 +95,7 @@ const ChatBot = () => {
       typeMessageReact(setMessages, reply, async () => {
         try {
           await axiosLogin.post("/chat/insert", {
-            user_id: user?.logged_id || null,
+            user_id: user?.user_id || user?.logged_id || null,
             query: msg,
             response: reply,
           });
@@ -151,7 +151,7 @@ const ChatBot = () => {
           textareaRef={textareaRef}
         />
       </Box>
-      <FloatingBackButton/>
+      <FloatingBackButton />
     </Box>
   );
 };
